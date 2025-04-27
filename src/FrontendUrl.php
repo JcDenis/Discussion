@@ -38,21 +38,25 @@ class FrontendUrl extends Url
             $args = substr($args, 1);
         }
         $exp = explode('/', (string) $args);
+
         switch ($exp[0]) {
             case 'list':
-                self::listDiscussions($args);
+                self::listDiscussions($exp);
                 break;
 
             default:
-                self::createDiscussion($args);
+                $exp[0] = 'create';
+                self::createDiscussion($exp);
                 break;
         }
     }
 
     /**
      * Discussion creation endpoint.
+     * 
+     * @param   array<int, string>  $args
      */
-    public static function createDiscussion(?string $args): void
+    public static function createDiscussion(array $args): void
     {
         if (!My::settings()->get('active')
             || App::auth()->userID() == ''
@@ -62,8 +66,6 @@ class FrontendUrl extends Url
         }
 
         //self::loadFormater();
-
-        $post_id = 0;
 
         if (!empty($_POST)) {
             self::checkForm();
@@ -96,15 +98,19 @@ class FrontendUrl extends Url
 
                     $post_id = App::auth()->sudo(App::blog()->addPost(...), $cur);
 
-                    if (My::settings()->get('publish_post')) {
-                        App::frontend()->context()->posts = App::blog()->getPosts(['post_id' => $post_id]);
-                    }
+                    $more = My::settings()->get('publish_post') ? '/' . $post_id : '';
 
-                    App::frontend()->context()->discussion_success = __('Discussion successfully created.');
+                    header('Location: ' . App::blog()->url() . App::url()->getURLFor(My::id(), 'create') . $more);
                 } catch (Exception $e) {
                     self::$form_error[] = $e->getMessage();
                 }
             }
+        }
+
+        $post_id = 0;
+        if (!empty($args[1]) && is_numeric($args[1])) {
+            $post_id = (int) $args[1];
+            App::frontend()->context()->discussion_success = __('Discussion successfully created.');
         }
 
         // Need to have a posts instance for templates
@@ -115,8 +121,10 @@ class FrontendUrl extends Url
 
     /**
      * Discussion user list endpoint.
+     * 
+     * @param   array<int, string>  $args
      */
-    public static function listDiscussions(?string $args): void
+    public static function listDiscussions(array $args): void
     {
         self::p404();
     }
