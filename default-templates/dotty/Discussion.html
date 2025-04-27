@@ -1,0 +1,59 @@
+{{tpl:extends parent="post.html"}}
+<tpl:Block name="head-title">
+  <title>{{tpl:lang Discussion}} - {{tpl:BlogName encode_html="1"}}</title>
+</tpl:Block>
+
+<tpl:Block name="meta-entry"></tpl:Block>
+
+<tpl:Block name="head-linkrel">
+  <link rel="contents" href="{{tpl:BlogArchiveURL}}" title="{{tpl:lang Archives}}" />
+  <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="{{tpl:BlogFeedURL type="atom"}}" />
+</tpl:Block>
+
+
+<tpl:Block name="body-tag">
+  <body class="dc-post dc-discussion">
+</tpl:Block>
+
+
+<tpl:Block name="main-content">
+  <header id="content-info">
+    <h2>{{tpl:lang Discussion}}</h2>
+  </header>
+  <tpl:Block name="main-content-before"></tpl:Block>
+
+  <div class="content-inner">
+      <tpl:SysIfFormError>
+      <p class="error">{{tpl:SysFormError}}</p>
+      </tpl:SysIfFormError>
+      <tpl:DiscussionIf success="1" published="1">
+        <p class="success">{{tpl:DiscussionFormSuccess}}<br /><a href="{{tpl:EntryURL}}">{{tpl:EntryTitle encode_html="1"}}</a></p>
+      </tpl:DiscussionIf>
+      <tpl:DiscussionIf success="1" published="0">
+        <p class="success">{{tpl:DiscussionFormSuccess}}<br />{{tpl:lang An administrator will review it for publishing.}}</p>
+      </tpl:DiscussionIf>
+    <h3>{{tpl:lang Start a new discussion}}</h3>
+    <form method="post" name="discussion-form" id="discussion-form" action="{{tpl:DiscussionFormURL page="create"}}" enctype="multipart/form-data">
+
+      <div class="inputfield">
+        <label for="discussion_category" class="required">{{tpl:lang Category:}}</label>
+        {{tpl:DiscussionCategoriesCombo}}
+      </div>
+      <div class="inputfield">
+        <label for="discussion_title" class="required">{{tpl:lang Title:}}</label>
+        <input type="text" id="discussion_title" name="discussion_title" value="{{tpl:DiscussionPostTitle encode_html="1"}}" />
+      </div>
+      <div class="inputfield">
+        <h5>{{tpl:lang Content:}}</h5>
+        <textarea id="discussion_content" name="discussion_content" rows="15">{{tpl:DiscussionPostContent encode_html="1"}}</textarea>
+      </div>
+      <div class="controlset">
+        <input type="hidden" name="discussion_check" value="{{tpl:DiscussionFormNonce}}" />
+        <input class="submit" type="submit" id="submit" name="submit" value="{{tpl:lang Create discussion}}" />
+      </div>
+
+    </form>
+  </div>
+
+  <tpl:Block name="main-content-after"></tpl:Block>
+</tpl:Block> <!-- # main-content -->

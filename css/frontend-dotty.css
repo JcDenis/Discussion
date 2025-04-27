@@ -1,0 +1,11 @@
+#discussion-form input:not([type='checkbox']):not([type='radio']) {
+  display: block;
+}
+#discussion-form .inputfield {
+    margin: 1em 0;
+}
+.content-inner #discussion-form {
+    padding-bottom: 2em;
+    border-bottom: 1px solid var(--main-color);
+
+}
