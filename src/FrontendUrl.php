@@ -40,13 +40,16 @@ class FrontendUrl extends Url
         $exp = explode('/', (string) $args);
 
         switch ($exp[0]) {
-            case 'list':
-                self::listDiscussions($exp);
+            case 'create':
+                self::create($exp);
+                break;
+            case 'mylist':
+                self::mylist($exp);
                 break;
 
             default:
-                $exp[0] = 'create';
-                self::createDiscussion($exp);
+                $exp[0] = 'categories';
+                self::categories($exp);
                 break;
         }
     }
@@ -56,7 +59,7 @@ class FrontendUrl extends Url
      * 
      * @param   array<int, string>  $args
      */
-    public static function createDiscussion(array $args): void
+    public static function create(array $args): void
     {
         if (!My::settings()->get('active')
             || App::auth()->userID() == ''
@@ -116,7 +119,7 @@ class FrontendUrl extends Url
         // Need to have a posts instance for templates
         App::frontend()->context()->posts = App::blog()->getPosts(['post_id' => $post_id]);
 
-        self::serveTemplate();
+        self::serveTemplate('create');
     }
 
     /**
@@ -124,9 +127,21 @@ class FrontendUrl extends Url
      * 
      * @param   array<int, string>  $args
      */
-    public static function listDiscussions(array $args): void
+    public static function mylist(array $args): void
     {
         self::p404();
+
+        //self::serveTemplate('mylist');
+    }
+
+    /**
+     * Discussion categories endpoint.
+     * 
+     * @param   array<int, string>  $args
+     */
+    public static function categories(array $args): void
+    {
+        self::serveTemplate('categories');
     }
 
     /**
@@ -160,7 +175,7 @@ class FrontendUrl extends Url
     /**
      * Serve template.
      */
-    private static function serveTemplate(): void
+    private static function serveTemplate(string $template): void
     {
         // use only dotty tplset
         $tplset = App::themes()->moduleInfo(App::blog()->settings()->get('system')->get('theme'), 'tplset');
@@ -177,6 +192,6 @@ class FrontendUrl extends Url
             App::frontend()->template()->setPath(App::frontend()->template()->getPath(), $default_template . $tplset);
         }
 
-        self::serveDocument(My::id() . '.html');
+        self::serveDocument(My::id() . '-' . $template . '.html');
     }
 }

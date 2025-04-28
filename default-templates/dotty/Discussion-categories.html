@@ -1,0 +1,72 @@
+{{tpl:extends parent="__layout.html"}}
+
+<tpl:Block name="head-title">
+	  <title>{{tpl:DiscussionCategoriesTitle}} - {{tpl:BlogName encode_html="1"}}</title>
+</tpl:Block>
+
+<tpl:Block name="meta-robots">
+	<meta name="ROBOTS" content="{{tpl:BlogMetaRobots robots="NOINDEX"}}" />
+</tpl:Block>
+
+<tpl:Block name="head-linkrel">
+  <link rel="contents" title="{{tpl:lang Archives}}" href="{{tpl:BlogArchiveURL}}" />
+  <tpl:DiscussionCategories>
+  <link rel="section" href="{{tpl:CategoryURL}}" title="{{tpl:CategoryTitle encode_html="1"}}" />
+  </tpl:DiscussionCategories>
+  <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="{{tpl:BlogFeedURL type="atom"}}" />
+</tpl:Block>
+
+<tpl:Block name="body-tag"><body class="dc-category dc-categories"></tpl:Block>
+
+<tpl:Block name="main-content">
+  <tpl:DiscussionIf has_root_cat="1">
+    <div id="content-info">
+      <h2>{{tpl:DiscussionCategoriesTitle}}</h2>
+      {{tpl:DiscussionCategoriesDescription}}
+    </div>
+  </tpl:DiscussionIf>
+
+  <div class="content-inner">
+	<tpl:DiscussionCategories>
+    <tpl:CategoryIf has_entries="1">
+  <article id="p{{tpl:CategoryID}}" class="post" role="article">
+      <header>
+          <h2 class="post-title"><a href="{{tpl:CategoryURL}}">{{tpl:CategoryTitle encode_html="1"}}</a> ({{tpl:CategoryEntriesCount}})</h2>
+            <ul class="content-info__feed">
+              <li><a type="application/atom+xml" href="{{tpl:CategoryFeedURL type="atom"}}"
+               title="{{tpl:lang This category's entries Atom feed}}" class="feed">{{tpl:lang Entries feed}}</a></li>
+              <tpl:SysIf operator="or" comments_active="1" pings_active="1">
+                <li><a type="application/atom+xml" href="{{tpl:CategoryFeedURL type="atom"}}/comments"
+                 title="{{tpl:lang This category's comments Atom feed}}" class="feed">{{tpl:lang Comments feed}}</a></li>
+              </tpl:SysIf>
+            </ul>
+      </header>
+
+          <div class="post-content">
+            {{tpl:CategoryDescription}}
+          </div>
+
+      <footer class="post-meta">
+        <tpl:Entries lastn="1" no_content="1">
+            <p class="post-info">
+              <span class="post-cat">{{tpl:lang Last entry:}} <a href="{{tpl:EntryURL}}">{{tpl:EntryTitle}}</a>, </span>
+              <span class="post-author">{{tpl:lang By}} {{tpl:EntryAuthorLink}}, </span>
+              <span class="post-date">{{tpl:lang On}} <time datetime="{{tpl:EntryDate iso8601="1"}}">{{tpl:EntryDate}}, {{tpl:EntryTime}}</time></span>
+            </p>
+        </tpl:Entries>
+        <tpl:SysIf comments_active="1">
+          <tpl:DiscussionCategoryComments lastn="1" no_content="1">
+            <p class="post-info">
+              <span class="post-cat">{{tpl:lang Last comment:}} <a href="{{tpl:EntryURL}}#c{{tpl:CommentID}}">{{tpl:EntryTitle}}</a>, </span>
+              <span class="post-author">{{tpl:lang By}} {{tpl:CommentAuthorLink}}, </span>
+              <span class="post-date">{{tpl:lang On}} <time datetime="{{tpl:CommentDate iso8601="1"}}">{{tpl:CommentDate}}, {{tpl:CommentTime}}</time></span>
+            </p>
+          </tpl:DiscussionCategoryComments>
+        </tpl:SysIf>
+      </footer>
+  </article>
+    </tpl:CategoryIf>
+	</tpl:DiscussionCategories>
+	
+  </div>
+</tpl:Block>

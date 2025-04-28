@@ -37,7 +37,7 @@ class Prepend extends Process
         App::url()->register(
             My::id(),
             'discussion',
-            '^discussion(/(create|list)(/.+)?)$',
+            '^discussion(/(categories|create|mylist)(/.+)?)$',
             FrontendUrl::discussionEndpoint(...)
         );
 

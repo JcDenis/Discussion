@@ -49,6 +49,9 @@ class FrontendTemplate
         if (isset($attr['published'])) {
             $if[] = $sign($attr['published']) . My::class . "::settings()->get('publish_post')";
         }
+        if (isset($attr['has_root_cat'])) {
+            $if[] = $sign($attr['has_root_cat']) . '(' . My::class . "::settings()->get('root_cat') != '')";
+        }
 
         return $if === [] ?
             $content :
@@ -122,5 +125,52 @@ class FrontendTemplate
             '->default((string) (int) ($_POST[\'discussion_category\'] ?? \'\'))' .
             '->render()'
         );
+    }
+
+    public static function DiscussionCategories(ArrayObject $attr, string $content): string
+    {
+        return '<?php App::frontend()->context()->categories = ' . Core::class . '::getCategories();' .
+            'while (App::frontend()->context()->categories->fetch()) : ?>' .
+            $content .
+            '<?php endwhile; App::frontend()->context()->pop("categories"); ?>';
+    }
+
+    public static function DiscussionCategoriesTitle(ArrayObject $attr): string
+    {
+        return self::filter($attr, Core::class . '::getCategoriesTitle()');
+    }
+
+    public static function DiscussionCategoriesDescription(ArrayObject $attr): string
+    {
+        return self::filter($attr, Core::class . '::getCategoriesDescription()');
+    }
+
+    public static function DiscussionCategoryComments(ArrayObject $attr, string $content): string
+    {
+        $p = 
+            '$params[\'cat_id\'] = App::frontend()->context()->categories->cat_id;' .
+            '$params[\'order\'] = \'comment_dt desc\';';
+            '$params[\'no_content\'] = true;';
+
+        $lastn = 0;
+        if (isset($attr['lastn'])) {
+            $lastn = abs((int) $attr['lastn']) + 0;
+        }
+        if ($lastn > 0) {
+            $p .= '$params[\'limit\'] = ' . $lastn . ';';
+        }
+        if (isset($attr['no_content']) && $attr['no_content']) {
+            $p .= '$params[\'no_content\'] = true;';
+        }
+    
+        return 
+            '<?php ' . $p . 
+            'App::frontend()->context()->comments_params = $params;' .
+            'App::frontend()->context()->comments = App::blog()->getComments($params); unset($params);' .
+            'while (App::frontend()->context()->comments->fetch()) : ' .
+            'App::frontend()->context()->posts = App::blog()->getPosts([\'post_id\' => App::frontend()->context()->comments->post_id]);' .
+            ' ?>' .
+            $content .
+            '<?php endwhile; App::frontend()->context()->pop("comments"); App::frontend()->context()->pop("posts"); ?>';
     }
 }

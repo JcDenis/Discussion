@@ -5,11 +5,35 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\Discussion;
 
 use Dotclear\App;
+use Dotclear\Database\MetaRecord;
 use Dotclear\Helper\Html\Form\Option;
 use Dotclear\Helper\Html\Html;
 
 class Core
 {
+    public static function getCategories(): MetaRecord
+    {
+        if (App::task()->checkContext('BACKEND')) {
+            $rs = App::blog()->getCategories();
+        } else {
+            $rs = App::blog()->getCategories([
+                'start' => My::settings()->get('root_cat'),
+            ]);
+        }
+
+        return $rs;
+    }
+
+    public static function getCategoriesTitle()
+    {
+        return App::blog()->getCategories(['cat_id' => My::class::settings()->get('root_cat')])->cat_title ?: __('Categories');
+    }
+
+    public static function getCategoriesDescription()
+    {
+        return App::blog()->getCategories(['cat_id' => My::class::settings()->get('root_cat')])->cat_desc ?: '';
+    }
+
     /**
      * Returns an hierarchical categories combo.
      *
@@ -17,30 +41,27 @@ class Core
      */
     public static function getCategoriesCombo(): array
     {
-        $root_cat = 0;
         if (App::task()->checkContext('BACKEND')) {
+            $root_cat         = 0;
             $categories_combo = [new Option(__('Do not limit'), '')];
-            $categories       = App::blog()->getCategories();
         } else {
-            $root_cat = My::settings()->get('root_cat');
+            $root_cat         = My::settings()->get('root_cat');
             $categories_combo = [new Option(__('Select a category'), '')];
-            $categories       = App::blog()->getCategories([
-                'start' => $root_cat,
-            ]);
         }
 
         $level = 1;
-        while ($categories->fetch()) {
-            if ($root_cat && $root_cat == $categories->cat_id) {
+        $rs = self::getCategories();
+        while ($rs->fetch()) {
+            if ($root_cat && $root_cat == $rs->cat_id) {
                 $level = 2;
                 continue;
             }
             $option = new Option(
-                str_repeat('&nbsp;', (int) (($categories->level - $level) * 4)) . Html::escapeHTML($categories->cat_title),
-                (string) $categories->cat_id
+                str_repeat('&nbsp;', (int) (($rs->level - $level) * 4)) . Html::escapeHTML($rs->cat_title),
+                (string) $rs->cat_id
             );
-            if ($categories->level - $level) {
-                $option->class('sub-option' . ($categories->level - $level));
+            if ($rs->level - $level) {
+                $option->class('sub-option' . ($rs->level - $level));
             }
             $categories_combo[] = $option;
         }
@@ -50,21 +71,18 @@ class Core
 
     public static function isDiscussionCategory(int $cat_id)
     {
-        $root_cat = 0;
         if (App::task()->checkContext('BACKEND')) {
-            $categories = App::blog()->getCategories();
+            $root_cat = 0;
         } else {
             $root_cat = My::settings()->get('root_cat');
-            $categories = App::blog()->getCategories([
-                'start' => $root_cat,
-            ]);
         }
 
-        while ($categories->fetch()) {
-            if ($root_cat && $root_cat == $categories->cat_id) {
+        $rs = self::getCategories();
+        while ($rs->fetch()) {
+            if ($root_cat && $root_cat == $rs->cat_id) {
                 continue;
             }
-            if ($cat_id == (int) $categories->cat_id) {
+            if ($cat_id == (int) $rs->cat_id) {
                 return true;
             }
         }
