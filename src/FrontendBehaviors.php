@@ -129,27 +129,29 @@ class FrontendBehaviors
         if (App::auth()->check(My::id(), App::blog()->id())) {
             $li  = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
             $lines = [
-                $li([App::url()->getURLFor(My::id(), 'mylist'), Html::escapeHTML(__('View my discussions')), Html::escapeHTML(__('My discussions'))]),
+                //$li([App::url()->getURLFor(My::id(), 'mine'), Html::escapeHTML(__('View my discussions')), Html::escapeHTML(__('My discussions'))]),
                 $li([App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), Html::escapeHTML(__('New discussion'))]),
             ];
 
             echo (new Para())
                 ->items([
                     (new Text('h3', __('Discussion'))),
-                    (new Text('p', __('You can create discussions.'))),
+                    (new Text('p', __('You can paticipate in discussions.'))),
                     (new Ul())->items($lines),
                 ])
                 ->render();
         }
     }
 
+    /**
+     * @param   ArrayObject<int, Li>    $lines
+     */
     public static function publicFrontendSessionWidget(ArrayObject $lines): void
     {
         if (App::auth()->check(My::id(), App::blog()->id())) {
             $li  = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
-            $url = App::url()->getURLFor(My::id(), 'create');
-
-            $lines->append($li([$url, Html::escapeHTML(__('Create a new discussion')), __('New Discussion')]));
+ 
+            $lines->append($li([App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), __('New discussion')]));
         }
     }
 
@@ -197,6 +199,43 @@ class FrontendBehaviors
 
         if ($settings->no_url) {
             $wiki->setOpt('active_urls', 0);
+        }
+
+        return '';
+    }
+
+    /**
+     * Check if current category is Root category and serve categories template.
+     *
+     * @param   ArrayObject<string, mixed>  $params
+     */
+    public static function publicCategoryBeforeGetCategories(ArrayObject $params, ?string $args): void
+    {
+        App::frontend()->context()->categories = App::blog()->getCategories($params);
+        if (!App::frontend()->context()->categories->isEmpty()
+            && Core::isRootCategory(App::frontend()->context()->categories->f('cat_id'))
+        ) {
+            FrontendUrl::serveTemplate('categories');
+            exit;
+        }
+    }
+
+    /**
+     * Put selected post on first on category page.
+     *
+     * @param   array<string, string>       $tpl
+     * @param   ArrayObject<string, mixed>  $attr
+     */
+    public static function templatePrepareParams(array $tpl, ArrayObject $attr, string $content): string
+    {
+        if ($tpl['tag'] == 'Entries' 
+            && $tpl['method'] == 'blog::getPosts'
+            && in_array(App::url()->getType(), ['category'])
+        ) {
+            return 
+                "if (". Core::class . "::isDiscussionCategory(App::frontend()->context()->categories->cat_id)){" .
+                "\$params['order'] = 'post_selected DESC, ' . \$params['order'];" .
+                "}\n";
         }
 
         return '';

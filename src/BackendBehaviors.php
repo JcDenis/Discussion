@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\Discussion;
 
-use ArrayObject;
 use Dotclear\App;
 use Dotclear\Core\Backend\Notices;
-use Dotclear\Database\Cursor;
-use Dotclear\Helper\Html\Form\{ Checkbox, Div, Input, Label, Note, Para, Select, Text, Textarea };
+use Dotclear\Helper\Html\Form\{ Checkbox, Div, Label, Para, Select, Text };
 use Dotclear\Helper\Html\Html;
-use Dotclear\Helper\Network\Http;
 use Dotclear\Interface\Core\BlogSettingsInterface;
-use Throwable;
 
 /**
  * @brief       Discussion module backend behaviors.
@@ -23,11 +19,6 @@ use Throwable;
  */
 class BackendBehaviors
 {
-    public static function init(): bool
-    {
-        return self::status(My::checkContext(My::BACKEND));
-    }
-
     public static function adminBlogPreferencesFormV2(BlogSettingsInterface $blog_settings): void
     {
         echo (new Div())
@@ -62,7 +53,7 @@ class BackendBehaviors
     {
         $blog_settings->get(My::id())->put('active', !empty($_POST[My::id() . 'active']));
         $blog_settings->get(My::id())->put('publish_post', !empty($_POST[My::id() . 'publish_post']));
-        $blog_settings->get(My::id())->put('root_cat', (int) $_POST[My::id() . 'root_cat'] ?? '');
+        $blog_settings->get(My::id())->put('root_cat', (int) $_POST[My::id() . 'root_cat'] ?: 0);
     }
 
     public static function adminBlogPreferencesHeaders(): string

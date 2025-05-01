@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Dotclear\Plugin\Discussion;
 
+use ArrayObject;
 use Dotclear\App;
 use Dotclear\Core\Frontend\Url;
 use Dotclear\Core\Frontend\Utility;
 use Dotclear\Exception\PreconditionException;
 use Dotclear\Helper\File\Path;
 use Dotclear\Helper\Text;
+use Dotclear\Plugin\legacyMarkdown\Helper as Markdown;
+use Exception;
 use Throwable;
 
 /**
@@ -43,8 +46,8 @@ class FrontendUrl extends Url
             case 'create':
                 self::create($exp);
                 break;
-            case 'mylist':
-                self::mylist($exp);
+            case 'mine':
+                self::mine($exp);
                 break;
 
             default:
@@ -68,16 +71,16 @@ class FrontendUrl extends Url
             self::p404();
         }
 
-        //self::loadFormater();
+        self::loadFormater();
 
         if (!empty($_POST)) {
             self::checkForm();
 
-            $post_cat     = (int) $_POST['discussion_category'] ?? 0;
+            $post_cat     = (int) ($_POST['discussion_category'] ?? 0);
             $post_title   = trim($_POST['discussion_title'] ?? '');
             $post_content = trim($_POST['discussion_content'] ?? '');
 
-            if (empty($post_cat) || !Core::isDiscussionCategory($post_cat)) {
+            if (empty($post_cat)) {
                 self::$form_error[] = __('You must select a category.');
             }
             if (empty($post_title)) {
@@ -88,13 +91,19 @@ class FrontendUrl extends Url
             }
 
             if (self::$form_error === []) {
+                // post content format
+                $post_format = 'wiki';
+                if (App::blog()->settings()->system->markdown_comments) {
+                    $post_format = 'markdown';
+                }
+
                 try {
                     $cur = App::blog()->openPostCursor();
                     $cur->setField('user_id', App::auth()->userID());
                     $cur->setField('post_status', My::settings()->get('publish_post') ? App::status()->post()::PUBLISHED : App::status()->post()::PENDING);
                     $cur->setField('post_title', $post_title);
                     $cur->setField('post_content', $post_content);
-                    $cur->setField('post_format', 'wiki');
+                    $cur->setField('post_format', $post_format);
                     $cur->setField('post_lang', App::blog()->settings()->get('system')->get('lang'));
                     $cur->setField('post_open_comment', 1);
                     $cur->setField('cat_id', $post_cat);
@@ -127,7 +136,7 @@ class FrontendUrl extends Url
      * 
      * @param   array<int, string>  $args
      */
-    public static function mylist(array $args): void
+    public static function mine(array $args): void
     {
         self::p404();
 
@@ -167,15 +176,17 @@ class FrontendUrl extends Url
             // add wiki tranform capabilities for submission
             App::formater()->addEditorFormater('dcLegacyEditor', 'wiki', App::filter()->wiki()->transform(...));
         }
-        // add markdown tranform capabilities for submission (convert readme contents on addPost)
-        /* @phpstan-ignore-next-line */
-        //App::formater()->addEditorFormater('dcLegacyEditor', 'markdown', Markdown::convert(...));
+        // add markdown tranform capabilities for submission
+        if (App::plugins()->moduleExists('legacyMarkdown')) {
+            /* @phpstan-ignore-next-line */
+            App::formater()->addEditorFormater('dcLegacyEditor', 'markdown', Markdown::convert(...));
+        }
     }
 
     /**
      * Serve template.
      */
-    private static function serveTemplate(string $template): void
+    public static function serveTemplate(string $template): void
     {
         // use only dotty tplset
         $tplset = App::themes()->moduleInfo(App::blog()->settings()->get('system')->get('theme'), 'tplset');

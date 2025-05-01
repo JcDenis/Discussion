@@ -127,6 +127,12 @@ class FrontendTemplate
         );
     }
 
+
+    /**
+     * Get discussions categories.
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
     public static function DiscussionCategories(ArrayObject $attr, string $content): string
     {
         return '<?php App::frontend()->context()->categories = ' . Core::class . '::getCategories();' .
@@ -135,22 +141,17 @@ class FrontendTemplate
             '<?php endwhile; App::frontend()->context()->pop("categories"); ?>';
     }
 
-    public static function DiscussionCategoriesTitle(ArrayObject $attr): string
-    {
-        return self::filter($attr, Core::class . '::getCategoriesTitle()');
-    }
 
-    public static function DiscussionCategoriesDescription(ArrayObject $attr): string
-    {
-        return self::filter($attr, Core::class . '::getCategoriesDescription()');
-    }
-
+    /**
+     * Get discussions categories comments.
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
     public static function DiscussionCategoryComments(ArrayObject $attr, string $content): string
     {
         $p = 
             '$params[\'cat_id\'] = App::frontend()->context()->categories->cat_id;' .
             '$params[\'order\'] = \'comment_dt desc\';';
-            '$params[\'no_content\'] = true;';
 
         $lastn = 0;
         if (isset($attr['lastn'])) {

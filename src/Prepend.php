@@ -37,9 +37,15 @@ class Prepend extends Process
         App::url()->register(
             My::id(),
             'discussion',
-            '^discussion(/(categories|create|mylist)(/.+)?)$',
+            '^discussion(/(categories|create|mine)(/.+)?)?$',
             FrontendUrl::discussionEndpoint(...)
         );
+
+        if (My::settings()->get('active')) {
+            App::behavior()->addBehaviors([
+                'coreBlogAfterTriggerComments' => Core::coreBlogAfterTriggerComments(...),
+            ]);
+        }
 
         return true;
     }

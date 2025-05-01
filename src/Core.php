@@ -6,6 +6,8 @@ namespace Dotclear\Plugin\Discussion;
 
 use Dotclear\App;
 use Dotclear\Database\MetaRecord;
+use Dotclear\Database\Statement\UpdateStatement;
+use Dotclear\Helper\Date;
 use Dotclear\Helper\Html\Form\Option;
 use Dotclear\Helper\Html\Html;
 
@@ -13,25 +15,22 @@ class Core
 {
     public static function getCategories(): MetaRecord
     {
-        if (App::task()->checkContext('BACKEND')) {
-            $rs = App::blog()->getCategories();
-        } else {
-            $rs = App::blog()->getCategories([
-                'start' => My::settings()->get('root_cat'),
-            ]);
-        }
-
-        return $rs;
+        return App::blog()->getCategories(App::task()->checkContext('BACKEND') ? [] : ['start' => self::getRootCategory()]);
     }
 
-    public static function getCategoriesTitle()
+    public static function getRootCategory(): int
     {
-        return App::blog()->getCategories(['cat_id' => My::class::settings()->get('root_cat')])->cat_title ?: __('Categories');
+        return (int) (My::settings()->get('root_cat') ?: 0);
     }
 
-    public static function getCategoriesDescription()
+    public static function isRootCategory(int|string $id): bool
     {
-        return App::blog()->getCategories(['cat_id' => My::class::settings()->get('root_cat')])->cat_desc ?: '';
+        return self::getRootCategory() === (int) $id;
+    }
+
+    public static function hasRootCategory(): bool
+    {
+        return self::getRootCategory() !== 0;
     }
 
     /**
@@ -41,19 +40,13 @@ class Core
      */
     public static function getCategoriesCombo(): array
     {
-        if (App::task()->checkContext('BACKEND')) {
-            $root_cat         = 0;
-            $categories_combo = [new Option(__('Do not limit'), '')];
-        } else {
-            $root_cat         = My::settings()->get('root_cat');
-            $categories_combo = [new Option(__('Select a category'), '')];
-        }
+        $categories_combo = [new Option(App::task()->checkContext('BACKEND') ? __('Do not limit') : __('Select a category'), '')];
+        $root_cat         = self::getRootCategory();
+        $rs               = self::getCategories();
+        $level            = self::hasRootCategory() ? 1 : 0;
 
-        $level = 1;
-        $rs = self::getCategories();
         while ($rs->fetch()) {
-            if ($root_cat && $root_cat == $rs->cat_id) {
-                $level = 2;
+            if (!App::task()->checkContext('BACKEND') && self::isRootCategory($rs->f('cat_id'))) {
                 continue;
             }
             $option = new Option(
@@ -69,24 +62,45 @@ class Core
         return $categories_combo;
     }
 
-    public static function isDiscussionCategory(int $cat_id)
+    public static function isDiscussionCategory(int|string $cat_id): bool
     {
-        if (App::task()->checkContext('BACKEND')) {
-            $root_cat = 0;
-        } else {
-            $root_cat = My::settings()->get('root_cat');
-        }
-
         $rs = self::getCategories();
         while ($rs->fetch()) {
-            if ($root_cat && $root_cat == $rs->cat_id) {
+            if (self::isRootCategory($rs->f('cat_id'))) {
                 continue;
             }
-            if ($cat_id == (int) $rs->cat_id) {
+            if (((int) $cat_id) == ((int) $rs->f('cat_id'))) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Update post date on new comment.
+     *
+     * This moves post order to reflect forum style order.
+     *
+     * @param   array<int, int>     $comments
+     * @param   array<int, int>     $posts
+     */
+    public static function coreBlogAfterTriggerComments(array $comments, array $posts): void
+    {
+        $rs = App::blog()->getPosts(['post_id' => $posts]);
+        if (!$rs->isEmpty()) {
+            // update discussion post date to follow last comments
+            while($rs->fetch()) {
+                if (self::isDiscussionCategory($rs->f('cat_id'))) {
+                    continue;
+                }
+                $cur = App::blog()->openPostCursor();
+                $cur->setField('post_dt', date('Y-m-d H:i:00', time() + Date::getTimeOffset(App::blog()->settings()->get('system')->get('blog_timezone'))));
+
+                $sql = new UpdateStatement();
+                $sql->where('post_id = ' . $rs->f('post_id'));
+                $sql->update($cur);
+            }
+        }
     }
 }

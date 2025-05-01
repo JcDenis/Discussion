@@ -35,16 +35,16 @@ class Frontend extends Process
         App::frontend()->template()->addValue('DiscussionPostContent', FrontendTemplate::DiscussionPostContent(...));
         App::frontend()->template()->addBlock('DiscussionCategories', FrontendTemplate::DiscussionCategories(...));
         App::frontend()->template()->addValue('DiscussionCategoriesCombo', FrontendTemplate::DiscussionCategoriesCombo(...));
-        App::frontend()->template()->addValue('DiscussionCategoriesTitle', FrontendTemplate::DiscussionCategoriesTitle(...));
-        App::frontend()->template()->addValue('DiscussionCategoriesDescription', FrontendTemplate::DiscussionCategoriesDescription(...));
         App::frontend()->template()->addBlock('DiscussionCategoryComments', FrontendTemplate::DiscussionCategoryComments(...));
 
         App::behavior()->addBehaviors([
-            'publicHeadContent'           => FrontendBehaviors::publicHeadContent(...),
-            'publicFrontendSessionPage'   => FrontendBehaviors::publicFrontendSessionPage(...),
-            'publicFrontendSessionWidget' => FrontendBehaviors::publicFrontendSessionWidget(...),
-            'publicBreadcrumb'            => FrontendBehaviors::publicBreadcrumb(...),
-            'coreInitWikiPost'            => FrontendBehaviors::coreInitWikiPost(...),
+            'publicHeadContent'                 => FrontendBehaviors::publicHeadContent(...),
+            'publicFrontendSessionPage'         => FrontendBehaviors::publicFrontendSessionPage(...),
+            'publicFrontendSessionWidget'       => FrontendBehaviors::publicFrontendSessionWidget(...),
+            'publicBreadcrumb'                  => FrontendBehaviors::publicBreadcrumb(...),
+            'coreInitWikiPost'                  => FrontendBehaviors::coreInitWikiPost(...),
+            'publicCategoryBeforeGetCategories' => FrontendBehaviors::publicCategoryBeforeGetCategories(...),
+            'templatePrepareParams'             => FrontendBehaviors::templatePrepareParams(...),
         ]);
 
         return true;
