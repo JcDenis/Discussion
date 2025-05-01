@@ -23,6 +23,16 @@ class Core
         return (int) (My::settings()->get('root_cat') ?: 0);
     }
 
+    public static function getRootCategoryTitle(): string
+    {
+        return self::hasRootCategory() ? App::blog()->getCategories(['cat_id' => self::getRootCategory()])->f('cat_title') : __('Discussions');
+    }
+
+    public static function getRootCategoryDescription(): string
+    {
+        return self::hasRootCategory() ? App::blog()->getCategories(['cat_id' => self::getRootCategory()])->f('cat_desc') : '';
+    }
+
     public static function isRootCategory(int|string $id): bool
     {
         return self::getRootCategory() === (int) $id;

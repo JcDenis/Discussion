@@ -71,12 +71,26 @@ class FrontendUrl extends Url
             self::p404();
         }
 
+        $post_id = $post_cat = 0;
+        foreach($args as $k => $arg) {
+            if ($arg == 'post' && isset($args[$k + 1]) && is_numeric($args[$k + 1])) {
+                App::frontend()->context()->discussion_success = __('Discussion successfully created.');
+                if (My::settings()->get('publish_post')) {
+                    $post_id = (int) $args[$k + 1];
+                }
+            }
+            if ($arg == 'category' && isset($args[$k + 1]) && is_numeric($args[$k + 1]) && Core::isDiscussionCategory($args[$k + 1])) {
+                $post_cat = (int) $args[$k + 1];
+                App::frontend()->context()->categories = App::blog()->getCategories(['cat_id' => $post_cat]);
+            }
+        }
+
         self::loadFormater();
 
         if (!empty($_POST)) {
             self::checkForm();
 
-            $post_cat     = (int) ($_POST['discussion_category'] ?? 0);
+            $post_cat     = (int) ($_POST['discussion_category'] ?? $post_cat);
             $post_title   = trim($_POST['discussion_title'] ?? '');
             $post_content = trim($_POST['discussion_content'] ?? '');
 
@@ -110,19 +124,14 @@ class FrontendUrl extends Url
 
                     $post_id = App::auth()->sudo(App::blog()->addPost(...), $cur);
 
-                    $more = My::settings()->get('publish_post') ? '/' . $post_id : '';
+                    $more = '/post/' . (My::settings()->get('publish_post') ? $post_id : '0');
+                    $more .= '/category/' . $post_cat;
 
                     header('Location: ' . App::blog()->url() . App::url()->getURLFor(My::id(), 'create') . $more);
                 } catch (Exception $e) {
                     self::$form_error[] = $e->getMessage();
                 }
             }
-        }
-
-        $post_id = 0;
-        if (!empty($args[1]) && is_numeric($args[1])) {
-            $post_id = (int) $args[1];
-            App::frontend()->context()->discussion_success = __('Discussion successfully created.');
         }
 
         // Need to have a posts instance for templates

@@ -7,7 +7,7 @@ namespace Dotclear\Plugin\Discussion;
 use ArrayObject;
 use Dotclear\App;
 use Dotclear\Core\Frontend\Tpl;
-use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Input, Label, Note, Para, Password, Submit, Text };
+use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Input, Label, Link, Note, Para, Password, Submit, Text };
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Network\Http;
 
@@ -122,7 +122,7 @@ class FrontendTemplate
     {
         return self::filter($attr, '(new Dotclear\Helper\Html\Form\Select(\'discussion_category\'))' .
             '->items(' . Core::class . '::getCategoriesCombo())' .
-            '->default((string) (int) ($_POST[\'discussion_category\'] ?? \'\'))' .
+            '->default((string) (int) ($_POST[\'discussion_category\'] ?? (App::frontend()->context()->categories?->f(\'cat_id\') ?: \'\')))' .
             '->render()'
         );
     }
@@ -141,6 +141,25 @@ class FrontendTemplate
             '<?php endwhile; App::frontend()->context()->pop("categories"); ?>';
     }
 
+    /**
+     * Get discussions categories page title.
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionCategoriesTitle(ArrayObject $attr): string
+    {
+        return self::filter($attr, Core::class . '::getRootCategoryTitle()');
+    }
+
+    /**
+     * Get discussions categories page description.
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionCategoriesDescription(ArrayObject $attr): string
+    {
+        return self::filter($attr, Core::class . '::getRootCategoryDescription()');
+    }
 
     /**
      * Get discussions categories comments.
@@ -173,5 +192,40 @@ class FrontendTemplate
             ' ?>' .
             $content .
             '<?php endwhile; App::frontend()->context()->pop("comments"); App::frontend()->context()->pop("posts"); ?>';
+    }
+
+    /**
+     * Overload Category description on category page.
+     *
+     * attributes:
+     *
+     *      - any filters     See self::getFilters()
+     *
+     * @param      ArrayObject<string, mixed>    $attr     The attributes
+     */
+    public static function CategoryDescription(ArrayObject $attr): string
+    {
+        return self::filter($attr, 'App::frontend()->context()->categories->cat_desc') . 
+            self::filter($attr, self::class . '::newDiscussionButton()');
+    }
+
+    public static function newDiscussionButton(): string
+    {
+        if (App::url()->getType() == 'category'
+            && Core::isDiscussionCategory(App::frontend()->context()->categories->f('cat_id'))
+            && App::auth()->check(My::id(), App::blog()->id())
+        ) {
+            return (new Para())
+                ->items([
+                    (new Link())
+                        ->class('button')
+                        ->href(App::blog()->url() . App::url()->getURLFor(My::id(), 'create') . '/category/' . App::frontend()->context()->categories->f('cat_id'))
+                        ->title(Html::escapeHTML(__('Create a new discussion')))
+                        ->text(__('New discussion'))
+                ])
+                ->render();
+        }
+
+        return 'oups';
     }
 }

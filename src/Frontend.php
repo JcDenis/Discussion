@@ -34,8 +34,11 @@ class Frontend extends Process
         App::frontend()->template()->addValue('DiscussionPostTitle', FrontendTemplate::DiscussionPostTitle(...));
         App::frontend()->template()->addValue('DiscussionPostContent', FrontendTemplate::DiscussionPostContent(...));
         App::frontend()->template()->addBlock('DiscussionCategories', FrontendTemplate::DiscussionCategories(...));
+        App::frontend()->template()->addValue('DiscussionCategoriesTitle', FrontendTemplate::DiscussionCategoriesTitle(...));
+        App::frontend()->template()->addValue('DiscussionCategoriesDescription', FrontendTemplate::DiscussionCategoriesDescription(...));
         App::frontend()->template()->addValue('DiscussionCategoriesCombo', FrontendTemplate::DiscussionCategoriesCombo(...));
         App::frontend()->template()->addBlock('DiscussionCategoryComments', FrontendTemplate::DiscussionCategoryComments(...));
+        App::frontend()->template()->addValue('CategoryDescription', FrontendTemplate::CategoryDescription(...));
 
         App::behavior()->addBehaviors([
             'publicHeadContent'                 => FrontendBehaviors::publicHeadContent(...),
