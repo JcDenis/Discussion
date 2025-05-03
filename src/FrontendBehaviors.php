@@ -221,7 +221,7 @@ class FrontendBehaviors
     }
 
     /**
-     * Put selected post on first on category page.
+     * Put selected post on first then by upddt on category page.
      *
      * @param   array<string, string>       $tpl
      * @param   ArrayObject<string, mixed>  $attr
@@ -234,7 +234,7 @@ class FrontendBehaviors
         ) {
             return 
                 "if (". Core::class . "::isDiscussionCategory(App::frontend()->context()->categories->cat_id)){" .
-                "\$params['order'] = 'post_selected DESC, ' . \$params['order'];" .
+                "\$params['order'] = 'post_selected DESC, post_upddt DESC' . (!empty(\$params['order']) ? ', ' . \$params['order'] : '');" .
                 "}\n";
         }
 

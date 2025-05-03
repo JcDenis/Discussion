@@ -88,9 +88,10 @@ class Core
     }
 
     /**
-     * Update post date on new comment.
+     * Update post update date on new comment.
      *
-     * This moves post order to reflect forum style order.
+     * This moves post order to reflect forum style order on category page.
+     * @see     FrontendBehaviors::templatePrepareParams()
      *
      * @param   array<int, int>     $comments
      * @param   array<int, int>     $posts
@@ -105,7 +106,7 @@ class Core
                     continue;
                 }
                 $cur = App::blog()->openPostCursor();
-                $cur->setField('post_dt', date('Y-m-d H:i:00', time() + Date::getTimeOffset(App::blog()->settings()->get('system')->get('blog_timezone'))));
+                $cur->setField('post_upddt', date('Y-m-d H:i:00', time() + Date::getTimeOffset(App::blog()->settings()->get('system')->get('blog_timezone'))));
 
                 $sql = new UpdateStatement();
                 $sql->where('post_id = ' . $rs->f('post_id'));
