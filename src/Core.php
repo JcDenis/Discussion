@@ -106,7 +106,7 @@ class Core
                     continue;
                 }
                 $cur = App::blog()->openPostCursor();
-                $cur->setField('post_upddt', date('Y-m-d H:i:00', time() + Date::getTimeOffset(App::blog()->settings()->get('system')->get('blog_timezone'))));
+                $cur->setField('post_upddt', date('Y-m-d H:i:s', time() + Date::getTimeOffset(App::blog()->settings()->get('system')->get('blog_timezone'))));
 
                 $sql = new UpdateStatement();
                 $sql->where('post_id = ' . $rs->f('post_id'));
