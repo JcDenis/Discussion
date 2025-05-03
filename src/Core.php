@@ -101,7 +101,7 @@ class Core
         if (!$rs->isEmpty()) {
             // update discussion post date to follow last comments
             while($rs->fetch()) {
-                if (self::isDiscussionCategory($rs->f('cat_id'))) {
+                if (!self::isDiscussionCategory($rs->f('cat_id'))) {
                     continue;
                 }
                 $cur = App::blog()->openPostCursor();
