@@ -1,8 +1,17 @@
 #discussion-form input:not([type='checkbox']):not([type='radio']) {
   display: block;
 }
-#discussion-form .inputfield {
+#discussion-form .post-preview-content {
+    margin: 0.5em;
+    padding: 0.75em  1em;
+    border: 1px solid rgba(210, 215, 217, .75);
+    border-radius: 0.375em;
+}
+#discussion-form .inputfield, #discussion-form .post-preview {
     margin: 1em 0;
+}
+#discussion-form .controlset input[type=submit] {
+    display: inline-block;
 }
 .content-inner #discussion-form {
     padding-bottom: 2em;

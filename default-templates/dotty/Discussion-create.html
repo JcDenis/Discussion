@@ -18,7 +18,7 @@
 
 <tpl:Block name="main-content">
   <header id="content-info">
-      <h2>{{tpl:DiscussionCategoriesTitle}}</h2>
+      <h2>{{tpl:DiscussionCategoriesTitle encode_html="1"}}</h2>
       {{tpl:DiscussionCategoriesDescription}}
   </header>
   <tpl:Block name="main-content-before"></tpl:Block>
@@ -34,8 +34,20 @@
       <p class="success">{{tpl:DiscussionFormSuccess}}<br />{{tpl:lang An administrator will review it for publishing.}}</p>
     </tpl:DiscussionIf>
     <tpl:DiscussionIf success="0">
-      <h3>{{tpl:lang Start a new discussion}}</h3>
       <form method="post" name="discussion-form" id="discussion-form" action="{{tpl:DiscussionFormURL page="create"}}" enctype="multipart/form-data">
+        <tpl:DiscussionPreviewIf>
+          <div class="post-preview">
+            <h3>{{tpl:lang Preview}}</h3>
+            <div class="post-preview-content">
+              <h3>{{tpl:DiscussionPreviewPostTitle encode_html="1"}}</h3>
+              {{tpl:DiscussionPreviewPostContent}}
+            </div>
+            <div class="controlset">
+              <input class="submit" type="submit" id="submit_preview" name="submit" value="{{tpl:lang Create discussion}}" />
+            </div>
+          </div>
+        </tpl:DiscussionPreviewIf>
+        <h3>{{tpl:lang Start a new discussion}}</h3>
         <div class="inputfield">
           <label for="discussion_category" class="required">{{tpl:lang Category:}}</label>
           {{tpl:DiscussionCategoriesCombo}}
@@ -50,6 +62,7 @@
         </div>
         <div class="controlset">
           <input type="hidden" name="discussion_check" value="{{tpl:DiscussionFormNonce}}" />
+          <input class="submit" type="submit" id="discussion_preview" name="discussion_preview" value="{{tpl:lang Preview}}" /> 
           <input class="submit" type="submit" id="submit" name="submit" value="{{tpl:lang Create discussion}}" />
         </div>
 

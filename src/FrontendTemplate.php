@@ -52,6 +52,9 @@ class FrontendTemplate
         if (isset($attr['has_root_cat'])) {
             $if[] = $sign($attr['has_root_cat']) . '(' . My::class . "::settings()->get('root_cat') != '')";
         }
+        if (isset($attr['preview'])) {
+            $if[] = $sign($attr['preview']) . "(App::frontend()->context()->post_preview !== null && App::frontend()->context()->post_preview['preview'])";
+        }
 
         return $if === [] ?
             $content :
@@ -91,6 +94,38 @@ class FrontendTemplate
     public static function DiscussionFormSuccess(ArrayObject $attr): string
     {
         return self::filter($attr, "App::frontend()->context()->discussion_success ?: ''");
+    }
+
+    /**
+     * Check preview conditions.
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionPreviewIf(ArrayObject $attr, string $content): string
+    {
+        return '<?php if(App::frontend()->context()->post_preview !== null && App::frontend()->context()->post_preview[\'preview\']) : ?>' . 
+            $content . 
+            '<?php endif; ?>';
+    }
+
+    /**
+     * Get form post title preview.
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionPreviewPostTitle(ArrayObject $attr): string
+    {
+        return self::filter($attr, 'App::frontend()->context()->post_preview[\'title\']');
+    }
+
+    /**
+     * Get form post content preview.
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionPreviewPostContent(ArrayObject $attr): string
+    {
+        return self::filter($attr, 'App::frontend()->context()->post_preview[\'content\']');
     }
 
     /**
@@ -226,6 +261,6 @@ class FrontendTemplate
                 ->render();
         }
 
-        return 'oups';
+        return '';
     }
 }

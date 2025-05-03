@@ -71,6 +71,7 @@ class FrontendUrl extends Url
             self::p404();
         }
 
+        // from URL
         $post_id = $post_cat = 0;
         foreach($args as $k => $arg) {
             if ($arg == 'post' && isset($args[$k + 1]) && is_numeric($args[$k + 1])) {
@@ -84,12 +85,27 @@ class FrontendUrl extends Url
                 App::frontend()->context()->categories = App::blog()->getCategories(['cat_id' => $post_cat]);
             }
         }
+        // post content format
+        $post_format = 'wiki';
+        if (App::blog()->settings()->system->markdown_comments) {
+            $post_format = 'markdown';
+        }
+
+        // preview
+        $init_preview = [  
+            'title'      => '',
+            'content'    => '',
+            'rawcontent' => '',
+            'preview'    => false,
+        ];
+        App::frontend()->context()->post_preview = new ArrayObject($init_preview);
 
         self::loadFormater();
 
         if (!empty($_POST)) {
             self::checkForm();
 
+            $preview      = !empty($_POST['discussion_preview']);
             $post_cat     = (int) ($_POST['discussion_category'] ?? $post_cat);
             $post_title   = trim($_POST['discussion_title'] ?? '');
             $post_content = trim($_POST['discussion_content'] ?? '');
@@ -104,13 +120,15 @@ class FrontendUrl extends Url
                 self::$form_error[] = __('You must set a discussion content.');
             }
 
-            if (self::$form_error === []) {
-                // post content format
-                $post_format = 'wiki';
-                if (App::blog()->settings()->system->markdown_comments) {
-                    $post_format = 'markdown';
-                }
+            if (self::$form_error === [] && $preview) {
+                $content = App::filter()->wikiTransform($post_content);
+                $content = App::filter()->HTMLfilter($content);
+                App::frontend()->context()->post_preview['title']   = $post_title;
+                App::frontend()->context()->post_preview['content'] = (string) $content;
+                App::frontend()->context()->post_preview['rawcontent'] = $post_content;
+                App::frontend()->context()->post_preview['preview'] = true;
 
+            } elseif (self::$form_error === [] && !$preview) {
                 try {
                     $cur = App::blog()->openPostCursor();
                     $cur->setField('user_id', App::auth()->userID());

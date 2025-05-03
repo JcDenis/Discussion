@@ -31,6 +31,9 @@ class Frontend extends Process
         App::frontend()->template()->addValue('DiscussionFormNonce', FrontendTemplate::DiscussionFormNonce(...));
         App::frontend()->template()->addValue('DiscussionFormURL', FrontendTemplate::DiscussionFormURL(...));
         App::frontend()->template()->addValue('DiscussionFormSuccess', FrontendTemplate::DiscussionFormSuccess(...));
+        App::frontend()->template()->addBlock('DiscussionPreviewIf', FrontendTemplate::DiscussionPreviewIf(...));
+        App::frontend()->template()->addValue('DiscussionPreviewPostTitle', FrontendTemplate::DiscussionPreviewPostTitle(...));
+        App::frontend()->template()->addValue('DiscussionPreviewPostContent', FrontendTemplate::DiscussionPreviewPostContent(...));
         App::frontend()->template()->addValue('DiscussionPostTitle', FrontendTemplate::DiscussionPostTitle(...));
         App::frontend()->template()->addValue('DiscussionPostContent', FrontendTemplate::DiscussionPostContent(...));
         App::frontend()->template()->addBlock('DiscussionCategories', FrontendTemplate::DiscussionCategories(...));
