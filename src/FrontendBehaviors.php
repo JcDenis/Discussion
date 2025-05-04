@@ -24,7 +24,7 @@ class FrontendBehaviors
     {
         $tplset = App::themes()->moduleInfo(App::blog()->settings()->get('system')->get('theme'), 'tplset');
         if (in_array($tplset, ['dotty', 'mustek'])) {
-            echo My::cssLoad('frontend-' . $tplset) . My::jsLoad('frontend');
+            echo My::cssLoad('frontend-' . $tplset);
         }
 
         // wiki, taken from plugin commentsWikibar
