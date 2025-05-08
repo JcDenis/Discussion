@@ -46,8 +46,11 @@ class FrontendUrl extends Url
             case 'create':
                 self::create($exp);
                 break;
-            case 'mine':
-                self::mine($exp);
+            case 'posts':
+                self::posts($exp);
+                break;
+            case 'comments':
+                self::comments($exp);
                 break;
 
             default:
@@ -159,15 +162,39 @@ class FrontendUrl extends Url
     }
 
     /**
-     * Discussion user list endpoint.
+     * Discussion user posts list endpoint.
      * 
      * @param   array<int, string>  $args
      */
-    public static function mine(array $args): void
+    public static function posts(array $args): void
+    {
+        if (!My::settings()->get('active')
+            || App::auth()->userID() == ''
+            || !App::auth()->check(My::id(), App::blog()->id())
+        ) {
+            self::p404();
+        }
+
+        $uri = implode('/', $args);
+        $page = App::url()::getPageNumber($uri) ?: 1;
+        $args = explode('/', $uri);
+        App::frontend()->setPageNumber($page);
+
+        $nbpp = (int) (App::blog()->settings()->get('system')->get('nb_post_per_page') ?: 20);
+        App::frontend()->context()->__set('nb_entry_first_page', $nbpp);
+        App::frontend()->context()->__set('nb_entry_per_page', $nbpp);
+
+        self::serveTemplate('posts');
+    }
+
+    /**
+     * Discussion user comments list endpoint.
+     * 
+     * @param   array<int, string>  $args
+     */
+    public static function comments(array $args): void
     {
         self::p404();
-
-        //self::serveTemplate('mylist');
     }
 
     /**

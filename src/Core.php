@@ -88,6 +88,24 @@ class Core
     }
 
     /**
+     * Get user posts.
+     *
+     * @param   array<string, mixed> $params
+     */
+    public static function getPosts(array $params = [], bool $count_only = false): MetaRecord
+    {
+        $params['user_id'] = (string) App::auth()->userID();
+        $params['cat_id']  = self::getRootCategory() . '?sub';
+
+        return App::blog()->getPosts($params, $count_only);
+    }
+
+    public static function getComments(): Metarecord
+    {
+        return metaRecord::newFromArray([]);
+    }
+
+    /**
      * Update post update date on new comment.
      *
      * This moves post order to reflect forum style order on category page.

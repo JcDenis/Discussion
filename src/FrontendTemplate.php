@@ -162,7 +162,6 @@ class FrontendTemplate
         );
     }
 
-
     /**
      * Get discussions categories.
      *
@@ -242,6 +241,71 @@ class FrontendTemplate
     {
         return self::filter($attr, 'App::frontend()->context()->categories->cat_desc') . 
             self::filter($attr, self::class . '::newDiscussionButton()');
+    }
+
+    /**
+     * Check user discussions conditions.
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionEntriesIf(ArrayObject $attr, string $content): string
+    {
+        $if   = [];
+        $sign = fn ($a): string => (bool) $a ? '!' : '';
+
+        $operator = isset($attr['operator']) ? Tpl::getOperator($attr['operator']) : '&&';
+
+        if (isset($attr['has_discussion'])) {
+            $if[] = $sign($attr['has_discussion']) . Core::class . '::getPosts()->isEmpty()';
+        }
+
+        return $if === [] ?
+            $content :
+            '<?php if(' . implode(' ' . $operator . ' ', $if) . ') : ?>' . $content . '<?php endif; ?>';
+    }
+
+    /**
+     * Get discussions user posts.
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionEntries(ArrayObject $attr, string $content): string
+    {
+        $params = 'if (App::frontend()->getPageNumber() === 0) { App::frontend()->setPageNumber(1); }' . "\n";
+        $params .= "if (!isset(\$params) || !isset(\$params['sql'])) { \$params['sql'] = ''; }\n";
+        $params .= "\$params['limit'] = App::frontend()->context()->nb_entry_per_page;\n";
+        $params .= "\$params['limit'] = [(App::frontend()->getPageNumber() - 1) * \$params['limit'],\$params['limit']];\n";
+
+        if (isset($attr['no_content']) && $attr['no_content']) {
+            $params .= "\$params['no_content'] = true;\n";
+        }
+
+        return "<?php\n" .
+            $params .
+            'App::frontend()->context()->post_params = $params;' . "\n" .
+            'App::frontend()->context()->posts = ' . Core::class . '::getPosts($params); unset($params);' . "\n" .
+            'while (App::frontend()->context()->posts->fetch()) : ?>' .
+            $content .
+            '<?php endwhile; App::frontend()->context()->pop("posts"); ?>';
+    }
+
+    /**
+     * Special pagination for user posts.
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionEntriesPagination(ArrayObject $attr, string $content): string
+    {
+        $params = "<?php\n" .
+            '$params = App::frontend()->context()->post_params;' . "\n" .
+            'App::frontend()->context()->pagination = ' . Core::class . '::getPosts($params,true); unset($params);' . "\n" .
+            "?>\n";
+
+        if (isset($attr['no_context']) && $attr['no_context']) {
+            return $params . $content;
+        }
+
+        return $params . '<?php if (App::frontend()->context()->pagination->f(0) > App::frontend()->context()->posts->count()) : ?>' . $content . '<?php endif; ?>';
     }
 
     public static function newDiscussionButton(): string

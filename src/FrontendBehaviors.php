@@ -131,6 +131,7 @@ class FrontendBehaviors
             $lines = [
                 //$li([App::url()->getURLFor(My::id(), 'mine'), Html::escapeHTML(__('View my discussions')), Html::escapeHTML(__('My discussions'))]),
                 $li([App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), Html::escapeHTML(__('New discussion'))]),
+                $li([App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')]),
             ];
 
             echo (new Para())
@@ -152,6 +153,7 @@ class FrontendBehaviors
             $li  = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
  
             $lines->append($li([App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), __('New discussion')]));
+            $lines->append($li([App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')]));
         }
     }
 

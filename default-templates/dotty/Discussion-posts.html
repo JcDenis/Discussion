@@ -1,0 +1,74 @@
+{{tpl:extends parent="__layout.html"}}
+
+<tpl:Block name="head-title">
+	 <title>{{tpl:lang Discussions}} - {{tpl:BlogName encode_html="1"}}</title>
+</tpl:Block>
+
+<tpl:Block name="meta-robots">
+	<meta name="ROBOTS" content="{{tpl:BlogMetaRobots robots="NOINDEX"}}" />
+</tpl:Block>
+
+<tpl:Block name="head-linkrel">
+  <link rel="contents" title="{{tpl:lang Archives}}" href="{{tpl:BlogArchiveURL}}" />
+  <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="{{tpl:BlogFeedURL type="atom"}}" />
+</tpl:Block>
+
+<tpl:Block name="body-tag"><body class="dc-category dc-categories"></tpl:Block>
+
+<tpl:Block name="main-content">
+  <div id="content-info">
+    <h2>{{tpl:lang My discussions}}</h2>
+    <p><a class="button new" href="{{tpl:DiscussionFormURL page="create"}}">{{tpl:lang New Discussion}}</a></p>
+  </div>
+
+  <div class="content-inner">
+    <tpl:DiscussionEntriesIf has_discussion="0">
+      <p>{{tpl:lang You have no discussions yet}}</p>
+    </tpl:DiscussionEntriesIf>
+  	<tpl:DiscussionEntries no_content="1">
+      <article id="p{{tpl:EntryID}}" class="post" role="article">
+        <header>
+          <h2 class="post-title"><a href="{{tpl:EntryURL}}">{{tpl:EntryTitle encode_html="1"}}</a></h2>
+        </header>
+
+        <div class="post-content"></div>
+
+        <footer class="post-meta">
+          <p class="post-info">
+              <span class="post-date"><time datetime="{{tpl:EntryDate iso8601="1"}}">{{tpl:EntryDate}}</time> - </span>
+                <span class="post-cat"><tpl:EntryCategoriesBreadcrumb><a
+                href="{{tpl:CategoryURL}}">{{tpl:CategoryTitle encode_html="1"}}</a> › </tpl:EntryCategoriesBreadcrumb><a
+                href="{{tpl:EntryCategoryURL}}">{{tpl:EntryCategory encode_html="1"}}</a> - 
+              </span>
+              <span class="post-comment"><a href="{{tpl:EntryURL}}#comments" class="comment_count">{{tpl:EntryCommentCount}}</a></span>
+          </p>
+        </footer>
+      </article>
+      <tpl:EntriesFooter>
+        <tpl:Block name="_pagination-before"></tpl:Block>
+        <tpl:Block name="_pagination-content">
+          <tpl:DiscussionEntriesPagination>
+            <nav class="pagination" aria-label="{{tpl:lang Pagination}}">
+              <tpl:PaginationIf end="0">
+              <p><a href="{{tpl:PaginationURL offset="+1"}}" class="button prev"><span aria-hidden="true">&#171; </span>{{tpl:lang previous entries}}</a></p>
+              </tpl:PaginationIf>
+              <tpl:PaginationIf end="1">
+              <p class="button prev disabled"><span aria-hidden="true">&#171; </span>{{tpl:lang previous entries}}</p>
+              </tpl:PaginationIf>
+
+              {{tpl:lang page}} {{tpl:PaginationCurrent}} {{tpl:lang of}} {{tpl:PaginationCounter}}
+
+              <tpl:PaginationIf start="0">
+                <p><a href="{{tpl:PaginationURL offset="-1"}}" class="button next">{{tpl:lang next entries}}<span aria-hidden="true"> &#187;</span></a></p>
+              </tpl:PaginationIf>
+              <tpl:PaginationIf start="1">
+              <p class="button next disabled">{{tpl:lang next entries}}<span aria-hidden="true"> &#187;</span></p>
+              </tpl:PaginationIf>
+            </nav>
+          </tpl:DiscussionEntriesPagination>
+        </tpl:Block>
+        <tpl:Block name="_pagination-after"></tpl:Block>
+      </tpl:EntriesFooter>
+  	</tpl:DiscussionEntries>
+  </div>
+</tpl:Block>
