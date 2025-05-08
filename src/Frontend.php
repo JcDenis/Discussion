@@ -50,6 +50,7 @@ class Frontend extends Process
             'publicHeadContent'                 => FrontendBehaviors::publicHeadContent(...),
             'publicFrontendSessionPage'         => FrontendBehaviors::publicFrontendSessionPage(...),
             'publicFrontendSessionWidget'       => FrontendBehaviors::publicFrontendSessionWidget(...),
+            'ReadingTrackingUrlTypes'           => FrontendBehaviors::ReadingTrackingUrlTypes(...),
             'publicBreadcrumb'                  => FrontendBehaviors::publicBreadcrumb(...),
             'coreInitWikiPost'                  => FrontendBehaviors::coreInitWikiPost(...),
             'publicCategoryBeforeGetCategories' => FrontendBehaviors::publicCategoryBeforeGetCategories(...),

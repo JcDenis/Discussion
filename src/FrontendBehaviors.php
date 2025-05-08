@@ -157,6 +157,14 @@ class FrontendBehaviors
         }
     }
 
+    /**
+     * @param   ArrayObject<int, string> $types
+     */
+    public static function ReadingTrackingUrlTypes(ArrayObject $types): void
+    {
+        $types->append(My::id());
+    }
+
     public static function publicBreadcrumb(string $context, string $separator): string
     {
         return $context == My::id() ? My::name() : '';
