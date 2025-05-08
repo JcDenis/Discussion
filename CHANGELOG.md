@@ -1,3 +1,11 @@
+Discussion 0.3 - 2025.05.08
+==========================================================
+* Require Dotclear 2.34
+* Require PHP 8.3
+* Require FrontendSession 0.21
+* Add users discussions page
+* Use plugin ReadingTracking 0.4 behavior
+
 Discussion 0.2 - 2025.05.04
 ==========================================================
 * Require Dotclear 2.34
