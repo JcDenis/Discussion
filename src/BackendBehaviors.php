@@ -34,6 +34,12 @@ class BackendBehaviors
                     ]),
                 (new Para())
                     ->items([
+                        (new Checkbox(My::id() . 'signup_perm', (bool) $blog_settings->get(My::id())->get('signup_perm')))
+                            ->value(1)
+                            ->label(new Label(__('Add user permission to post discussions on sign up'), Label::IL_FT)),
+                    ]),
+                (new Para())
+                    ->items([
                         (new Checkbox(My::id() . 'publish_post', (bool) $blog_settings->get(My::id())->get('publish_post')))
                             ->value(1)
                             ->label(new Label(__('Publish new discussion without validation'), Label::IL_FT)),
@@ -51,9 +57,10 @@ class BackendBehaviors
 
     public static function adminBeforeBlogSettingsUpdate(BlogSettingsInterface $blog_settings): void
     {
-        $blog_settings->get(My::id())->put('active', !empty($_POST[My::id() . 'active']));
-        $blog_settings->get(My::id())->put('publish_post', !empty($_POST[My::id() . 'publish_post']));
-        $blog_settings->get(My::id())->put('root_cat', (int) $_POST[My::id() . 'root_cat'] ?: 0);
+        $blog_settings->get(My::id())->put('active', !empty($_POST[My::id() . 'active']), 'boolean');
+        $blog_settings->get(My::id())->put('signup_perm', !empty($_POST[My::id() . 'signup_perm']), 'boolean');
+        $blog_settings->get(My::id())->put('publish_post', !empty($_POST[My::id() . 'publish_post']), 'boolean');
+        $blog_settings->get(My::id())->put('root_cat', (int) $_POST[My::id() . 'root_cat'] ?: 0, 'integer');
     }
 
     public static function adminBlogPreferencesHeaders(): string

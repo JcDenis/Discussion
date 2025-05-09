@@ -6,6 +6,7 @@ namespace Dotclear\Plugin\Discussion;
 
 use ArrayObject;
 use Dotclear\App;
+use Dotclear\Database\Cursor;
 use Dotclear\Helper\Html\Form\{ Li, Link, Para, Text, Ul };
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Html\WikiToHtml;
@@ -154,6 +155,19 @@ class FrontendBehaviors
  
             $lines->append($li([App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), __('New discussion')]));
             $lines->append($li([App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')]));
+        }
+    }
+
+    /**
+     * Add user permission after registration.
+     */
+    public static function FrontendSessionAfterSignup(Cursor $cur): void
+    {
+        if (My::conf()->isActive('signup')) {
+            $perms = App::users()->getUserPermissions($cur->user_id);
+            $perms = $perms[App::blog()->id()]['p'] ?? [];
+            $perms[My::id()]  = true;
+            App::auth()->sudo([App::users(), 'setUserBlogPermissions'], $cur->user_id, App::blog()->id(), $perms);
         }
     }
 
