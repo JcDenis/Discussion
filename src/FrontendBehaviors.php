@@ -6,11 +6,12 @@ namespace Dotclear\Plugin\Discussion;
 
 use ArrayObject;
 use Dotclear\App;
-use Dotclear\Database\Cursor;
+use Dotclear\Database\{ Cursor, MetaRecord };
 use Dotclear\Helper\Html\Form\{ Li, Link, Para, Text, Ul };
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Html\WikiToHtml;
 use Dotclear\Plugin\commentsWikibar\My as Wb;
+use Dotclear\Plugin\FrontendSession\CommentOptions;
 
 /**
  * @brief       Discussion module frontend behaviors.
@@ -125,7 +126,7 @@ class FrontendBehaviors
         }
     }
 
-    public static function publicFrontendSessionPage(): void
+    public static function FrontendSessionPage(): void
     {
         if (App::auth()->check(My::id(), App::blog()->id())) {
             $li  = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
@@ -148,7 +149,7 @@ class FrontendBehaviors
     /**
      * @param   ArrayObject<int, Li>    $lines
      */
-    public static function publicFrontendSessionWidget(ArrayObject $lines): void
+    public static function FrontendSessionWidget(ArrayObject $lines): void
     {
         if (App::auth()->check(My::id(), App::blog()->id())) {
             $li  = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
@@ -168,6 +169,23 @@ class FrontendBehaviors
             $perms = $perms[App::blog()->id()]['p'] ?? [];
             $perms[My::id()]  = true;
             App::auth()->sudo([App::users(), 'setUserBlogPermissions'], $cur->user_id, App::blog()->id(), $perms);
+        }
+    }
+
+    /**
+     * Check comments perms.
+     */
+    public static function FrontendSessionCommentsActive(CommentOptions $option): void
+    {
+        // check if it is a discussion category else follow blog settings
+        if (!is_null($option->rs) && Core::isDiscussionCategory((int) $option->rs->f('cat_id'))) {
+            // active if user is auth or unregistered comments are allowed
+            $option->setActive(App::auth()->check(My::id(), App::blog()->id()) || (bool) My::settings()->get('unregister_comment'));
+
+            // not moderate if user is auth else follow blog settings
+            if (App::auth()->check(My::id(), App::blog()->id())) {
+                $option->setModerate(false);
+            }
         }
     }
 

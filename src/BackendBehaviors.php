@@ -46,6 +46,12 @@ class BackendBehaviors
                     ]),
                 (new Para())
                     ->items([
+                        (new Checkbox(My::id() . 'unregister_comment', (bool) $blog_settings->get(My::id())->get('unregister_comment')))
+                            ->value(1)
+                            ->label(new Label(__('Open discussions comments to unregistered users'), Label::IL_FT)),
+                    ]),
+                (new Para())
+                    ->items([
                         (new Select(My::id() . 'root_cat'))
                             ->items(Core::getCategoriesCombo())
                             ->default((string) (int) $blog_settings->get(My::id())->get('root_cat'))
@@ -60,6 +66,7 @@ class BackendBehaviors
         $blog_settings->get(My::id())->put('active', !empty($_POST[My::id() . 'active']), 'boolean');
         $blog_settings->get(My::id())->put('signup_perm', !empty($_POST[My::id() . 'signup_perm']), 'boolean');
         $blog_settings->get(My::id())->put('publish_post', !empty($_POST[My::id() . 'publish_post']), 'boolean');
+        $blog_settings->get(My::id())->put('unregister_comment', !empty($_POST[My::id() . 'unregister_comment']), 'boolean');
         $blog_settings->get(My::id())->put('root_cat', (int) $_POST[My::id() . 'root_cat'] ?: 0, 'integer');
     }
 
