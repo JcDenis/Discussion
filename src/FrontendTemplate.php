@@ -256,7 +256,7 @@ class FrontendTemplate
         $operator = isset($attr['operator']) ? Tpl::getOperator($attr['operator']) : '&&';
 
         if (isset($attr['has_discussion'])) {
-            $if[] = $sign($attr['has_discussion']) . Core::class . '::getPosts()->isEmpty()';
+            $if[] = $sign($attr['has_discussion']) . Core::class . '::getUserPosts()->isEmpty()';
         }
 
         return $if === [] ?
@@ -283,7 +283,7 @@ class FrontendTemplate
         return "<?php\n" .
             $params .
             'App::frontend()->context()->post_params = $params;' . "\n" .
-            'App::frontend()->context()->posts = ' . Core::class . '::getPosts($params); unset($params);' . "\n" .
+            'App::frontend()->context()->posts = ' . Core::class . '::getUserPosts($params); unset($params);' . "\n" .
             'while (App::frontend()->context()->posts->fetch()) : ?>' .
             $content .
             '<?php endwhile; App::frontend()->context()->pop("posts"); ?>';
@@ -298,7 +298,7 @@ class FrontendTemplate
     {
         $params = "<?php\n" .
             '$params = App::frontend()->context()->post_params;' . "\n" .
-            'App::frontend()->context()->pagination = ' . Core::class . '::getPosts($params,true); unset($params);' . "\n" .
+            'App::frontend()->context()->pagination = ' . Core::class . '::getUserPosts($params,true); unset($params);' . "\n" .
             "?>\n";
 
         if (isset($attr['no_context']) && $attr['no_context']) {

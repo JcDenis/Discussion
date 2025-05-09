@@ -47,6 +47,7 @@ class Frontend extends Process
         App::frontend()->template()->addBlock('DiscussionEntriesPagination', FrontendTemplate::DiscussionEntriesPagination(...));
 
         App::behavior()->addBehaviors([
+            'initWidgets'                       => Widgets::initWidgets(...),
             'publicHeadContent'                 => FrontendBehaviors::publicHeadContent(...),
             'publicFrontendSessionPage'         => FrontendBehaviors::publicFrontendSessionPage(...),
             'publicFrontendSessionWidget'       => FrontendBehaviors::publicFrontendSessionWidget(...),

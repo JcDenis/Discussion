@@ -28,6 +28,11 @@ class Core
         return self::hasRootCategory() ? App::blog()->getCategories(['cat_id' => self::getRootCategory()])->f('cat_title') : __('Discussions');
     }
 
+    public static function getRootCategoryUrl(): string
+    {
+        return self::hasRootCategory() ? App::blog()->url() . App::url()->getURLFor('category', Html::sanitizeURL(App::blog()->getCategories(['cat_id' => self::getRootCategory()])->f('cat_url'))) : '';
+    }
+
     public static function getRootCategoryDescription(): string
     {
         return self::hasRootCategory() ? App::blog()->getCategories(['cat_id' => self::getRootCategory()])->f('cat_desc') : '';
@@ -92,9 +97,20 @@ class Core
      *
      * @param   array<string, mixed> $params
      */
-    public static function getPosts(array $params = [], bool $count_only = false): MetaRecord
+    public static function getUserPosts(array $params = [], bool $count_only = false): MetaRecord
     {
         $params['user_id'] = (string) App::auth()->userID();
+
+        return self::getPosts($params, $count_only);
+    }
+
+    /**
+     * Get posts (started at root category).
+     *
+     * @param   array<string, mixed> $params
+     */
+    public static function getPosts(array $params = [], bool $count_only = false): MetaRecord
+    {
         $params['cat_id']  = self::getRootCategory() . '?sub';
 
         return App::blog()->getPosts($params, $count_only);

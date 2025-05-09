@@ -28,6 +28,7 @@ class Backend extends Process
         }
 
         App::behavior()->addBehaviors([
+            'initWidgets'                   => Widgets::initWidgets(...),
             'adminBlogPreferencesFormV2'    => BackendBehaviors::adminBlogPreferencesFormV2(...),
             'adminBeforeBlogSettingsUpdate' => BackendBehaviors::adminBeforeBlogSettingsUpdate(...),
             'adminBlogPreferencesHeaders'   => BackendBehaviors::adminBlogPreferencesHeaders(...),
