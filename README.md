@@ -16,14 +16,12 @@ _Discussion_ is a plugin for the open-source web publishing software called [Dot
 
 * Dotclear 2.34
 * PHP 8.1+
-* Plugin FrontendSession 0.21
+* Plugin FrontendSession
 * Dotclear admin permission for configuration
 
 Better with these plugins :
 
-* Plugin commentsWikibar 5.4
-* Plugin legacyMarkdown 7.0
-* Plugin ReadingTracking 0.4
+* Plugins commentsWikibar, legacyMarkdown, ReadingTracking
 
 ## USAGE
 

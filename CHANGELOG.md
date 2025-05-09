@@ -1,3 +1,8 @@
+Discussion 0.4 - 2025.05.09
+===========================================================
+* Bump FrontendSession from 0.21 to 0.23
+* Add option to add perm on signup
+
 Discussion 0.3 - 2025.05.08
 ==========================================================
 * Require Dotclear 2.34
