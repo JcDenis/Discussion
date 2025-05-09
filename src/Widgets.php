@@ -31,11 +31,6 @@ class Widgets
             ->addTitle(__('Last discussions'))
             ->setting('limit', __('Limit:'), 10)
             ->setting(
-                'addcat',
-                __('Add link to discussion category'),
-                0,
-                'check'
-            )            ->setting(
                 'addroot',
                 __('Add link to forum'),
                 1,
@@ -59,21 +54,13 @@ class Widgets
         $lines = [];
         $rs    = Core::getPosts(['limit' => $widget->get('limit')]);
         while($rs->fetch()) {
-            $res = [
-                (new Link())
-                    ->href($rs->getURL())
-                    ->text($rs->f('post_title'))
-            ];
-
-            if ($widget->get('addcat')) {
-                $res[] = new Text('', ' (' . (new Link())
-                    ->href($rs->getCategoryURL())
-                    ->text($rs->f('cat_title'))
-                    ->render() . ')');
-            }
-
             $lines[] = (new Li())
-                ->items($res);
+                ->items([
+                    (new Link())
+                        ->href($rs->getURL())
+                        ->text(Html::escapeHTML($rs->f('post_title')))
+                        ->title(Html::escapeHTML($rs->f('cat_title')))
+                ]);
         }
 
         if ($lines === []) {
