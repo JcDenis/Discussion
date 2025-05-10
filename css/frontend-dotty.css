@@ -1,5 +1,8 @@
-#discussion-form input:not([type='checkbox']):not([type='radio']) {
+#discussion-form input:not([type='checkbox'], [type='radio'], [type='submit']),
+#discussion-form textarea,
+#discussion-form select {
   display: block;
+  width: 75%;
 }
 #discussion-form .post-preview-content {
     margin: 0.5em;
@@ -15,6 +18,5 @@
 }
 .content-inner #discussion-form {
     padding-bottom: 2em;
-    border-bottom: 1px solid var(--main-color);
-
+    border-bottom: 1px solid var(--main-color, #4b4b4b);
 }
