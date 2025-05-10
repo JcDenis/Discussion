@@ -1,15 +1,15 @@
 # Language: Français
-# Module: Discussion - 0.3.2
-# Date: 2025-05-09 11:36:07
+# Module: Discussion - 0.4
+# Date: 2025-05-10 06:36:28
 # Author: , contact@jcdenis.fr
 # Translated with translater 2025.03.03
 
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: Discussion 0.3.2\n"
+"Project-Id-Version: Discussion 0.4\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-05-09T11:36:07+00:00\n"
+"PO-Revision-Date: 2025-05-10T06:36:28+00:00\n"
 "Last-Translator: Jean-Christian Denis\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,7 @@ msgstr "Dernier commentaire :"
 
 #: default-templates/dotty/Discussion-comments.html:21
 #: default-templates/dotty/Discussion-posts.html:21
-#: src/FrontendBehaviors.php:134
+#: src/FrontendBehaviors.php:135
 #: src/FrontendTemplate.php:323
 msgid "New discussion"
 msgstr "Nouvelle discussion"
@@ -49,7 +49,7 @@ msgid "Start a new discussion"
 msgstr "Démarrer une nouvelle discussion"
 
 #: default-templates/dotty/Discussion-posts.html:20
-#: src/FrontendBehaviors.php:133
+#: src/FrontendBehaviors.php:134
 msgid "My discussions"
 msgstr "Mes discussions"
 
@@ -65,7 +65,11 @@ msgstr "Ajouter les permissions utilisateur lors de l'inscription"
 msgid "Publish new discussion without validation"
 msgstr "Publier les nouvelles discussions sans validation"
 
-#: src/BackendBehaviors.php:52
+#: src/BackendBehaviors.php:51
+msgid "Open discussions comments to unregistered users"
+msgstr "Ouvrir les commentaires de discussions aux utilisateurs non enregistrés"
+
+#: src/BackendBehaviors.php:58
 msgid "Limit discussion to this category children:"
 msgstr "Limiter les discussions au sous catégories de :"
 
@@ -77,16 +81,16 @@ msgstr "Ne pas limiter"
 msgid "Select a category"
 msgstr "Sélectionner un catégorie"
 
-#: src/FrontendBehaviors.php:133
+#: src/FrontendBehaviors.php:134
 msgid "View my discussions"
 msgstr "Voir mes discussions"
 
-#: src/FrontendBehaviors.php:134
+#: src/FrontendBehaviors.php:135
 #: src/FrontendTemplate.php:322
 msgid "Create a new discussion"
 msgstr "Créer une nouvelle discussion"
 
-#: src/FrontendBehaviors.php:141
+#: src/FrontendBehaviors.php:142
 msgid "You can paticipate in discussions."
 msgstr "Vous pouvez participer aux discussions."
 
@@ -110,6 +114,10 @@ msgstr "Vous devez fournir un contenu de discussion."
 msgid "Last discussions"
 msgstr "Dernières discussions"
 
+#: src/Widgets.php:32
+msgid "Limit:"
+msgstr "Limite :"
+
 #: src/Widgets.php:35
 msgid "Add link to forum"
 msgstr "Ajouter un lien vers le forum"
@@ -117,7 +125,4 @@ msgstr "Ajouter un lien vers le forum"
 #: src/Widgets.php:76
 msgid "All discussions"
 msgstr "Toutes les discussions"
-
-msgid "Add link to discussion category"
-msgstr "Ajouter un lien vers la catégorie"
 
