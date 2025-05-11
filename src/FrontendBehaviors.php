@@ -59,6 +59,13 @@ class FrontendBehaviors
         if (in_array($tplset, ['dotty', 'mustek'])) {
             echo My::cssLoad('frontend-' . $tplset);
         }
+        if (App::auth()->userID() != '') {
+            echo My::jsLoad('frontend-comment') .
+            Html::jsJson(My::id(), [
+                'input_text' => __('Respond'),
+                'response_text' => __('In response to a comment'),
+            ]);
+        }
 
         // wiki, taken from plugin commentsWikibar
         if (!App::plugins()->moduleExists('commentsWikibar')
@@ -161,6 +168,7 @@ class FrontendBehaviors
     {
         if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id') 
             && App::frontend()->context()->posts->f('post_open_comment')
+            && Core::isDiscussionCategory(App::frontend()->context()->posts->f('cat_id'))
         ) {
             echo (new Form(My::id(). App::frontend()->context()->comments->f('comment_id')))
                 ->method('post')
@@ -178,7 +186,9 @@ class FrontendBehaviors
 
     public static function publicCommentFormAfterContent(): void
     {
-        if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id')) {
+        if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id')
+            && Core::isDiscussionCategory((int) App::frontend()->context()->posts->f('cat_id'))
+        ) {
             echo (new Para())
                 ->items([
                     (new Checkbox(My::id() . 'resolved', !empty($_POST[My::id() . 'resolved'])))
@@ -191,7 +201,10 @@ class FrontendBehaviors
 
     public static function publicAfterCommentCreate(Cursor $cur, $comment_id)
     {
-        if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id') && !empty($_POST[My::id() . 'resolved'])) {
+        if (!empty($_POST[My::id() . 'resolved'])
+            && App::auth()->userID() === App::frontend()->context()->posts->f('user_id')
+            && Core::isDiscussionCategory((int) App::frontend()->context()->posts->f('cat_id'))
+        ) {
             $cur = App::blog()->openPostCursor();
             $cur->setField('post_open_comment', 0);
             $cur->setField('post_title', sprintf('[%s] ', __('Resolved')) . App::frontend()->context()->posts->f('post_title'));
