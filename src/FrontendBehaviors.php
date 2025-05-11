@@ -30,7 +30,7 @@ class FrontendBehaviors
 
             $comment_id = (int) $_POST['discussion_comment'];
             $rs = App::blog()->getPosts($params);
-            if (!$rs->isEmpty()) {
+            if (!$rs->isEmpty() && $rs->f('post_open_comment')) {
                 FrontendUrl::loadFormater();
                 $text = match ($rs->f('post_format')) {
                     'wiki'  => "\n\n''[%s|%s]''",
@@ -159,7 +159,9 @@ class FrontendBehaviors
 
     public static function publicCommentAfterContent(): void
     {
-        if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id')) {
+        if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id') 
+            && App::frontend()->context()->posts->f('post_open_comment')
+        ) {
             echo (new Form(My::id(). App::frontend()->context()->comments->f('comment_id')))
                 ->method('post')
                 ->action('')

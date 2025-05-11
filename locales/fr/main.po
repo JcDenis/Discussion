@@ -1,15 +1,15 @@
 # Language: Français
-# Module: Discussion - 0.4.1
-# Date: 2025-05-11 14:07:20
+# Module: Discussion - 0.4.2
+# Date: 2025-05-11 14:37:28
 # Author: , contact@jcdenis.fr
 # Translated with translater 2025.03.03
 
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: Discussion 0.4.1\n"
+"Project-Id-Version: Discussion 0.4.2\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-05-11T14:07:20+00:00\n"
+"PO-Revision-Date: 2025-05-11T14:37:28+00:00\n"
 "Last-Translator: Jean-Christian Denis\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -26,7 +26,7 @@ msgstr "Dernier commentaire :"
 
 #: default-templates/dotty/Discussion-comments.html:21
 #: default-templates/dotty/Discussion-posts.html:21
-#: src/FrontendBehaviors.php:211
+#: src/FrontendBehaviors.php:214
 #: src/FrontendTemplate.php:323
 msgid "New discussion"
 msgstr "Nouvelle discussion"
@@ -49,7 +49,7 @@ msgid "Start a new discussion"
 msgstr "Démarrer une nouvelle discussion"
 
 #: default-templates/dotty/Discussion-posts.html:20
-#: src/FrontendBehaviors.php:210
+#: src/FrontendBehaviors.php:213
 msgid "My discussions"
 msgstr "Mes discussions"
 
@@ -87,26 +87,26 @@ msgstr "Résolu"
 
 #: src/FrontendBehaviors.php:47
 msgid "Discussion closed as it is resolved in comments"
-msgstr "Discussion fermée car elle est résolue dans le commentaires"
+msgstr "Discussion fermée car elle est résolue dans les commentaires"
 
-#: src/FrontendBehaviors.php:168
+#: src/FrontendBehaviors.php:171
 msgid "Solution"
 msgstr "Solution"
 
-#: src/FrontendBehaviors.php:184
+#: src/FrontendBehaviors.php:187
 msgid "Mark as resolved and close disscussion"
 msgstr "Marquer cette discussion comme résolue et la fermer"
 
-#: src/FrontendBehaviors.php:210
+#: src/FrontendBehaviors.php:213
 msgid "View my discussions"
 msgstr "Voir mes discussions"
 
-#: src/FrontendBehaviors.php:211
+#: src/FrontendBehaviors.php:214
 #: src/FrontendTemplate.php:322
 msgid "Create a new discussion"
 msgstr "Créer une nouvelle discussion"
 
-#: src/FrontendBehaviors.php:218
+#: src/FrontendBehaviors.php:221
 msgid "You can paticipate in discussions."
 msgstr "Vous pouvez participer aux discussions."
 
