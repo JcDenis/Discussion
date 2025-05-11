@@ -7,7 +7,8 @@ namespace Dotclear\Plugin\Discussion;
 use ArrayObject;
 use Dotclear\App;
 use Dotclear\Database\{ Cursor, MetaRecord };
-use Dotclear\Helper\Html\Form\{ Li, Link, Para, Text, Ul };
+use Dotclear\Database\Statement\UpdateStatement;
+use Dotclear\Helper\Html\Form\{ Checkbox, Form, Hidden, Label, Li, Link, Para, Submit, Text, Ul };
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Html\WikiToHtml;
 use Dotclear\Plugin\commentsWikibar\My as Wb;
@@ -22,6 +23,36 @@ use Dotclear\Plugin\FrontendSession\CommentOptions;
  */
 class FrontendBehaviors
 {
+    public static function publicPostBeforeGetPosts(ArrayObject $params, $args): void
+    {
+        if (!empty($_POST['discussion_comment'])) {
+            FrontendUrl::checkForm();
+
+            $comment_id = (int) $_POST['discussion_comment'];
+            $rs = App::blog()->getPosts($params);
+            if (!$rs->isEmpty()) {
+                FrontendUrl::loadFormater();
+                $text = match ($rs->f('post_format')) {
+                    'wiki'  => "\n\n''[%s|%s]''",
+                    default => "\n\n%s",
+                };
+
+                $cur = App::blog()->openPostCursor();
+                $cur->setField('post_open_comment', 0);
+                $cur->setField('post_title', sprintf('[%s] ', __('Resolved')) . $rs->f('post_title'));
+                $cur->setField('post_lang', $rs->f('post_lang'));
+                $cur->setField('post_format', $rs->f('post_format'));
+                $cur->setField('post_content', $rs->f('post_content') . sprintf(
+                    $text,
+                    __('Discussion closed as it is resolved in comments'),
+                    $rs->getURL() . '#c' . $comment_id
+                ));
+
+                App::auth()->sudo(App::blog()->updPost(...), $rs->f('post_id'), $cur);
+            }
+        }
+    }
+
     public static function publicHeadContent(): void
     {
         $tplset = App::themes()->moduleInfo(App::blog()->settings()->get('system')->get('theme'), 'tplset');
@@ -123,6 +154,51 @@ class FrontendBehaviors
                 ],
             ]) .
             Wb::jsLoad('bootstrap.js');
+        }
+    }
+
+    public static function publicCommentAfterContent(): void
+    {
+        if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id')) {
+            echo (new Form(My::id(). App::frontend()->context()->comments->f('comment_id')))
+                ->method('post')
+                ->action('')
+                ->class(['post-comment-answer', 'button'])
+                ->fields([
+                    (new Submit(['discussion_answer'], __('Solution'))
+                        ->title('Mark this comment as answer and close discussion')),
+                    (new Hidden(['discussion_check'], App::nonce()->getNonce())),
+                    (new Hidden(['discussion_comment'], App::frontend()->context()->comments->f('comment_id'))),
+                ])
+                ->render();
+        }
+    }
+
+    public static function publicCommentFormAfterContent(): void
+    {
+        if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id')) {
+            echo (new Para())
+                ->items([
+                    (new Checkbox(My::id() . 'resolved', !empty($_POST[My::id() . 'resolved'])))
+                        ->value(1)
+                        ->label((new Label(__('Resolved'), Label::IL_FT))->title(__('Mark as resolved and close disscussion'))),
+                ])
+                ->render();
+        }
+    }
+
+    public static function publicAfterCommentCreate(Cursor $cur, $comment_id)
+    {
+        if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id') && !empty($_POST[My::id() . 'resolved'])) {
+            $cur = App::blog()->openPostCursor();
+            $cur->setField('post_open_comment', 0);
+            $cur->setField('post_title', sprintf('[%s] ', __('Resolved')) . App::frontend()->context()->posts->f('post_title'));
+
+            $sql = new UpdateStatement();
+            $sql
+                ->where('blog_id = ' . $sql->quote(App::blog()->id()))
+                ->and('post_id = ' . App::frontend()->context()->posts->f('post_id'))
+                ->update($cur);
         }
     }
 

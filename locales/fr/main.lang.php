@@ -1,7 +1,7 @@
 <?php
 // Language: Français
-// Module: Discussion - 0.4
-// Date: 2025-05-10 06:36:28
+// Module: Discussion - 0.4.1
+// Date: 2025-05-11 14:07:20
 // Author: , contact@jcdenis.fr
 // Translated with Translater - 2025.03.03
 
@@ -27,6 +27,10 @@ L10n::$locales['Open discussions comments to unregistered users'] = 'Ouvrir les 
 L10n::$locales['Limit discussion to this category children:'] = 'Limiter les discussions au sous catégories de :';
 L10n::$locales['Do not limit'] = 'Ne pas limiter';
 L10n::$locales['Select a category'] = 'Sélectionner un catégorie';
+L10n::$locales['Resolved'] = 'Résolu';
+L10n::$locales['Discussion closed as it is resolved in comments'] = 'Discussion fermée car elle est résolue dans le commentaires';
+L10n::$locales['Solution'] = 'Solution';
+L10n::$locales['Mark as resolved and close disscussion'] = 'Marquer cette discussion comme résolue et la fermer';
 L10n::$locales['View my discussions'] = 'Voir mes discussions';
 L10n::$locales['Create a new discussion'] = 'Créer une nouvelle discussion';
 L10n::$locales['You can paticipate in discussions.'] = 'Vous pouvez participer aux discussions.';

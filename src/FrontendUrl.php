@@ -210,7 +210,7 @@ class FrontendUrl extends Url
     /**
      * Check nonce from POST requests.
      */
-    private static function checkForm(): void
+    public static function checkForm(): void
     {
         if (!App::nonce()->checkNonce($_POST['discussion_check'] ?? '-')) {
             throw new PreconditionException();
@@ -220,7 +220,7 @@ class FrontendUrl extends Url
     /**
      * Load formater.
      */
-    private static function loadFormater(): void
+    public static function loadFormater(): void
     {
         // init wiki transform
         if (!App::filter()->wiki()) {
