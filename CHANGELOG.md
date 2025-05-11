@@ -1,3 +1,8 @@
+Discussion 0.5 - 2025.05.11
+===========================================================
+* Add button "mark as resolved"
+* Add button "respond to comment"
+
 Discussion 0.4 - 2025.05.09
 ===========================================================
 * Bump FrontendSession from 0.21 to 0.23
