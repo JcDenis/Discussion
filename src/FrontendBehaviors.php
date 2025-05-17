@@ -173,7 +173,7 @@ class FrontendBehaviors
             echo (new Form(My::id(). App::frontend()->context()->comments->f('comment_id')))
                 ->method('post')
                 ->action('')
-                ->class(['post-comment-answer', 'button'])
+                ->class('post-comment-answer')
                 ->fields([
                     (new Submit(['discussion_answer'], __('Solution'))
                         ->title('Mark this comment as answer and close discussion')),
