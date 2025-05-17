@@ -27,25 +27,28 @@ class Frontend extends Process
             return false;
         }
 
-        App::frontend()->template()->addBlock('DiscussionIf', FrontendTemplate::DiscussionIf(...));
-        App::frontend()->template()->addValue('DiscussionFormNonce', FrontendTemplate::DiscussionFormNonce(...));
-        App::frontend()->template()->addValue('DiscussionFormURL', FrontendTemplate::DiscussionFormURL(...));
-        App::frontend()->template()->addValue('DiscussionFormSuccess', FrontendTemplate::DiscussionFormSuccess(...));
-        App::frontend()->template()->addBlock('DiscussionPreviewIf', FrontendTemplate::DiscussionPreviewIf(...));
-        App::frontend()->template()->addValue('DiscussionPreviewPostTitle', FrontendTemplate::DiscussionPreviewPostTitle(...));
-        App::frontend()->template()->addValue('DiscussionPreviewPostContent', FrontendTemplate::DiscussionPreviewPostContent(...));
-        App::frontend()->template()->addValue('DiscussionPostTitle', FrontendTemplate::DiscussionPostTitle(...));
-        App::frontend()->template()->addValue('DiscussionPostContent', FrontendTemplate::DiscussionPostContent(...));
-        App::frontend()->template()->addBlock('DiscussionCategories', FrontendTemplate::DiscussionCategories(...));
-        App::frontend()->template()->addValue('DiscussionCategoriesTitle', FrontendTemplate::DiscussionCategoriesTitle(...));
-        App::frontend()->template()->addValue('DiscussionCategoriesDescription', FrontendTemplate::DiscussionCategoriesDescription(...));
-        App::frontend()->template()->addValue('DiscussionCategoriesCombo', FrontendTemplate::DiscussionCategoriesCombo(...));
-        App::frontend()->template()->addBlock('DiscussionCategoryComments', FrontendTemplate::DiscussionCategoryComments(...));
-        App::frontend()->template()->addValue('CategoryDescription', FrontendTemplate::CategoryDescription(...));
-        App::frontend()->template()->addBlock('DiscussionEntries', FrontendTemplate::DiscussionEntries(...));
-        App::frontend()->template()->addBlock('DiscussionEntriesIf', FrontendTemplate::DiscussionEntriesIf(...));
-        App::frontend()->template()->addBlock('DiscussionEntriesPagination', FrontendTemplate::DiscussionEntriesPagination(...));
-
+        App::frontend()->template()->addBlocks([
+            'DiscussionIf'                => FrontendTemplate::DiscussionIf(...),
+            'DiscussionPreviewIf'         => FrontendTemplate::DiscussionPreviewIf(...),
+            'DiscussionCategories'        => FrontendTemplate::DiscussionCategories(...),
+            'DiscussionCategoryComments'  => FrontendTemplate::DiscussionCategoryComments(...),
+            'DiscussionEntries'           => FrontendTemplate::DiscussionEntries(...),
+            'DiscussionEntriesIf'         => FrontendTemplate::DiscussionEntriesIf(...),
+            'DiscussionEntriesPagination' => FrontendTemplate::DiscussionEntriesPagination(...),
+        ]);
+        App::frontend()->template()->addValues([
+            'DiscussionFormNonce'             => FrontendTemplate::DiscussionFormNonce(...),
+            'DiscussionFormURL'               => FrontendTemplate::DiscussionFormURL(...),
+            'DiscussionFormSuccess'           => FrontendTemplate::DiscussionFormSuccess(...),
+            'DiscussionPreviewPostTitle'      => FrontendTemplate::DiscussionPreviewPostTitle(...),
+            'DiscussionPreviewPostContent'    => FrontendTemplate::DiscussionPreviewPostContent(...),
+            'DiscussionPostTitle'             => FrontendTemplate::DiscussionPostTitle(...),
+            'DiscussionPostContent'           => FrontendTemplate::DiscussionPostContent(...),
+            'DiscussionCategoriesTitle'       => FrontendTemplate::DiscussionCategoriesTitle(...),
+            'DiscussionCategoriesDescription' => FrontendTemplate::DiscussionCategoriesDescription(...),
+            'DiscussionCategoriesCombo'       => FrontendTemplate::DiscussionCategoriesCombo(...),
+            'CategoryDescription'             => FrontendTemplate::CategoryDescription(...),
+        ]);
         App::behavior()->addBehaviors([
             'initWidgets'                       => Widgets::initWidgets(...),
             'publicPostBeforeGetPosts'          => FrontendBehaviors::publicPostBeforeGetPosts(...),
