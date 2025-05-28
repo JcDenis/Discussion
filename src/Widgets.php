@@ -70,6 +70,7 @@ class Widgets
 
         if ($widget->get('addroot') && Core::hasRootCategory()) {
             $lines[] = (new Li())
+                ->class('all')
                 ->items([
                     (new Link())
                         ->href(Core::getRootCategoryUrl())
