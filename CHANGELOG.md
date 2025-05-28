@@ -1,3 +1,10 @@
+Discussion 0.6 - 2025.05.28
+===========================================================
+* Remove feeds stuff from categories page
+* Remove "button" class from templates
+* Use input instead of button in js
+* Use Dotclear 2.34 methods for templates
+
 Discussion 0.5 - 2025.05.11
 ===========================================================
 * Add button "mark as resolved"
