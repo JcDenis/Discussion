@@ -8,7 +8,7 @@ use ArrayObject;
 use Dotclear\App;
 use Dotclear\Database\{ Cursor, MetaRecord };
 use Dotclear\Database\Statement\UpdateStatement;
-use Dotclear\Helper\Html\Form\{ Checkbox, Form, Hidden, Label, Li, Link, Para, Submit, Text, Ul };
+use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Label, Li, Link, Para, Submit, Text, Ul };
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Html\WikiToHtml;
 use Dotclear\Plugin\commentsWikibar\My as Wb;
@@ -227,7 +227,8 @@ class FrontendBehaviors
                 $li([App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')]),
             ];
 
-            echo (new Para())
+            echo (new Div())
+                ->class('session-form')
                 ->items([
                     (new Text('h3', __('Discussion'))),
                     (new Text('p', __('You can paticipate in discussions.'))),
