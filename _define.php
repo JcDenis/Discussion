@@ -22,7 +22,7 @@ $this->registerModule(
     [
         'requires'    => [
             ['core', '2.34'],
-            ['FrontendSession', '0.23'],
+            ['FrontendSession', '0.28'],
             //['commentsWikibar', '5.4'], // optional
             //['legacyMarkdown', '7.0'], // optional
             //['ReadingTracking', '0.4'], // optional

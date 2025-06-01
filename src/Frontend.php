@@ -56,7 +56,7 @@ class Frontend extends Process
             'publicCommentAfterContent'         => FrontendBehaviors::publicCommentAfterContent(...),
             'publicCommentFormAfterContent'     => FrontendBehaviors::publicCommentFormAfterContent(...),
             'publicAfterCommentCreate'          => FrontendBehaviors::publicAfterCommentCreate(...),
-            'FrontendSessionPage'               => FrontendBehaviors::FrontendSessionPage(...),
+            'FrontendSessionProfil'             => FrontendBehaviors::FrontendSessionProfil(...),
             'FrontendSessionWidget'             => FrontendBehaviors::FrontendSessionWidget(...),
             'FrontendSessionAfterSignup'        => FrontendBehaviors::FrontendSessionAfterSignup(...),
             'FrontendSessionCommentsActive'     => FrontendBehaviors::FrontendSessionCommentsActive(...),

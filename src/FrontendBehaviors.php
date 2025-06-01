@@ -8,11 +8,10 @@ use ArrayObject;
 use Dotclear\App;
 use Dotclear\Database\{ Cursor, MetaRecord };
 use Dotclear\Database\Statement\UpdateStatement;
-use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Label, Li, Link, Para, Submit, Text, Ul };
-use Dotclear\Helper\Html\Html;
-use Dotclear\Helper\Html\WikiToHtml;
+use Dotclear\Helper\Html\Form\{ Checkbox, Form, Hidden, Label, Li, Link, Para, Submit, Text, Ul };
+use Dotclear\Helper\Html\{ Html, WikiToHtml };
 use Dotclear\Plugin\commentsWikibar\My as Wb;
-use Dotclear\Plugin\FrontendSession\CommentOptions;
+use Dotclear\Plugin\FrontendSession\{ CommentOptions, FrontendSessionProfil };
 
 /**
  * @brief       Discussion module frontend behaviors.
@@ -217,24 +216,19 @@ class FrontendBehaviors
         }
     }
 
-    public static function FrontendSessionPage(): void
+    public static function FrontendSessionProfil(FrontendSessionProfil $profil): void
     {
         if (App::auth()->check(My::id(), App::blog()->id())) {
             $li  = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
             $lines = [
-                //$li([App::url()->getURLFor(My::id(), 'mine'), Html::escapeHTML(__('View my discussions')), Html::escapeHTML(__('My discussions'))]),
                 $li([App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), Html::escapeHTML(__('New discussion'))]),
                 $li([App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')]),
             ];
 
-            echo (new Div())
-                ->class('session-form')
-                ->items([
-                    (new Text('h3', __('Discussion'))),
-                    (new Text('p', __('You can paticipate in discussions.'))),
-                    (new Ul())->items($lines),
-                ])
-                ->render();
+            $profil->addAction(My::id(), My::name(), [
+                (new Text('p', __('You can paticipate in discussions.'))),
+                (new Ul())->items($lines),
+            ]);
         }
     }
 
