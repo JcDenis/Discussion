@@ -1,3 +1,7 @@
+Discussion 0.7 - 2025.06.02
+===========================================================
+* Bump plugin FrontendSession from 0.23 to 0.28
+
 Discussion 0.6 - 2025.05.28
 ===========================================================
 * Remove feeds stuff from categories page
