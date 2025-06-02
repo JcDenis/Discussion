@@ -204,15 +204,25 @@ class FrontendBehaviors
             && App::auth()->userID() === App::frontend()->context()->posts->f('user_id')
             && Core::isDiscussionCategory((int) App::frontend()->context()->posts->f('cat_id'))
         ) {
+            FrontendUrl::loadFormater();
+            $text = match (App::frontend()->context()->posts->f('post_format')) {
+                'wiki'  => "\n\n''[%s|%s]''",
+                default => "\n\n%s",
+            };
+
             $cur = App::blog()->openPostCursor();
             $cur->setField('post_open_comment', 0);
             $cur->setField('post_title', sprintf('[%s] ', __('Resolved')) . App::frontend()->context()->posts->f('post_title'));
 
-            $sql = new UpdateStatement();
-            $sql
-                ->where('blog_id = ' . $sql->quote(App::blog()->id()))
-                ->and('post_id = ' . App::frontend()->context()->posts->f('post_id'))
-                ->update($cur);
+            $cur->setField('post_lang', App::frontend()->context()->posts->f('post_lang'));
+            $cur->setField('post_format', App::frontend()->context()->posts->f('post_format'));
+            $cur->setField('post_content', App::frontend()->context()->posts->f('post_content') . sprintf(
+                $text,
+                __('Discussion closed as it is resolved in comments'),
+                App::frontend()->context()->posts->getURL() . '#c' . $comment_id
+            ));
+
+            App::auth()->sudo(App::blog()->updPost(...), App::frontend()->context()->posts->f('post_id'), $cur);
         }
     }
 
