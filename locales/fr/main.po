@@ -1,32 +1,32 @@
 # Language: Français
-# Module: Discussion - 0.4.3
-# Date: 2025-05-11 15:26:43
+# Module: Discussion - 0.7
+# Date: 2025-06-04 07:55:31
 # Author: , contact@jcdenis.fr
 # Translated with translater 2025.03.03
 
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: Discussion 0.4.3\n"
+"Project-Id-Version: Discussion 0.7\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-05-11T15:26:43+00:00\n"
+"PO-Revision-Date: 2025-06-04T07:55:31+00:00\n"
 "Last-Translator: Jean-Christian Denis\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: default-templates/dotty/Discussion-categories.html:50
+#: default-templates/dotty/Discussion-categories.html:42
 msgid "Last entry:"
 msgstr "Dernier billet :"
 
-#: default-templates/dotty/Discussion-categories.html:58
+#: default-templates/dotty/Discussion-categories.html:50
 msgid "Last comment:"
 msgstr "Dernier commentaire :"
 
 #: default-templates/dotty/Discussion-comments.html:21
 #: default-templates/dotty/Discussion-posts.html:21
-#: src/FrontendBehaviors.php:220
+#: src/FrontendBehaviors.php:257
 #: src/FrontendTemplate.php:323
 msgid "New discussion"
 msgstr "Nouvelle discussion"
@@ -49,7 +49,7 @@ msgid "Start a new discussion"
 msgstr "Démarrer une nouvelle discussion"
 
 #: default-templates/dotty/Discussion-posts.html:20
-#: src/FrontendBehaviors.php:219
+#: src/FrontendBehaviors.php:258
 msgid "My discussions"
 msgstr "Mes discussions"
 
@@ -81,58 +81,66 @@ msgstr "Ne pas limiter"
 msgid "Select a category"
 msgstr "Sélectionner un catégorie"
 
-#: src/FrontendBehaviors.php:42
-msgid "Resolved"
-msgstr "Résolu"
+#: src/FrontendBehaviors.php:38
+msgid "Discussion closed as it is resolved in comment from %s"
+msgstr "La discussion est fermée car résolue par le commentaire de %s"
 
-#: src/FrontendBehaviors.php:47
-msgid "Discussion closed as it is resolved in comments"
-msgstr "Discussion fermée car elle est résolue dans les commentaires"
-
-#: src/FrontendBehaviors.php:65
+#: src/FrontendBehaviors.php:102
 msgid "Respond"
 msgstr "Répondre"
 
-#: src/FrontendBehaviors.php:66
+#: src/FrontendBehaviors.php:103
 msgid "In response to a comment"
 msgstr "En réponse à un commentaire"
 
-#: src/FrontendBehaviors.php:177
+#: src/FrontendBehaviors.php:222
 msgid "Solution"
 msgstr "Solution"
 
-#: src/FrontendBehaviors.php:193
+#: src/FrontendBehaviors.php:223
+msgid "Mark this comment as answer and close discussion"
+msgstr "Marquer ce commentaire comme solution et fermer la discussion"
+
+#: src/FrontendBehaviors.php:243
+msgid "Resolved"
+msgstr "Résolu"
+
+#: src/FrontendBehaviors.php:243
 msgid "Mark as resolved and close disscussion"
 msgstr "Marquer cette discussion comme résolue et la fermer"
 
-#: src/FrontendBehaviors.php:219
-msgid "View my discussions"
-msgstr "Voir mes discussions"
-
-#: src/FrontendBehaviors.php:220
+#: src/FrontendBehaviors.php:257
 #: src/FrontendTemplate.php:322
 msgid "Create a new discussion"
 msgstr "Créer une nouvelle discussion"
 
-#: src/FrontendBehaviors.php:227
+#: src/FrontendBehaviors.php:258
+msgid "View my discussions"
+msgstr "Voir mes discussions"
+
+#: src/FrontendBehaviors.php:262
 msgid "You can paticipate in discussions."
 msgstr "Vous pouvez participer aux discussions."
 
-#: src/FrontendUrl.php:81
+#: src/FrontendUrl.php:86
 msgid "Discussion successfully created."
 msgstr "Discussion créée avec succès."
 
-#: src/FrontendUrl.php:117
+#: src/FrontendUrl.php:122
 msgid "You must select a category."
 msgstr "Vous devez sélectionner une catégorie."
 
-#: src/FrontendUrl.php:120
+#: src/FrontendUrl.php:125
 msgid "You must set a discussion title."
 msgstr "Vous devez fournir un titre de discussion."
 
-#: src/FrontendUrl.php:123
+#: src/FrontendUrl.php:128
 msgid "You must set a discussion content."
 msgstr "Vous devez fournir un contenu de discussion."
+
+#: src/FrontendUrl.php:232
+msgid "[Resolved]"
+msgstr "[Résolu]"
 
 #: src/Widgets.php:26
 msgid "Last discussions"
@@ -146,7 +154,7 @@ msgstr "Limite :"
 msgid "Add link to forum"
 msgstr "Ajouter un lien vers le forum"
 
-#: src/Widgets.php:76
+#: src/Widgets.php:77
 msgid "All discussions"
 msgstr "Toutes les discussions"
 

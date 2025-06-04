@@ -51,6 +51,7 @@ class Frontend extends Process
         ]);
         App::behavior()->addBehaviors([
             'initWidgets'                       => Widgets::initWidgets(...),
+            'publicEntryAfterContent'           => FrontendBehaviors::publicEntryAfterContent(...),
             'publicPostBeforeGetPosts'          => FrontendBehaviors::publicPostBeforeGetPosts(...),
             'publicHeadContent'                 => FrontendBehaviors::publicHeadContent(...),
             'publicCommentAfterContent'         => FrontendBehaviors::publicCommentAfterContent(...),

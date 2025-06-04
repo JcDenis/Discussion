@@ -8,13 +8,14 @@ dotclear.DiscussionCommentOptions = (source, target) => {
 
   // create menu
   const tpl_input = document.createElement('template');
-  tpl_input.innerHTML = `<input type="submit" class="post-comment-quote" value="${dotclear.Discussion.input_text}" />`;
+  tpl_input.innerHTML = `<input type="submit" class="post-comment-quote" value="${dotclear.Discussionreply.input_text}" />`;
   const button = tpl_input.content.childNodes[0];
 
   button.addEventListener('click', (e) => {
-    const text = source.querySelector('.comment-content').textContent.trim();
+    const text = source.querySelector('.comment-content').textContent;
     if (text?.length) {
-      target.innerHTML += '>' + `[${dotclear.Discussion.response_text}|#c${source.getAttribute('id').substr(1)}]` + "\n";
+      //var content = text.trim().split('\n').map((line,index,main)=>{ return '>' + line; }).join("\n");
+      target.innerHTML += '>' + `[${dotclear.Discussionreply.response_text}|#c${source.getAttribute('id').substr(1)}]` + "\n";// + content;
       target.focus();
     }
 
@@ -26,7 +27,8 @@ dotclear.DiscussionCommentOptions = (source, target) => {
 
 dotclear.ready(() => {
   // translations
-  dotclear.Discussion = dotclear.getData('Discussion');
+  const Discussionreply = dotclear.getData('Discussionreply');
+  dotclear.Discussionreply = Discussionreply;
 
   // find comments and form
   const target = document.getElementById('c_content');

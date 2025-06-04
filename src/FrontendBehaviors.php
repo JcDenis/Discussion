@@ -8,8 +8,9 @@ use ArrayObject;
 use Dotclear\App;
 use Dotclear\Database\{ Cursor, MetaRecord };
 use Dotclear\Database\Statement\UpdateStatement;
-use Dotclear\Helper\Html\Form\{ Checkbox, Form, Hidden, Label, Li, Link, Para, Submit, Text, Ul };
+use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Label, Li, Link, Para, Submit, Text, Ul };
 use Dotclear\Helper\Html\{ Html, WikiToHtml };
+use Dotclear\Helper\Network\Http;
 use Dotclear\Plugin\commentsWikibar\My as Wb;
 use Dotclear\Plugin\FrontendSession\{ CommentOptions, FrontendSessionProfil };
 
@@ -22,48 +23,94 @@ use Dotclear\Plugin\FrontendSession\{ CommentOptions, FrontendSessionProfil };
  */
 class FrontendBehaviors
 {
-    public static function publicPostBeforeGetPosts(ArrayObject $params, $args): void
+    /**
+     * Check if post is marked as resolved and add link to the comment.
+     */
+    public static function publicEntryAfterContent(): void
     {
-        if (!empty($_POST['discussion_comment'])) {
-            FrontendUrl::checkForm();
+        $meta = CoreResolver::getPostResolver((int) App::frontend()->context()->posts->f('post_id'));
+        if (!$meta->isEmpty()) {
+            echo (new Div())
+                ->class('post-resolver')
+                ->items([
+                    (new Link())
+                        ->href(App::frontend()->context()->posts->getURL() . '#c' . $meta->f('comment_id'))
+                        ->text(sprintf(__('Discussion closed as it is resolved in comment from %s'), $meta->f('comment_author'))),
+                    (new Text('', $meta->f('comment_content'))),
+                ])
+                ->render();
+        }
+    }
+  
+    /**
+     * Mark post as resolved from an existing comment.
+     *
+     * @param   ArrayObject<string, mixed>  $params
+     */
+    public static function publicPostBeforeGetPosts(ArrayObject $params, ?string $args): void
+    {
+        $done = false;
+        $rs   = App::blog()->getPosts($params);
+        if (!$rs->isEmpty()
+            && $rs->f('post_open_comment')
+            && Core::isDiscussionCategory((int) $rs->f('cat_id'))
+        ) {
+            $meta = CoreResolver::getPostResolver((int) $rs->f('post_id'));
+            if (!$meta->isEmpty()) {
+                CoreResolver::delPostResolver((int) $rs->f('post_id'));
+                $done = true;
+            }
 
-            $comment_id = (int) $_POST['discussion_comment'];
-            $rs = App::blog()->getPosts($params);
-            if (!$rs->isEmpty() && $rs->f('post_open_comment')) {
-                FrontendUrl::loadFormater();
-                $text = match ($rs->f('post_format')) {
-                    'wiki'  => "\n\n''[%s|%s]''",
-                    default => "\n\n%s",
-                };
+            if (!empty($_POST['discussion_comment'])) {
+                FrontendUrl::checkForm();
+                CoreResolver::setPostResolver((int) $rs->f('post_id'), (int) $_POST['discussion_comment']);
+                $done = true;
+            }
 
-                $cur = App::blog()->openPostCursor();
-                $cur->setField('post_open_comment', 0);
-                $cur->setField('post_title', sprintf('[%s] ', __('Resolved')) . $rs->f('post_title'));
-                $cur->setField('post_lang', $rs->f('post_lang'));
-                $cur->setField('post_format', $rs->f('post_format'));
-                $cur->setField('post_content', $rs->f('post_content') . sprintf(
-                    $text,
-                    __('Discussion closed as it is resolved in comments'),
-                    $rs->getURL() . '#c' . $comment_id
-                ));
-
-                App::auth()->sudo(App::blog()->updPost(...), $rs->f('post_id'), $cur);
+            if ($done) {
+                App::blog()->triggerBlog();
+                Http::redirect(Http::getSelfURI());
             }
         }
     }
 
+    /**
+     * Mark post as resolved from a new comment.
+     */
+    public static function publicAfterCommentCreate(Cursor $cur, int $comment_id): void
+    {
+        if (!empty($_POST[My::id() . 'resolved'])
+            && App::auth()->userID() === App::frontend()->context()->posts->f('user_id')
+            && Core::isDiscussionCategory((int) App::frontend()->context()->posts->f('cat_id'))
+        ) {
+            CoreResolver::setPostResolver((int) App::frontend()->context()->posts->f('post_id'), $comment_id);
+        }
+    }
+
+    /**
+     * Load JS and CSS and add wiki bar to post form.
+     */
     public static function publicHeadContent(): void
     {
+        // style
         $tplset = App::themes()->moduleInfo(App::blog()->settings()->get('system')->get('theme'), 'tplset');
         if (in_array($tplset, ['dotty', 'mustek'])) {
             echo My::cssLoad('frontend-' . $tplset);
         }
+
+        // resolve
+        echo My::jsLoad('frontend-post') .
+            Html::jsJson(My::id() . 'resolver', [
+                'url' => App::blog()->url() . App::url()->getBase(My::id()),
+            ]);
+
+        // reply
         if (App::auth()->userID() != '') {
             echo My::jsLoad('frontend-comment') .
-            Html::jsJson(My::id(), [
-                'input_text' => __('Respond'),
-                'response_text' => __('In response to a comment'),
-            ]);
+                Html::jsJson(My::id() . 'reply', [
+                    'input_text' => __('Respond'),
+                    'response_text' => __('In response to a comment'),
+                ]);
         }
 
         // wiki, taken from plugin commentsWikibar
@@ -163,26 +210,36 @@ class FrontendBehaviors
         }
     }
 
+    /**
+     * Add form for resolver to existing comments.
+     */
     public static function publicCommentAfterContent(): void
     {
-        if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id') 
-            && App::frontend()->context()->posts->f('post_open_comment')
+        if (App::frontend()->context()->posts->f('post_open_comment')
             && Core::isDiscussionCategory(App::frontend()->context()->posts->f('cat_id'))
         ) {
+            $items = [
+                (new Hidden(['discussion_check'], App::nonce()->getNonce())),
+                (new Hidden(['discussion_comment'], App::frontend()->context()->comments->f('comment_id')))
+            ];
+
+            if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id')) {
+                $items[] = (new Submit(['discussion_answer'], __('Solution')))
+                    ->title(__('Mark this comment as answer and close discussion'));
+            }
+
             echo (new Form(My::id(). App::frontend()->context()->comments->f('comment_id')))
                 ->method('post')
                 ->action('')
                 ->class('post-comment-answer')
-                ->fields([
-                    (new Submit(['discussion_answer'], __('Solution'))
-                        ->title('Mark this comment as answer and close discussion')),
-                    (new Hidden(['discussion_check'], App::nonce()->getNonce())),
-                    (new Hidden(['discussion_comment'], App::frontend()->context()->comments->f('comment_id'))),
-                ])
+                ->fields($items)
                 ->render();
         }
     }
 
+    /**
+     * Add form for resolver to new comment.
+     */
     public static function publicCommentFormAfterContent(): void
     {
         if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id')
@@ -198,34 +255,9 @@ class FrontendBehaviors
         }
     }
 
-    public static function publicAfterCommentCreate(Cursor $cur, $comment_id)
-    {
-        if (!empty($_POST[My::id() . 'resolved'])
-            && App::auth()->userID() === App::frontend()->context()->posts->f('user_id')
-            && Core::isDiscussionCategory((int) App::frontend()->context()->posts->f('cat_id'))
-        ) {
-            FrontendUrl::loadFormater();
-            $text = match (App::frontend()->context()->posts->f('post_format')) {
-                'wiki'  => "\n\n''[%s|%s]''",
-                default => "\n\n%s",
-            };
-
-            $cur = App::blog()->openPostCursor();
-            $cur->setField('post_open_comment', 0);
-            $cur->setField('post_title', sprintf('[%s] ', __('Resolved')) . App::frontend()->context()->posts->f('post_title'));
-
-            $cur->setField('post_lang', App::frontend()->context()->posts->f('post_lang'));
-            $cur->setField('post_format', App::frontend()->context()->posts->f('post_format'));
-            $cur->setField('post_content', App::frontend()->context()->posts->f('post_content') . sprintf(
-                $text,
-                __('Discussion closed as it is resolved in comments'),
-                App::frontend()->context()->posts->getURL() . '#c' . $comment_id
-            ));
-
-            App::auth()->sudo(App::blog()->updPost(...), App::frontend()->context()->posts->f('post_id'), $cur);
-        }
-    }
-
+    /**
+     * Add discussion menu to session page.
+     */
     public static function FrontendSessionProfil(FrontendSessionProfil $profil): void
     {
         if (App::auth()->check(My::id(), App::blog()->id())) {
@@ -243,6 +275,8 @@ class FrontendBehaviors
     }
 
     /**
+     * Add discussion menu to session widget.
+     *
      * @param   ArrayObject<int, Li>    $lines
      */
     public static function FrontendSessionWidget(ArrayObject $lines): void
@@ -260,12 +294,10 @@ class FrontendBehaviors
      */
     public static function FrontendSessionAfterSignup(Cursor $cur): void
     {
-        if (My::conf()->isActive('signup')) {
-            $perms = App::users()->getUserPermissions($cur->user_id);
-            $perms = $perms[App::blog()->id()]['p'] ?? [];
-            $perms[My::id()]  = true;
-            App::auth()->sudo([App::users(), 'setUserBlogPermissions'], $cur->user_id, App::blog()->id(), $perms);
-        }
+        $perms = App::users()->getUserPermissions($cur->user_id);
+        $perms = $perms[App::blog()->id()]['p'] ?? [];
+        $perms[My::id()]  = true;
+        App::auth()->sudo([App::users(), 'setUserBlogPermissions'], $cur->user_id, App::blog()->id(), $perms);
     }
 
     /**
@@ -286,6 +318,8 @@ class FrontendBehaviors
     }
 
     /**
+     * Add Discussion posts type to plugin ReadingTracking.
+     *
      * @param   ArrayObject<int, string> $types
      */
     public static function ReadingTrackingUrlTypes(ArrayObject $types): void
@@ -293,11 +327,17 @@ class FrontendBehaviors
         $types->append(My::id());
     }
 
+    /**
+     * Add Discussion name to breadcrumb.
+     */
     public static function publicBreadcrumb(string $context, string $separator): string
     {
         return $context == My::id() ? My::name() : '';
     }
 
+    /**
+     * Init wiki syntax for post form.
+     */
     public static function coreInitWikiPost(WikiToHtml $wiki): string
     {
         if (!App::plugins()->moduleExists('commentsWikibar')

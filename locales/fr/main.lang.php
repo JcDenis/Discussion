@@ -1,7 +1,7 @@
 <?php
 // Language: Français
-// Module: Discussion - 0.4.3
-// Date: 2025-05-11 15:26:43
+// Module: Discussion - 0.7
+// Date: 2025-06-04 07:55:31
 // Author: , contact@jcdenis.fr
 // Translated with Translater - 2025.03.03
 
@@ -27,19 +27,21 @@ L10n::$locales['Open discussions comments to unregistered users'] = 'Ouvrir les 
 L10n::$locales['Limit discussion to this category children:'] = 'Limiter les discussions au sous catégories de :';
 L10n::$locales['Do not limit'] = 'Ne pas limiter';
 L10n::$locales['Select a category'] = 'Sélectionner un catégorie';
-L10n::$locales['Resolved'] = 'Résolu';
-L10n::$locales['Discussion closed as it is resolved in comments'] = 'Discussion fermée car elle est résolue dans les commentaires';
+L10n::$locales['Discussion closed as it is resolved in comment from %s'] = 'La discussion est fermée car résolue par le commentaire de %s';
 L10n::$locales['Respond'] = 'Répondre';
 L10n::$locales['In response to a comment'] = 'En réponse à un commentaire';
 L10n::$locales['Solution'] = 'Solution';
+L10n::$locales['Mark this comment as answer and close discussion'] = 'Marquer ce commentaire comme solution et fermer la discussion';
+L10n::$locales['Resolved'] = 'Résolu';
 L10n::$locales['Mark as resolved and close disscussion'] = 'Marquer cette discussion comme résolue et la fermer';
-L10n::$locales['View my discussions'] = 'Voir mes discussions';
 L10n::$locales['Create a new discussion'] = 'Créer une nouvelle discussion';
+L10n::$locales['View my discussions'] = 'Voir mes discussions';
 L10n::$locales['You can paticipate in discussions.'] = 'Vous pouvez participer aux discussions.';
 L10n::$locales['Discussion successfully created.'] = 'Discussion créée avec succès.';
 L10n::$locales['You must select a category.'] = 'Vous devez sélectionner une catégorie.';
 L10n::$locales['You must set a discussion title.'] = 'Vous devez fournir un titre de discussion.';
 L10n::$locales['You must set a discussion content.'] = 'Vous devez fournir un contenu de discussion.';
+L10n::$locales['[Resolved]'] = '[Résolu]';
 L10n::$locales['Last discussions'] = 'Dernières discussions';
 L10n::$locales['Limit:'] = 'Limite :';
 L10n::$locales['Add link to forum'] = 'Ajouter un lien vers le forum';

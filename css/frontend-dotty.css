@@ -24,3 +24,11 @@
     text-align: right;
     margin: 0.25em;
 }
+
+.post-resolver {
+    margin: 1em;
+    padding: 0.25em;
+    border: 1px solid var(--main-color, #4b4b4b);
+    border-left-width: 0.5em;
+    font-size: 0.9em;
+}

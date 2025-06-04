@@ -10,6 +10,7 @@ use Dotclear\Core\Frontend\Url;
 use Dotclear\Core\Frontend\Utility;
 use Dotclear\Exception\PreconditionException;
 use Dotclear\Helper\File\Path;
+use Dotclear\Helper\Network\Http;
 use Dotclear\Helper\Text;
 use Dotclear\Plugin\legacyMarkdown\Helper as Markdown;
 use Exception;
@@ -51,6 +52,10 @@ class FrontendUrl extends Url
                 break;
             case 'comments':
                 self::comments($exp);
+                break;
+
+            case 'resolver':
+                self::resolver($exp);
                 break;
 
             default:
@@ -205,6 +210,28 @@ class FrontendUrl extends Url
     public static function categories(array $args): void
     {
         self::serveTemplate('categories');
+    }
+
+    /**
+     * Resolver (post title) endpoint.
+     * 
+     * @param   array<int, string>  $args
+     */
+    public static function resolver(array $args): void
+    {
+        $rsp = '';
+        $post_id = (int) ($args[1] ?? 0);
+        if ($post_id) {
+            $rs  = CoreResolver::getPostResolver($post_id);
+            $rsp = $rs->isEmpty() ? '' : __('[Resolved]') . ' ';
+        }
+
+        Http::head(200);
+        header('Content-type: application/json');
+        echo json_encode([
+            'ret' => $rsp,
+        ]);
+        exit;
     }
 
     /**
