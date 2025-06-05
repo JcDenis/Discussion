@@ -1,3 +1,8 @@
+Discussion 0.8 - 2025.06.05
+===========================================================
+* Use artifact on resolved post title
+* Show comment that resolved post after content
+
 Discussion 0.7 - 2025.06.02
 ===========================================================
 * Bump plugin FrontendSession from 0.23 to 0.28
