@@ -24,70 +24,6 @@ use Dotclear\Plugin\FrontendSession\{ CommentOptions, FrontendSessionProfil };
 class FrontendBehaviors
 {
     /**
-     * Check if post is marked as resolved and add link to the comment.
-     */
-    public static function publicEntryAfterContent(): void
-    {
-        $meta = Core::getPostResolver((int) App::frontend()->context()->posts->f('post_id'));
-        if (!$meta->isEmpty()) {
-            echo (new Div())
-                ->class('post-resolver')
-                ->items([
-                    (new Link())
-                        ->href(App::frontend()->context()->posts->getURL() . '#c' . $meta->f('comment_id'))
-                        ->text(sprintf(__('Discussion closed as it is resolved in comment from %s'), $meta->f('comment_author'))),
-                    (new Text('', $meta->f('comment_content'))),
-                ])
-                ->render();
-        }
-    }
-  
-    /**
-     * Mark post as resolved from an existing comment.
-     *
-     * @param   ArrayObject<string, mixed>  $params
-     */
-    public static function publicPostBeforeGetPosts(ArrayObject $params, ?string $args): void
-    {
-        $done = false;
-        $rs   = App::blog()->getPosts($params);
-        if (!$rs->isEmpty()
-            && $rs->f('post_open_comment')
-            && Core::isDiscussionCategory((int) $rs->f('cat_id'))
-        ) {
-            $meta = Core::getPostResolver((int) $rs->f('post_id'));
-            if (!$meta->isEmpty()) {
-                Core::delPostResolver((int) $rs->f('post_id'));
-                $done = true;
-            }
-
-            if (!empty($_POST['discussion_comment'])) {
-                FrontendUrl::checkForm();
-                Core::setPostResolver((int) $rs->f('post_id'), (int) $_POST['discussion_comment']);
-                $done = true;
-            }
-
-            if ($done) {
-                App::blog()->triggerBlog();
-                Http::redirect(Http::getSelfURI());
-            }
-        }
-    }
-
-    /**
-     * Mark post as resolved from a new comment.
-     */
-    public static function publicAfterCommentCreate(Cursor $cur, int $comment_id): void
-    {
-        if (!empty($_POST[My::id() . 'resolved'])
-            && App::auth()->userID() === App::frontend()->context()->posts->f('user_id')
-            && Core::isDiscussionCategory((int) App::frontend()->context()->posts->f('cat_id'))
-        ) {
-            Core::setPostResolver((int) App::frontend()->context()->posts->f('post_id'), $comment_id);
-        }
-    }
-
-    /**
      * Load JS and CSS and add wiki bar to post form.
      */
     public static function publicHeadContent(): void
@@ -213,6 +149,25 @@ class FrontendBehaviors
     }
 
     /**
+     * Check if post is marked as resolved and add link to the comment.
+     */
+    public static function publicEntryAfterContent(): void
+    {
+        $meta = Core::getPostResolver((int) App::frontend()->context()->posts->f('post_id'));
+        if (!$meta->isEmpty()) {
+            echo (new Div())
+                ->class('post-resolver')
+                ->items([
+                    (new Link())
+                        ->href(App::frontend()->context()->posts->getURL() . '#c' . $meta->f('comment_id'))
+                        ->text(sprintf(__('Discussion closed as it is resolved in comment from %s'), $meta->f('comment_author'))),
+                    (new Text('', $meta->f('comment_content'))),
+                ])
+                ->render();
+        }
+    }
+
+    /**
      * Add form for resolver to existing comments.
      */
     public static function publicCommentAfterContent(): void
@@ -225,7 +180,7 @@ class FrontendBehaviors
                 (new Hidden(['discussion_comment'], App::frontend()->context()->comments->f('comment_id')))
             ];
 
-            if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id')) {
+            if (Core::canResolvePost(App::frontend()->context()->posts)) {
                 $items[] = (new Submit(['discussion_answer'], __('Solution')))
                     ->title(__('Mark this comment as answer and close discussion'));
             }
@@ -238,15 +193,44 @@ class FrontendBehaviors
                 ->render();
         }
     }
+  
+    /**
+     * Mark post as resolved from an existing comment.
+     *
+     * @param   ArrayObject<string, mixed>  $params
+     */
+    public static function publicPostBeforeGetPosts(ArrayObject $params, ?string $args): void
+    {
+        $done = false;
+        $rs   = App::blog()->getPosts($params);
+        if (!$rs->isEmpty()
+            && $rs->f('post_open_comment')
+            && Core::isDiscussionCategory((int) $rs->f('cat_id'))
+        ) {
+            $meta = Core::getPostResolver((int) $rs->f('post_id'));
+            if (!$meta->isEmpty()) {
+                Core::delPostResolver((int) $rs->f('post_id'));
+                $done = true;
+            }
+
+            if (!empty($_POST['discussion_comment'])) {
+                FrontendUrl::checkForm();
+                Core::setPostResolver($rs, (int) $_POST['discussion_comment']);
+                $done = true;
+            }
+
+            if ($done) {
+                Http::redirect(Http::getSelfURI());
+            }
+        }
+    }
 
     /**
      * Add form for resolver to new comment.
      */
     public static function publicCommentFormAfterContent(): void
     {
-        if (App::auth()->userID() === App::frontend()->context()->posts->f('user_id')
-            && Core::isDiscussionCategory((int) App::frontend()->context()->posts->f('cat_id'))
-        ) {
+        if (Core::canResolvePost(App::frontend()->context()->posts)) {
             echo (new Para())
                 ->items([
                     (new Checkbox(My::id() . 'resolved', !empty($_POST[My::id() . 'resolved'])))
@@ -254,6 +238,16 @@ class FrontendBehaviors
                         ->label((new Label(__('Resolved'), Label::IL_FT))->title(__('Mark as resolved and close disscussion'))),
                 ])
                 ->render();
+        }
+    }
+
+    /**
+     * Mark post as resolved from a new comment.
+     */
+    public static function publicAfterCommentCreate(Cursor $cur, int $comment_id): void
+    {
+        if (!empty($_POST[My::id() . 'resolved'])) {
+            Core::setPostResolver(App::frontend()->context()->posts, $comment_id);
         }
     }
 

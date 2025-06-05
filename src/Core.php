@@ -166,22 +166,39 @@ class Core
     }
 
     /**
+     * Check if user can resolve post.
+     */
+    public static function canResolvePost(MetaRecord $rs): bool
+    {
+        return !$rs->isEmpty() 
+            && Core::isDiscussionCategory((int) $rs->f('cat_id')) 
+            && (
+                App::auth()->userID() === $rs->f('user_id')
+                || App::auth()->check(App::auth()::PERMISSION_ADMIN, App::blog()->id())
+            );
+    }
+
+    /**
      * Set post resolver.
      */
-    public static function setPostResolver(int $post_id, int $resolver_id): void
+    public static function setPostResolver(MetaRecord $rs, int $resolver_id): void
     {
-        // mark post as resolved
-        App::auth()->sudo(App::meta()->setPostMeta(...), $post_id, My::id() . 'post', (string) $resolver_id);
+        if (self::canResolvePost($rs)) {
+            $post_id = (int) $rs->f('post_id');
 
-        // Close post comments
-        $cur = App::blog()->openPostCursor();
-        $cur->setField('post_open_comment', 0);
-        $cur->update(
-            'WHERE post_id = ' . $post_id . ' ' .
-            "AND blog_id = '" . App::con()->escapeStr(App::blog()->id()) . "' " .
-            "AND user_id = '" . App::con()->escapeStr((string) App::auth()->userID()) . "' "
-        );
-        App::blog()->triggerBlog();
+            // mark post as resolved
+            App::auth()->sudo(App::meta()->setPostMeta(...), $post_id, My::id() . 'post', (string) $resolver_id);
+
+            // Close post comments
+            $cur = App::blog()->openPostCursor();
+            $cur->setField('post_open_comment', 0);
+            $cur->update(
+                'WHERE post_id = ' . $post_id . ' ' .
+                "AND blog_id = '" . App::con()->escapeStr(App::blog()->id()) . "' " .
+                "AND user_id = '" . App::con()->escapeStr((string) App::auth()->userID()) . "' "
+            );
+            App::blog()->triggerBlog();
+        }
     }
 
     /**
@@ -190,6 +207,7 @@ class Core
     public static function delPostResolver(int $post_id): void
     {
         App::auth()->sudo(App::meta()->delPostMeta(...), $post_id, My::id() . 'post');
+        App::blog()->triggerBlog();
     }
 
     /**
