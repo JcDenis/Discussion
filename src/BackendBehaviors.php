@@ -56,7 +56,14 @@ class BackendBehaviors
                             ->items(Core::getCategoriesCombo())
                             ->default((string) (int) $blog_settings->get(My::id())->get('root_cat'))
                             ->label((new Label(__('Limit discussion to this category children:'), Label::OL_TF))),
-                    ])
+                    ]),
+                (new Para())
+                    ->items([
+                        (new Select(My::id() . 'artifact'))
+                            ->items(Core::getPostArtifactsCombo())
+                            ->default((string) $blog_settings->get(My::id())->get('artifact'))
+                            ->label((new Label(__('Prefix to use on resolved posts titles:'), Label::OL_TF))),
+                    ]),
             ])
             ->render();
     }
@@ -68,10 +75,6 @@ class BackendBehaviors
         $blog_settings->get(My::id())->put('publish_post', !empty($_POST[My::id() . 'publish_post']), 'boolean');
         $blog_settings->get(My::id())->put('unregister_comment', !empty($_POST[My::id() . 'unregister_comment']), 'boolean');
         $blog_settings->get(My::id())->put('root_cat', (int) $_POST[My::id() . 'root_cat'] ?: 0, 'integer');
-    }
-
-    public static function adminBlogPreferencesHeaders(): string
-    {
-        return My::jsLoad('backend');
+        $blog_settings->get(My::id())->put('artifact', (string) $_POST[My::id() . 'artifact'], 'string');
     }
 }

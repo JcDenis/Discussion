@@ -219,11 +219,11 @@ class FrontendUrl extends Url
      */
     public static function resolver(array $args): void
     {
-        $rsp = '';
-        $post_id = (int) ($args[1] ?? 0);
-        if ($post_id) {
-            $rs  = CoreResolver::getPostResolver($post_id);
-            $rsp = $rs->isEmpty() ? '' : __('[Resolved]') . ' ';
+        $rsp      = '';
+        $post_id  = (int) ($args[1] ?? 0);
+        $artifact = Core::getPostArtifact();
+        if ($post_id && $artifact != '') {
+            $rsp = Core::getPostResolver($post_id)->isEmpty() ? '' : $artifact;
         }
 
         Http::head(200);

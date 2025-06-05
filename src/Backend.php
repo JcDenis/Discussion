@@ -31,7 +31,6 @@ class Backend extends Process
             'initWidgets'                   => Widgets::initWidgets(...),
             'adminBlogPreferencesFormV2'    => BackendBehaviors::adminBlogPreferencesFormV2(...),
             'adminBeforeBlogSettingsUpdate' => BackendBehaviors::adminBeforeBlogSettingsUpdate(...),
-            'adminBlogPreferencesHeaders'   => BackendBehaviors::adminBlogPreferencesHeaders(...),
         ]);
 
         return true;

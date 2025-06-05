@@ -11,8 +11,24 @@ use Dotclear\Helper\Date;
 use Dotclear\Helper\Html\Form\Option;
 use Dotclear\Helper\Html\Html;
 
+/**
+ * @brief       Discussion core class.
+ * @ingroup     Discussion
+ *
+ * "resolver" is a comment that resolved a discussion.
+ *
+ * @author      Jean-Christian Paul Denis
+ * @copyright   AGPL-3.0
+ */
 class Core
 {
+    public const DEFAULT_ARTIFACT = "\u{2713}";
+
+    /**
+     * @var     array<int, MetaRecord>  $resolvers  The posts/commments resolver stack
+     */
+    private static array $resolvers = [];
+
     public static function getCategories(): MetaRecord
     {
         return App::blog()->getCategories(App::task()->checkContext('BACKEND') ? [] : ['start' => self::getRootCategory()]);
@@ -147,5 +163,95 @@ class Core
                 $sql->update($cur);
             }
         }
+    }
+
+    /**
+     * Set post resolver.
+     */
+    public static function setPostResolver(int $post_id, int $resolver_id): void
+    {
+        // mark post as resolved
+        App::auth()->sudo(App::meta()->setPostMeta(...), $post_id, My::id() . 'post', (string) $resolver_id);
+
+        // Close post comments
+        $cur = App::blog()->openPostCursor();
+        $cur->setField('post_open_comment', 0);
+        $cur->update(
+            'WHERE post_id = ' . $post_id . ' ' .
+            "AND blog_id = '" . App::con()->escapeStr(App::blog()->id()) . "' " .
+            "AND user_id = '" . App::con()->escapeStr((string) App::auth()->userID()) . "' "
+        );
+        App::blog()->triggerBlog();
+    }
+
+    /**
+     * Delete post resolver.
+     */
+    public static function delPostResolver(int $post_id): void
+    {
+        App::auth()->sudo(App::meta()->delPostMeta(...), $post_id, My::id() . 'post');
+    }
+
+    /**
+     * Get post resolver.
+     */
+    public static function getPostResolver(int $post_id): MetaRecord
+    {
+        if (!isset(self::$resolvers[$post_id])) {
+            $posts = self::$resolvers;
+            $meta  = App::meta()->getMetadata(['meta_type' => My::id() . 'post', 'post_id' => $post_id]);
+
+            $posts[$post_id] = $meta->isEmpty() ?
+                MetaRecord::newFromArray([]) :
+                App::blog()->getComments(['post_id' => $post_id, 'comment_id' => $meta->meta_id, 'limit' => 1]);
+
+            self::$resolvers = $posts;
+        }
+
+        return self::$resolvers[$post_id] ?? MetaRecord::newFromArray([]);
+    }
+
+    /**
+     * Get post artifact.
+     */
+    public static function getPostArtifact(): string
+    {
+        return My::settings()->get('artifact') ?: self::DEFAULT_ARTIFACT;
+    }
+
+    /**
+     * Get artifacts list.
+     *
+     * @return  array<int, string>
+     */
+    public static function getPostArtifacts(): array
+    {
+        return array_unique([
+            My::settings()->get('artifact') ?: self::DEFAULT_ARTIFACT,
+            self::DEFAULT_ARTIFACT,
+            "\u{2718}",
+            "\u{25A0}",
+            __('[Resolved]'),
+        ]);
+    }
+
+    /**
+     * Get artifacts combo.
+     *
+     * @return array<int, Option>
+     */
+    public static function getPostArtifactsCombo(): array
+    {
+        $options = [
+            new Option(__('Do not use artifact'), ''),
+        ];
+        foreach (self::getPostArtifacts() as $artifact) {
+            $options[] = new Option(
+                Html::escapeHTML($artifact),
+                Html::escapeHTML($artifact)
+            );
+        }
+
+        return $options;
     }
 }

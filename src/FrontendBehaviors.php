@@ -28,7 +28,7 @@ class FrontendBehaviors
      */
     public static function publicEntryAfterContent(): void
     {
-        $meta = CoreResolver::getPostResolver((int) App::frontend()->context()->posts->f('post_id'));
+        $meta = Core::getPostResolver((int) App::frontend()->context()->posts->f('post_id'));
         if (!$meta->isEmpty()) {
             echo (new Div())
                 ->class('post-resolver')
@@ -55,15 +55,15 @@ class FrontendBehaviors
             && $rs->f('post_open_comment')
             && Core::isDiscussionCategory((int) $rs->f('cat_id'))
         ) {
-            $meta = CoreResolver::getPostResolver((int) $rs->f('post_id'));
+            $meta = Core::getPostResolver((int) $rs->f('post_id'));
             if (!$meta->isEmpty()) {
-                CoreResolver::delPostResolver((int) $rs->f('post_id'));
+                Core::delPostResolver((int) $rs->f('post_id'));
                 $done = true;
             }
 
             if (!empty($_POST['discussion_comment'])) {
                 FrontendUrl::checkForm();
-                CoreResolver::setPostResolver((int) $rs->f('post_id'), (int) $_POST['discussion_comment']);
+                Core::setPostResolver((int) $rs->f('post_id'), (int) $_POST['discussion_comment']);
                 $done = true;
             }
 
@@ -83,7 +83,7 @@ class FrontendBehaviors
             && App::auth()->userID() === App::frontend()->context()->posts->f('user_id')
             && Core::isDiscussionCategory((int) App::frontend()->context()->posts->f('cat_id'))
         ) {
-            CoreResolver::setPostResolver((int) App::frontend()->context()->posts->f('post_id'), $comment_id);
+            Core::setPostResolver((int) App::frontend()->context()->posts->f('post_id'), $comment_id);
         }
     }
 
@@ -99,10 +99,12 @@ class FrontendBehaviors
         }
 
         // resolve
-        echo My::jsLoad('frontend-post') .
-            Html::jsJson(My::id() . 'resolver', [
-                'url' => App::blog()->url() . App::url()->getBase(My::id()),
-            ]);
+        if (Core::getPostArtifact() != '') {
+            echo My::jsLoad('frontend-post') .
+                Html::jsJson(My::id() . 'resolver', [
+                    'url' => App::blog()->url() . App::url()->getBase(My::id()),
+                ]);
+        }
 
         // reply
         if (App::auth()->userID() != '') {
