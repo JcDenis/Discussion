@@ -174,7 +174,7 @@ class Core
             && Core::isDiscussionCategory((int) $rs->f('cat_id')) 
             && (
                 App::auth()->userID() === $rs->f('user_id')
-                || App::auth()->check(App::auth()::PERMISSION_ADMIN, App::blog()->id())
+                || App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())
             );
     }
 
