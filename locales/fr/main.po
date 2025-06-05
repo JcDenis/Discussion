@@ -71,7 +71,7 @@ msgstr "Ouvrir les commentaires de discussions aux utilisateurs non enregistrés
 
 #: src/BackendBehaviors.php:58
 msgid "Limit discussion to this category children:"
-msgstr "Limiter les discussions au sous catégories de :"
+msgstr "Limiter les discussions aux sous catégories de :"
 
 #: src/BackendBehaviors.php:65
 msgid "Prefix to use on resolved posts titles:"
