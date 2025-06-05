@@ -6,6 +6,7 @@ namespace Dotclear\Plugin\Discussion;
 
 use ArrayObject;
 use Dotclear\App;
+use Dotclear\Core\Frontend\Ctx;
 use Dotclear\Database\{ Cursor, MetaRecord };
 use Dotclear\Database\Statement\UpdateStatement;
 use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Label, Li, Link, Para, Submit, Text, Ul };
@@ -23,6 +24,20 @@ use Dotclear\Plugin\FrontendSession\{ CommentOptions, FrontendSessionProfil };
  */
 class FrontendBehaviors
 {
+    private static bool $loop = false;
+
+    /**
+     * Overload discussion post template.
+     */
+    public static function urlHandlerBeforeGetData(Ctx $ctx): void
+    {
+        if (!self::$loop && $ctx->exists('posts') && Core::isDiscussionCategory((int) $ctx->posts->f('cat_id'))) {
+            self::$loop = true;
+            FrontendUrl::serveTemplate('post');
+            exit();
+        }
+    }
+
     /**
      * Load JS and CSS and add wiki bar to post form.
      */

@@ -1,0 +1,18 @@
+{{tpl:extends parent="post.html"}}
+
+<tpl:Block name="post-navigation-before">
+  <tpl:EntryIf has_category="1">
+    <header id="content-info">
+      <h2>
+        <tpl:EntryCategoriesBreadcrumb><a
+        href="{{tpl:CategoryURL}}">{{tpl:CategoryTitle encode_html="1"}}</a> › </tpl:EntryCategoriesBreadcrumb><a
+        href="{{tpl:EntryCategoryURL}}">{{tpl:EntryCategory encode_html="1"}}</a>
+      </h2>
+      <div class="content-info__cat-desc">
+        {{tpl:EntryCategoryDescription}}
+      </div>
+    </header>
+  </tpl:EntryIf>
+</tpl:Block>
+
+<tpl:Block name="post-navigation-after"></tpl:Block>
