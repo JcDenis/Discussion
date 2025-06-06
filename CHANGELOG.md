@@ -1,3 +1,8 @@
+Discussion 0.9 - 2025.06.06
+===========================================================
+* Allow content admin to resolve post from frontend
+* Use custom template for discussion post
+
 Discussion 0.8 - 2025.06.05
 ===========================================================
 * Use artifact on resolved post title
