@@ -83,7 +83,7 @@ msgstr "Limiter les discussions aux sous catégories de :"
 
 #: src/BackendBehaviors.php:77
 msgid "Prefix to use on resolved posts titles:"
-msgstr "Préfixe à ajouter sur les tires de billets résolus :"
+msgstr "Préfixe à ajouter sur les titres de billets résolus :"
 
 #: src/Core.php:75
 msgid "Do not limit"
