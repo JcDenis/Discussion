@@ -26,55 +26,67 @@ class BackendBehaviors
             ->items([
                 (new Text('h4', My::name()))
                     ->id(My::id() . '_params'),
-                (new Para())
+                (new Div())
+                    ->class('two-cols')->separator('')
                     ->items([
-                        (new Checkbox(My::id() . 'active', (bool) $blog_settings->get(My::id())->get('active')))
-                            ->value(1)
-                            ->label(new Label(__('Enable users to post discussions on frontend'), Label::IL_FT)),
-                    ]),
-                (new Para())
-                    ->items([
-                        (new Checkbox(My::id() . 'signup_perm', (bool) $blog_settings->get(My::id())->get('signup_perm')))
-                            ->value(1)
-                            ->label(new Label(__('Add user permission to post discussions on sign up'), Label::IL_FT)),
-                    ]),
-                (new Para())
-                    ->items([
-                        (new Checkbox(My::id() . 'publish_post', (bool) $blog_settings->get(My::id())->get('publish_post')))
-                            ->value(1)
-                            ->label(new Label(__('Publish new discussion without validation'), Label::IL_FT)),
-                    ]),
-                (new Para())
-                    ->items([
-                        (new Checkbox(My::id() . 'canedit_post', (bool) $blog_settings->get(My::id())->get('canedit_post')))
-                            ->value(1)
-                            ->label(new Label(__('Allow users to edit their own discussions from frontend'), Label::IL_FT)),
-                    ]),
-                (new Para())
-                    ->items([
-                        (new Number(My::id() . 'canedit_time', 0, 60))
-                            ->value((string) (int) $blog_settings->get(My::id())->get('canedit_time'))
-                            ->label(new Label(__('Limit discussions edition to a given time in minutes (0 for no limit):'), Label::OL_TF)),
-                    ]),
-                (new Para())
-                    ->items([
-                        (new Checkbox(My::id() . 'unregister_comment', (bool) $blog_settings->get(My::id())->get('unregister_comment')))
-                            ->value(1)
-                            ->label(new Label(__('Open discussions comments to unregistered users'), Label::IL_FT)),
-                    ]),
-                (new Para())
-                    ->items([
-                        (new Select(My::id() . 'root_cat'))
-                            ->items(Core::getCategoriesCombo())
-                            ->default((string) (int) $blog_settings->get(My::id())->get('root_cat'))
-                            ->label((new Label(__('Limit discussion to this category children:'), Label::OL_TF))),
-                    ]),
-                (new Para())
-                    ->items([
-                        (new Select(My::id() . 'artifact'))
-                            ->items(Core::getPostArtifactsCombo())
-                            ->default((string) $blog_settings->get(My::id())->get('artifact'))
-                            ->label((new Label(__('Prefix to use on resolved posts titles:'), Label::OL_TF))),
+                        (new Div())
+                            ->class('col')
+                            ->items([
+                                (new Para())
+                                    ->items([
+                                        (new Checkbox(My::id() . 'active', (bool) $blog_settings->get(My::id())->get('active')))
+                                            ->value(1)
+                                            ->label(new Label(__('Enable users to post discussions on frontend'), Label::IL_FT)),
+                                    ]),
+                                (new Para())
+                                    ->items([
+                                        (new Checkbox(My::id() . 'signup_perm', (bool) $blog_settings->get(My::id())->get('signup_perm')))
+                                            ->value(1)
+                                            ->label(new Label(__('Add user permission to post discussions on sign up'), Label::IL_FT)),
+                                    ]),
+                                (new Para())
+                                    ->items([
+                                        (new Checkbox(My::id() . 'publish_post', (bool) $blog_settings->get(My::id())->get('publish_post')))
+                                            ->value(1)
+                                            ->label(new Label(__('Publish new discussion without validation'), Label::IL_FT)),
+                                    ]),
+                                (new Para())
+                                    ->items([
+                                        (new Checkbox(My::id() . 'canedit_post', (bool) $blog_settings->get(My::id())->get('canedit_post')))
+                                            ->value(1)
+                                            ->label(new Label(__('Allow users to edit their own discussions from frontend'), Label::IL_FT)),
+                                    ]),
+                                (new Para())
+                                    ->items([
+                                        (new Number(My::id() . 'canedit_time', 0, 60))
+                                            ->value((string) (int) $blog_settings->get(My::id())->get('canedit_time'))
+                                            ->label(new Label(__('Limit discussions edition to a given time in minutes (0 for no limit):'), Label::OL_TF)),
+                                    ]),
+                                (new Para())
+                                    ->items([
+                                        (new Checkbox(My::id() . 'unregister_comment', (bool) $blog_settings->get(My::id())->get('unregister_comment')))
+                                            ->value(1)
+                                            ->label(new Label(__('Open discussions comments to unregistered users'), Label::IL_FT)),
+                                    ]),
+                            ]),
+                        (new Div())
+                            ->class('col')
+                            ->items([
+                                (new Para())
+                                    ->items([
+                                        (new Select(My::id() . 'root_cat'))
+                                            ->items(Core::getCategoriesCombo())
+                                            ->default((string) (int) $blog_settings->get(My::id())->get('root_cat'))
+                                            ->label((new Label(__('Limit discussion to this category children:'), Label::OL_TF))),
+                                    ]),
+                                (new Para())
+                                    ->items([
+                                        (new Select(My::id() . 'artifact'))
+                                            ->items(Core::getPostArtifactsCombo())
+                                            ->default((string) $blog_settings->get(My::id())->get('artifact'))
+                                            ->label((new Label(__('Prefix to use on resolved posts titles:'), Label::OL_TF))),
+                                    ]),
+                            ]),
                     ]),
             ])
             ->render();
