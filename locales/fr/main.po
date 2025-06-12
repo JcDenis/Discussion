@@ -1,6 +1,6 @@
 # Language: Français
 # Module: Discussion - 0.10
-# Date: 2025-06-12 16:10:26
+# Date: 2025-06-12 16:35:01
 # Author: , contact@jcdenis.fr
 # Translated with translater 2025.03.03
 
@@ -9,7 +9,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: Discussion 0.10\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-06-12T16:10:26+00:00\n"
+"PO-Revision-Date: 2025-06-12T16:35:01+00:00\n"
 "Last-Translator: Jean-Christian Denis\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -109,9 +109,29 @@ msgstr "Répondre"
 msgid "In response to a comment"
 msgstr "En réponse à un commentaire"
 
+#: src/FrontendBehaviors.php:183
+msgid "Edit discussion:"
+msgstr "Modifier la discussion :"
+
+#: src/FrontendBehaviors.php:192
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: src/FrontendBehaviors.php:193
+msgid "Save discussion modifications"
+msgstr "Enregistrer les modificaitons"
+
 #: src/FrontendBehaviors.php:232
 msgid "Edit"
 msgstr "Modifier"
+
+#: src/FrontendBehaviors.php:233
+msgid "Edit my discussion"
+msgstr "Modifier ma discussion"
+
+#: src/FrontendBehaviors.php:247
+msgid "Discussion successfully updated"
+msgstr "Discussion mise à jour avec succès"
 
 #: src/FrontendBehaviors.php:266
 msgid "Discussion closed as it is resolved in comment from %s"
@@ -126,8 +146,8 @@ msgid "Mark this comment as answer and close discussion"
 msgstr "Marquer ce commentaire comme solution et fermer la discussion"
 
 #: src/FrontendBehaviors.php:341
-msgid "Resolved"
-msgstr "Résolu"
+msgid "Mark discussion as resolved"
+msgstr "Marquer la discussion comme résolue"
 
 #: src/FrontendBehaviors.php:341
 msgid "Mark as resolved and close disscussion"

@@ -338,7 +338,7 @@ class FrontendBehaviors
                 ->items([
                     (new Checkbox(My::id() . 'resolved', !empty($_POST[My::id() . 'resolved'])))
                         ->value(1)
-                        ->label((new Label(__('Resolved'), Label::IL_FT))->title(__('Mark as resolved and close disscussion'))),
+                        ->label((new Label(__('Mark discussion as resolved'), Label::IL_FT))->title(__('Mark as resolved and close disscussion'))),
                 ])
                 ->render();
         }

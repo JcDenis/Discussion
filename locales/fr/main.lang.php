@@ -1,7 +1,7 @@
 <?php
 // Language: Français
 // Module: Discussion - 0.10
-// Date: 2025-06-12 16:10:26
+// Date: 2025-06-12 16:35:01
 // Author: , contact@jcdenis.fr
 // Translated with Translater - 2025.03.03
 
@@ -34,11 +34,16 @@ L10n::$locales['[Resolved]'] = '[Résolu]';
 L10n::$locales['Do not use artifact'] = 'Ne pas utiliser l\'artefact';
 L10n::$locales['Respond'] = 'Répondre';
 L10n::$locales['In response to a comment'] = 'En réponse à un commentaire';
+L10n::$locales['Edit discussion:'] = 'Modifier la discussion :';
+L10n::$locales['Update'] = 'Mettre à jour';
+L10n::$locales['Save discussion modifications'] = 'Enregistrer les modificaitons';
 L10n::$locales['Edit'] = 'Modifier';
+L10n::$locales['Edit my discussion'] = 'Modifier ma discussion';
+L10n::$locales['Discussion successfully updated'] = 'Discussion mise à jour avec succès';
 L10n::$locales['Discussion closed as it is resolved in comment from %s'] = 'La discussion est fermée car résolue par le commentaire de %s';
 L10n::$locales['Solution'] = 'Solution';
 L10n::$locales['Mark this comment as answer and close discussion'] = 'Marquer ce commentaire comme solution et fermer la discussion';
-L10n::$locales['Resolved'] = 'Résolu';
+L10n::$locales['Mark discussion as resolved'] = 'Marquer la discussion comme résolue';
 L10n::$locales['Mark as resolved and close disscussion'] = 'Marquer cette discussion comme résolue et la fermer';
 L10n::$locales['Create a new discussion'] = 'Créer une nouvelle discussion';
 L10n::$locales['View my discussions'] = 'Voir mes discussions';
