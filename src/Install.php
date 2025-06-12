@@ -31,6 +31,8 @@ class Install extends Process
         try {
             My::settings()->put('active', false, 'boolean', 'Enable users to post discussions on frontend', false, true);
             My::settings()->put('publish_post', false, 'boolean', 'Publish new discussion without validation', false, true);
+            My::settings()->put('canedit_post', false, 'boolean', 'Allow post edition on frontend', false, true);
+            My::settings()->put('canedit_time', 0, 'integer', 'Limit post edition to a given time', false, true);
             My::settings()->put('signup_perm', false, 'boolean', 'Add user permission on signup', false, true);
             My::settings()->put('root_cat', 0, 'integer', 'Limit discussion to this category children', false, true);
 

@@ -9,7 +9,7 @@ use Dotclear\App;
 use Dotclear\Core\Frontend\Ctx;
 use Dotclear\Database\{ Cursor, MetaRecord };
 use Dotclear\Database\Statement\UpdateStatement;
-use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Label, Li, Link, Para, Submit, Text, Ul };
+use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Label, Li, Link, Para, Submit, Text, TextArea, Ul };
 use Dotclear\Helper\Html\{ Html, WikiToHtml };
 use Dotclear\Helper\Network\Http;
 use Dotclear\Plugin\commentsWikibar\My as Wb;
@@ -69,7 +69,7 @@ class FrontendBehaviors
         // wiki, taken from plugin commentsWikibar
         if (!App::plugins()->moduleExists('commentsWikibar')
             || !Wb::settings()->get('active')
-            || App::url()->getType() != My::id()
+            || !in_array(App::url()->getType(), ['post', My::id()])
         ) {
             return;
         }
@@ -164,6 +164,94 @@ class FrontendBehaviors
     }
 
     /**
+     * Add or remove post subscription.
+     */
+    public static function FrontendSessionPostAction(MetaRecord $post): void
+    {
+        if (Core::canEditPost($post)) {
+            $post_id = (int) $post->f('post_id');
+
+            // update form
+            if (!empty($_POST[My::id() . 'editpost'])) {
+                echo (new Form('discussion-form'))
+                    ->method('post')
+                    ->action('#p' . $post_id)
+                    ->items([
+                        (new Div())
+                            ->class(['inputfield', 'edit-entry'])
+                            ->items([
+                                (new Text('h5', __('Edit discussion:'))),
+                                (new Textarea('discussion_content'))
+                                    ->rows(15)
+                                    ->value(Html::escapeHTML($post->f('post_content'))),
+                            ]),
+                        (new Div())
+                            ->class('controlset')
+                            ->separator(' ')
+                            ->items([
+                                (new Submit([My::id() . 'updatepost'], __('Update')))
+                                    ->title(__('Save discussion modifications')),
+                                (new Submit([My::id() . 'cancelpost'], __('Cancel'))),
+                                (new Hidden(['FrontendSessioncheck'], App::nonce()->getNonce())),
+                                (new Hidden(['FrontendSessionpost'], (string) $post_id)),
+                            ]),
+                    ])
+                    ->render();
+            // update action
+            } elseif (!empty($_POST[My::id() . 'updatepost']) && !empty(trim($_POST['discussion_content'] ?? ''))) {
+                FrontendUrl::loadFormater();
+
+                $cur = App::blog()->openPostCursor();
+                $cur->setField('post_content', $_POST['discussion_content']);
+                $cur->setField('post_format', App::blog()->settings()->get('system')->get('markdown_comments') ? 'markdown' : 'wiki');
+                $cur->setField('post_lang', $post->f('post_lang'));
+                $cur->setField('post_title', $post->f('post_title'));
+                $cur->setField('post_dt', $post->f('post_dt'));
+                $cur->setField('post_content_xhtml', null);
+
+                App::auth()->sudo(App::blog()->updPost(...), $post_id, $cur);
+
+                Http::redirect(
+                    App::frontend()->context()->posts->getURL() . (App::blog()->settings()->get('system')->get('url_scan') == 'query_string' ? '&' : '?') . 'pupd=1'
+                );
+            }
+        }
+    }
+
+    /**
+     * Add edit button after post content.
+     * 
+     * @params ArrayObject<int, Submit>
+     */
+    public static function FrontendSessionPostForm(MetaRecord $post, ArrayObject $buttons): void
+    {
+        if (empty($_POST[My::id() . 'editpost'])
+            && Core::canEditPost($post)
+        ) {
+            $buttons->append(
+                (new Submit([My::id() . 'editpost'], __('Edit')))
+                    ->title(__('Edit my discussion'))
+            );
+        }
+    }
+
+    /**
+     * Add succes message on post edition.
+     */
+    public static function publicEntryBeforeContent(): void
+    {
+        // succes message of post edition
+        if (!empty($_REQUEST['pupd'])) {
+                echo (new Div())
+                    ->items([
+                        (new Text('p', __('Discussion successfully updated')))
+                            ->class('success')
+                    ])
+                    ->render();
+        }
+    }
+
+    /**
      * Check if post is marked as resolved and add link to the comment.
      */
     public static function publicEntryAfterContent(): void
@@ -229,7 +317,7 @@ class FrontendBehaviors
             }
 
             if (!empty($_POST['discussion_comment'])) {
-                FrontendUrl::checkForm();
+                Core::checkForm();
                 Core::setPostResolver($rs, (int) $_POST['discussion_comment']);
                 $done = true;
             }

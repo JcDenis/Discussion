@@ -8,7 +8,6 @@ use ArrayObject;
 use Dotclear\App;
 use Dotclear\Core\Frontend\Url;
 use Dotclear\Core\Frontend\Utility;
-use Dotclear\Exception\PreconditionException;
 use Dotclear\Helper\File\Path;
 use Dotclear\Helper\Network\Http;
 use Dotclear\Helper\Text;
@@ -111,7 +110,7 @@ class FrontendUrl extends Url
         self::loadFormater();
 
         if (!empty($_POST)) {
-            self::checkForm();
+            Core::checkForm();
 
             $preview      = !empty($_POST['discussion_preview']);
             $post_cat     = (int) ($_POST['discussion_category'] ?? $post_cat);
@@ -232,16 +231,6 @@ class FrontendUrl extends Url
             'ret' => $rsp,
         ]);
         exit;
-    }
-
-    /**
-     * Check nonce from POST requests.
-     */
-    public static function checkForm(): void
-    {
-        if (!App::nonce()->checkNonce($_POST['discussion_check'] ?? '-')) {
-            throw new PreconditionException();
-        }
     }
 
     /**

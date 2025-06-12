@@ -52,6 +52,9 @@ class Frontend extends Process
         App::behavior()->addBehaviors([
             'initWidgets'                       => Widgets::initWidgets(...),
             'urlHandlerBeforeGetData'           => FrontendBehaviors::urlHandlerBeforeGetData(...),
+            'FrontendSessionPostForm'           => FrontendBehaviors::FrontendSessionPostForm(...),
+            'FrontendSessionPostAction'         => FrontendBehaviors::FrontendSessionPostAction(...),
+            'publicEntryBeforeContent'          => FrontendBehaviors::publicEntryBeforeContent(...),
             'publicEntryAfterContent'           => FrontendBehaviors::publicEntryAfterContent(...),
             'publicPostBeforeGetPosts'          => FrontendBehaviors::publicPostBeforeGetPosts(...),
             'publicHeadContent'                 => FrontendBehaviors::publicHeadContent(...),
