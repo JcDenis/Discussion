@@ -1,3 +1,9 @@
+Discussion 0.10 - 2025.06.12
+===========================================================
+* Bump plugin FrontendSession from 0.23 to 0.30
+* Use FrontendSession for post buttons and actions
+* Allow post edition on frontend
+
 Discussion 0.9 - 2025.06.06
 ===========================================================
 * Allow content admin to resolve post from frontend
