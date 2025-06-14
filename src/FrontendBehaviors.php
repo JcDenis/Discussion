@@ -517,50 +517,6 @@ class FrontendBehaviors
     }
 
     /**
-     * Init wiki syntax for post form.
-     */
-    public static function coreInitWikiPost(WikiToHtml $wiki): string
-    {
-        if (App::url()->getType() != My::id()) {
-            return '';
-        }
-
-        $settings = Wikibar::settings();
-        if ($settings->no_format) {
-            $wiki->setOpt('active_strong', 0);
-            $wiki->setOpt('active_em', 0);
-            $wiki->setOpt('active_ins', 0);
-            $wiki->setOpt('active_del', 0);
-            $wiki->setOpt('active_q', 0);
-            $wiki->setOpt('active_code', 0);
-        }
-
-        if ($settings->no_br) {
-            $wiki->setOpt('active_br', 0);
-        }
-
-        if ($settings->no_list) {
-            $wiki->setOpt('active_lists', 0);
-        }
-
-        if ($settings->no_pre) {
-            $wiki->setOpt('active_pre', 0);
-        }
-
-        if ($settings->no_quote) {
-            $wiki->setOpt('active_quote', 0);
-        } elseif (App::blog()->settings()->system->wiki_comments) {
-            //$wiki->setOpt('active_quote', 1);
-        }
-
-        if ($settings->no_url) {
-            $wiki->setOpt('active_urls', 0);
-        }
-
-        return '';
-    }
-
-    /**
      * Check if current category is Root category and serve categories template.
      *
      * @param   ArrayObject<string, mixed>  $params

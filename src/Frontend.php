@@ -69,7 +69,6 @@ class Frontend extends Process
             'FrontendSessionCommentAction'      => FrontendBehaviors::FrontendSessionCommentAction(...),
             'ReadingTrackingUrlTypes'           => FrontendBehaviors::ReadingTrackingUrlTypes(...),
             'publicBreadcrumb'                  => FrontendBehaviors::publicBreadcrumb(...),
-            'coreInitWikiPost'                  => FrontendBehaviors::coreInitWikiPost(...),
             'publicCategoryBeforeGetCategories' => FrontendBehaviors::publicCategoryBeforeGetCategories(...),
             'templatePrepareParams'             => FrontendBehaviors::templatePrepareParams(...),
         ]);
