@@ -6,7 +6,7 @@ namespace Dotclear\Plugin\Discussion;
 
 use Dotclear\App;
 use Dotclear\Core\Backend\Notices;
-use Dotclear\Helper\Html\Form\{ Checkbox, Div, Label, Number, Para, Select, Text };
+use Dotclear\Helper\Html\Form\{ Checkbox, Div, Label, Li, Link, Number, Para, Select, Text, Ul };
 use Dotclear\Helper\Html\Html;
 use Dotclear\Interface\Core\BlogSettingsInterface;
 
@@ -19,6 +19,12 @@ use Dotclear\Interface\Core\BlogSettingsInterface;
  */
 class BackendBehaviors
 {
+    private static function canEdit(): bool
+    {
+        return App::blog()->settings()->get('commentsWikibar')->get('active') !== false
+            && App::blog()->settings()->get('system')->get('markdown_comments');
+    }
+
     public static function adminBlogPreferencesFormV2(BlogSettingsInterface $blog_settings): void
     {
         echo (new Div())
@@ -52,8 +58,9 @@ class BackendBehaviors
                                     ]),
                                 (new Para())
                                     ->items([
-                                        (new Checkbox(My::id() . 'canedit_post', (bool) $blog_settings->get(My::id())->get('canedit_post')))
+                                        (new Checkbox(My::id() . 'canedit_post', (bool) $blog_settings->get(My::id())->get('canedit_post') && self::canEdit()))
                                             ->value(1)
+                                            ->disabled(!self::canEdit())
                                             ->label(new Label(__('Allow users to edit their own discussions from frontend'), Label::IL_FT)),
                                     ]),
                                 (new Para())
@@ -86,6 +93,25 @@ class BackendBehaviors
                                             ->default((string) $blog_settings->get(My::id())->get('artifact'))
                                             ->label((new Label(__('Prefix to use on resolved posts titles:'), Label::OL_TF))),
                                     ]),
+                                (new Text('h5', __('Discussions and comments edition requirements:')))
+                                    ->class('form-note'),
+                                (new Ul())
+                                    ->items([
+                                        (new Li())
+                                            ->class('form-note')
+                                            ->items([
+                                                (new Link())
+                                                    ->href('#legacy_markdown')
+                                                    ->text(__('Markdown syntax must be activated')),
+                                            ]),
+                                        (new Li())
+                                            ->class('form-note')
+                                            ->items([
+                                                (new Link())
+                                                    ->href('?process=Plugin&p=commentsWikibar')
+                                                    ->text(__('Wikibar must be activated')),
+                                            ]),
+                                    ]),
                             ]),
                     ]),
             ])
@@ -97,7 +123,7 @@ class BackendBehaviors
         $blog_settings->get(My::id())->put('active', !empty($_POST[My::id() . 'active']), 'boolean');
         $blog_settings->get(My::id())->put('signup_perm', !empty($_POST[My::id() . 'signup_perm']), 'boolean');
         $blog_settings->get(My::id())->put('publish_post', !empty($_POST[My::id() . 'publish_post']), 'boolean');
-        $blog_settings->get(My::id())->put('canedit_post', !empty($_POST[My::id() . 'canedit_post']), 'boolean');
+        $blog_settings->get(My::id())->put('canedit_post', !empty($_POST[My::id() . 'canedit_post']) && self::canEdit(), 'boolean');
         $blog_settings->get(My::id())->put('canedit_time', (int) $_POST[My::id() . 'canedit_time'] ?: 0, 'integer');
         $blog_settings->get(My::id())->put('unregister_comment', !empty($_POST[My::id() . 'unregister_comment']), 'boolean');
         $blog_settings->get(My::id())->put('root_cat', (int) $_POST[My::id() . 'root_cat'] ?: 0, 'integer');

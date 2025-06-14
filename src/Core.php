@@ -167,15 +167,24 @@ class Core
     }
 
     /**
-     * Check if post can be editied from frontend.
+     * Check partialy if post or comment can be editied from frontend.
      */
-    public static function canEditPost(MetaRecord $post): bool
+    public static function canEdit(): bool
     {
         return App::task()->checkContext('FRONTEND') // only on frontend
             && App::url()->getType() == 'post' // only on post page
             && My::settings()->get('canedit_post') // only if edition is allowed
-            && (!My::settings()->get('canedit_time') || ($post->getTS() + My::settings()->get('canedit_time')) > time()) // only on limited time
             && App::blog()->settings()->get('commentsWikibar')->get('active') !== false // only if plugin commentsWikibar is active
+            && App::blog()->settings()->get('system')->get('markdown_comments'); // only if markdown syntax is active
+    }
+
+    /**
+     * Check if post can be editied from frontend.
+     */
+    public static function canEditPost(MetaRecord $post): bool
+    {
+        return self::canEdit()
+            && (!My::settings()->get('canedit_time') || ($post->getTS() + My::settings()->get('canedit_time')) > time()) // only on limited time
             && self::isDiscussionCategory($post->f('cat_id')) // only on discussion
             && self::getPostResolver((int) $post->f('post_id'))->isEmpty() // only if not resolved
             && (
@@ -189,17 +198,14 @@ class Core
      */
     public static function canEditComment(MetaRecord $post, MetaRecord $comment): bool
     {
-        return App::task()->checkContext('FRONTEND') // only on frontend
-            && App::url()->getType() == 'post' // only on post page
-            && My::settings()->get('canedit_post') // only if edition is allowed
+        return self::canEdit()
             && (!My::settings()->get('canedit_time') || ($comment->getTS() + My::settings()->get('canedit_time')) > time()) // only on limited time
-            && App::blog()->settings()->get('commentsWikibar')->get('active') !== false // only if plugin commentsWikibar is active
             && self::isDiscussionCategory($post->f('cat_id')) // only on discussion
             && self::getPostResolver((int) $post->f('post_id'))->isEmpty() // only if not resolved
             && (
                 App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())
                 || App::auth()->userID() == $comment->f('author')
-            ); // only if admin or post author
+            ); // only if admin or comment author
     }
 
     /**

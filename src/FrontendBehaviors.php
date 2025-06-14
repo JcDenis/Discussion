@@ -33,9 +33,6 @@ class FrontendBehaviors
     public static function urlHandlerBeforeGetData(Ctx $ctx): void
     {
         if (!self::$loop && $ctx->exists('posts') && Core::isDiscussionCategory((int) $ctx->posts->f('cat_id'))) {
-            // force Markdown syntax for public post and comment !
-            App::blog()->settings()->get('system')->set('markdown_comments', true);
-
             self::$loop = true;
             FrontendUrl::serveTemplate('post');
             exit();
@@ -168,6 +165,7 @@ class FrontendBehaviors
      */
     public static function FrontendSessionPostAction(MetaRecord $post): void
     {
+        // Check rights
         if (Core::canEditPost($post)) {
             $post_id = (int) $post->f('post_id');
 
