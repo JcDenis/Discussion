@@ -22,7 +22,7 @@ dotclear.DiscussionCommentOptions = (source, target) => {
     e.preventDefault();
     return false;
   });
-  source.querySelector('form')?.prepend(button);
+  source.querySelector('.comment-action form')?.prepend(button);
 };
 
 dotclear.ready(() => {

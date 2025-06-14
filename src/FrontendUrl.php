@@ -92,11 +92,8 @@ class FrontendUrl extends Url
                 App::frontend()->context()->categories = App::blog()->getCategories(['cat_id' => $post_cat]);
             }
         }
-        // post content format
-        $post_format = 'wiki';
-        if (App::blog()->settings()->system->markdown_comments) {
-            $post_format = 'markdown';
-        }
+        // post content format force to markdown
+        $post_format = 'markdown';
 
         // preview
         $init_preview = [  
@@ -247,10 +244,8 @@ class FrontendUrl extends Url
             App::formater()->addEditorFormater('dcLegacyEditor', 'wiki', App::filter()->wiki()->transform(...));
         }
         // add markdown tranform capabilities for submission
-        if (App::plugins()->moduleExists('legacyMarkdown')) {
-            /* @phpstan-ignore-next-line */
-            App::formater()->addEditorFormater('dcLegacyEditor', 'markdown', Markdown::convert(...));
-        }
+        /* @phpstan-ignore-next-line */
+         App::formater()->addEditorFormater('dcLegacyEditor', 'markdown', Markdown::convert(...));
     }
 
     /**

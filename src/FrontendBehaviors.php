@@ -9,10 +9,11 @@ use Dotclear\App;
 use Dotclear\Core\Frontend\Ctx;
 use Dotclear\Database\{ Cursor, MetaRecord };
 use Dotclear\Database\Statement\UpdateStatement;
-use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Label, Li, Link, Para, Submit, Text, TextArea, Ul };
+use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Label, Li, Link, Para, Submit, Text, Textarea, Ul };
 use Dotclear\Helper\Html\{ Html, WikiToHtml };
 use Dotclear\Helper\Network\Http;
-use Dotclear\Plugin\commentsWikibar\My as Wb;
+use Dotclear\Plugin\commentsWikibar\My as Wikibar;
+use Dotclear\Plugin\legacyMarkdown\Helper as Markdown;
 use Dotclear\Plugin\FrontendSession\{ CommentOptions, FrontendSessionProfil };
 
 /**
@@ -32,6 +33,9 @@ class FrontendBehaviors
     public static function urlHandlerBeforeGetData(Ctx $ctx): void
     {
         if (!self::$loop && $ctx->exists('posts') && Core::isDiscussionCategory((int) $ctx->posts->f('cat_id'))) {
+            // force Markdown syntax for public post and comment !
+            App::blog()->settings()->get('system')->set('markdown_comments', true);
+
             self::$loop = true;
             FrontendUrl::serveTemplate('post');
             exit();
@@ -66,15 +70,14 @@ class FrontendBehaviors
                 ]);
         }
 
-        // wiki, taken from plugin commentsWikibar
-        if (!App::plugins()->moduleExists('commentsWikibar')
-            || !Wb::settings()->get('active')
+        // edit
+        if (!Wikibar::settings()->get('active')
             || !in_array(App::url()->getType(), ['post', My::id()])
         ) {
             return;
         }
 
-        $settings = Wb::settings();
+        $settings = Wikibar::settings();
         // CSS
         if ($settings->add_css) {
             $custom_css = trim((string) $settings->custom_css);
@@ -91,7 +94,7 @@ class FrontendBehaviors
 
                 $css = App::plugins()->cssLoad($css_file);
             } else {
-                $css = Wb::cssLoad('wikibar.css');
+                $css = Wikibar::cssLoad('wikibar.css');
             }
 
             echo $css;
@@ -111,23 +114,20 @@ class FrontendBehaviors
 
                 $js = App::plugins()->jsLoad($js_file);
             } else {
-                $js = Wb::jsLoad('wikibar.js');
+                $js = Wikibar::jsLoad('wikibar.js');
             }
 
             echo $js;
         }
 
         if ($settings->add_jsglue) {
-            $mode = 'wiki';
-            // Formatting Markdown activated
-            if (App::blog()->settings()->system->markdown_comments) {
-                $mode = 'markdown';
-            }
+            // Force formatting Markdown
+            $mode = 'markdown';
 
             echo
             Html::jsJson('commentswikibar', [
                 'base_url'   => App::blog()->host(),
-                'id'         => 'discussion_content',
+                'id'         => !empty($_POST['FrontendSessioncomment']) ? 'discussion_comment_content' : 'discussion_content',
                 'mode'       => $mode,
                 'legend_msg' => __('You can use the following shortcuts to format your text.'),
                 'label'      => __('Text formatting'),
@@ -159,12 +159,12 @@ class FrontendBehaviors
                     'no_url'    => $settings->no_url,
                 ],
             ]) .
-            Wb::jsLoad('bootstrap.js');
+            Wikibar::jsLoad('bootstrap.js');
         }
     }
 
     /**
-     * Add or remove post subscription.
+     * Edit post.
      */
     public static function FrontendSessionPostAction(MetaRecord $post): void
     {
@@ -203,7 +203,7 @@ class FrontendBehaviors
 
                 $cur = App::blog()->openPostCursor();
                 $cur->setField('post_content', $_POST['discussion_content']);
-                $cur->setField('post_format', App::blog()->settings()->get('system')->get('markdown_comments') ? 'markdown' : 'wiki');
+                $cur->setField('post_format', 'markdown');
                 $cur->setField('post_lang', $post->f('post_lang'));
                 $cur->setField('post_title', $post->f('post_title'));
                 $cur->setField('post_dt', $post->f('post_dt'));
@@ -212,7 +212,7 @@ class FrontendBehaviors
                 App::auth()->sudo(App::blog()->updPost(...), $post_id, $cur);
 
                 Http::redirect(
-                    App::frontend()->context()->posts->getURL() . (App::blog()->settings()->get('system')->get('url_scan') == 'query_string' ? '&' : '?') . 'pupd=1'
+                    $post->getURL() . (App::blog()->settings()->get('system')->get('url_scan') == 'query_string' ? '&' : '?') . 'pupd=' . $post_id
                 );
             }
         }
@@ -220,8 +220,8 @@ class FrontendBehaviors
 
     /**
      * Add edit button after post content.
-     * 
-     * @params ArrayObject<int, Submit>
+     *
+     * @param   ArrayObject<int, Submit>    $buttons
      */
     public static function FrontendSessionPostForm(MetaRecord $post, ArrayObject $buttons): void
     {
@@ -271,60 +271,126 @@ class FrontendBehaviors
     }
 
     /**
-     * Add form for resolver to existing comments.
+     * Mark post as resolved from an existing comment, and save comment edition.
      */
-    public static function publicCommentAfterContent(): void
+    public static function FrontendSessionCommentAction(MetaRecord $post, MetaRecord $comment): void
     {
-        if (App::frontend()->context()->posts->f('post_open_comment')
-            && Core::isDiscussionCategory(App::frontend()->context()->posts->f('cat_id'))
+        // Post resolved
+        if (!empty($_POST['discussion_answer'])
+            && $post->f('post_open_comment')
+            && Core::isDiscussionCategory((int) $post->f('cat_id'))
         ) {
-            $items = [
-                (new Hidden(['discussion_check'], App::nonce()->getNonce())),
-                (new Hidden(['discussion_comment'], App::frontend()->context()->comments->f('comment_id')))
-            ];
+            Core::setPostResolver($post, (int) $comment->f('comment_id'));
+            Http::redirect(Http::getSelfURI());
+        }
 
-            if (Core::canResolvePost(App::frontend()->context()->posts)) {
-                $items[] = (new Submit(['discussion_answer'], __('Solution')))
-                    ->title(__('Mark this comment as answer and close discussion'));
+        // Comment edition
+        if (Core::canEditComment($post, $comment)) {
+            $post_id         = (int) $post->f('post_id');
+            $comment_id      = (int) $comment->f('comment_id');
+            $comment_content = Markdown::fromHTML((string) $comment->f('comment_content'));
+
+            // update comment form
+            if (!empty($_POST[My::id() . 'editcomment'])) {
+                echo (new Form('discussion-form'))
+                    ->method('post')
+                    ->action('#c' . $comment_id)
+                    ->items([
+                        (new Div())
+                            ->class(['inputfield', 'edit-entry'])
+                            ->items([
+                                (new Text('h5', __('Edit comment:'))),
+                                (new Textarea('discussion_comment_content'))
+                                    ->rows(7)
+                                    //->value(App::frontend()->context()->remove_html((string) $comment->f('comment_content'))),
+                                    ->value(Html::escapeHTML((string) $comment_content)),
+                            ]),
+                        (new Div())
+                            ->class('controlset')
+                            ->separator(' ')
+                            ->items([
+                                (new Submit([My::id() . 'updatecomment'], __('Update')))
+                                    ->title(__('Save comment modifications')),
+                                (new Submit([My::id() . 'cancelcomment'], __('Cancel'))),
+                                (new Hidden(['FrontendSessioncheck'], App::nonce()->getNonce())),
+                                (new Hidden(['FrontendSessionpost'], (string) $post_id)),
+                                (new Hidden(['FrontendSessioncomment'], (string) $comment_id)),
+                            ]),
+                    ])
+                    ->render();
+            // update comment action
+            } elseif (!empty($_POST[My::id() . 'updatecomment']) && !empty(trim($_POST['discussion_comment_content'] ?? ''))) {
+                FrontendUrl::loadFormater();
+
+                $content = $_POST['discussion_comment_content'];
+
+                # --BEHAVIOR-- publicBeforeCommentTransform -- string
+                $buffer = App::behavior()->callBehavior('publicBeforeCommentTransform', $content);
+                if ($buffer !== '') {
+                    $content = $buffer;
+                } else {
+                    App::filter()->initWikiComment();
+                    $content = App::filter()->wikiTransform($content);
+                }
+                $content = App::filter()->HTMLfilter($content);
+
+                if ($content == '') {
+                    return;
+                }
+
+                $cur = App::blog()->openCommentCursor();
+                $cur->setField('comment_content', $content);
+
+                App::auth()->sudo(App::blog()->updComment(...), $comment_id, $cur);
+
+                Http::redirect(
+                    $post->getURL() . (App::blog()->settings()->get('system')->get('url_scan') == 'query_string' ? '&' : '?') . 'cupd=' . $comment_id
+                );
             }
-
-            echo (new Form(My::id(). App::frontend()->context()->comments->f('comment_id')))
-                ->method('post')
-                ->action('')
-                ->class('post-comment-answer')
-                ->fields($items)
-                ->render();
         }
     }
-  
+
     /**
-     * Mark post as resolved from an existing comment.
+     * Add form for resolver to existing comments.
      *
-     * @param   ArrayObject<string, mixed>  $params
+     * @param   ArrayObject<int, Submit>    $buttons
      */
-    public static function publicPostBeforeGetPosts(ArrayObject $params, ?string $args): void
+    public static function FrontendSessionCommentForm(MetaRecord $post, MetaRecord $comment, ArrayObject $buttons): void
     {
-        $done = false;
-        $rs   = App::blog()->getPosts($params);
-        if (!$rs->isEmpty()
-            && $rs->f('post_open_comment')
-            && Core::isDiscussionCategory((int) $rs->f('cat_id'))
+        // Resolve button
+        if ($post->f('post_open_comment')
+            && Core::isDiscussionCategory($post->f('cat_id'))
+            && Core::canResolvePost($post)
         ) {
-            $meta = Core::getPostResolver((int) $rs->f('post_id'));
-            if (!$meta->isEmpty()) {
-                Core::delPostResolver((int) $rs->f('post_id'));
-                $done = true;
-            }
+            $buttons->append((new Submit(['discussion_answer'], __('Solution')))
+                ->title(__('Mark this comment as answer and close discussion'))
+            );
+        }
 
-            if (!empty($_POST['discussion_comment'])) {
-                Core::checkForm();
-                Core::setPostResolver($rs, (int) $_POST['discussion_comment']);
-                $done = true;
-            }
+        // Edit button
+        if (empty($_POST[My::id() . 'editcomment'])
+            && Core::canEditComment($post, $comment)
+        ) {
+            $buttons->append(
+                (new Submit([My::id() . 'editcomment'], __('Edit')))
+                    ->title(__('Edit my comment'))
+            );
+        }
+    }
 
-            if ($done) {
-                Http::redirect(Http::getSelfURI());
-            }
+    /**
+     * Add success message on comment edition.
+     */
+    public static function publicCommentBeforeContent(): void
+    {
+        // succes message of post edition
+        if (($_REQUEST['cupd'] ?? '') == App::frontend()->context()->comments->f('comment_id')) {
+                echo (new Div())
+                    ->items([
+                        (new Text('p', __('Comment successfully updated')))
+                            ->class('success')
+                    ])
+                    ->render();
         }
     }
 
@@ -351,6 +417,39 @@ class FrontendBehaviors
     {
         if (!empty($_POST[My::id() . 'resolved'])) {
             Core::setPostResolver(App::frontend()->context()->posts, $comment_id);
+        }
+    }
+
+    /**
+     * Check if post comments are reopened.
+     *
+     * @param   ArrayObject<string, mixed>  $params
+     */
+    public static function publicPostBeforeGetPosts(ArrayObject $params, ?string $args): void
+    {
+        $rs = App::blog()->getPosts($params);
+        if (!$rs->isEmpty() && $rs->f('post_open_comment')
+            && Core::isDiscussionCategory((int) $rs->f('cat_id'))
+            && !Core::getPostResolver((int) $rs->f('post_id'))->isEmpty()
+        ) {
+            Core::delPostResolver((int) $rs->f('post_id'));
+        }
+    }
+
+    /**
+     * Check comments perms.
+     */
+    public static function FrontendSessionCommentsActive(CommentOptions $option): void
+    {
+        // check if it is a discussion category else follow blog settings
+        if (!is_null($option->rs) && Core::isDiscussionCategory((int) $option->rs->f('cat_id'))) {
+            // active if user is auth or unregistered comments are allowed
+            $option->setActive(App::auth()->check(My::id(), App::blog()->id()) || (bool) My::settings()->get('unregister_comment'));
+
+            // not moderate if user is auth else follow blog settings
+            if (App::auth()->check(My::id(), App::blog()->id())) {
+                $option->setModerate(false);
+            }
         }
     }
 
@@ -400,24 +499,7 @@ class FrontendBehaviors
     }
 
     /**
-     * Check comments perms.
-     */
-    public static function FrontendSessionCommentsActive(CommentOptions $option): void
-    {
-        // check if it is a discussion category else follow blog settings
-        if (!is_null($option->rs) && Core::isDiscussionCategory((int) $option->rs->f('cat_id'))) {
-            // active if user is auth or unregistered comments are allowed
-            $option->setActive(App::auth()->check(My::id(), App::blog()->id()) || (bool) My::settings()->get('unregister_comment'));
-
-            // not moderate if user is auth else follow blog settings
-            if (App::auth()->check(My::id(), App::blog()->id())) {
-                $option->setModerate(false);
-            }
-        }
-    }
-
-    /**
-     * Add Discussion posts type to plugin ReadingTracking.
+     * Add Discussion URL type to plugin ReadingTracking.
      *
      * @param   ArrayObject<int, string> $types
      */
@@ -439,14 +521,11 @@ class FrontendBehaviors
      */
     public static function coreInitWikiPost(WikiToHtml $wiki): string
     {
-        if (!App::plugins()->moduleExists('commentsWikibar')
-            || !Wb::settings()->get('active')
-            || App::url()->getType() != My::id()
-        ) {
+        if (App::url()->getType() != My::id()) {
             return '';
         }
 
-        $settings = Wb::settings();
+        $settings = Wikibar::settings();
         if ($settings->no_format) {
             $wiki->setOpt('active_strong', 0);
             $wiki->setOpt('active_em', 0);
@@ -471,7 +550,7 @@ class FrontendBehaviors
         if ($settings->no_quote) {
             $wiki->setOpt('active_quote', 0);
         } elseif (App::blog()->settings()->system->wiki_comments) {
-            $wiki->setOpt('active_quote', 1);
+            //$wiki->setOpt('active_quote', 1);
         }
 
         if ($settings->no_url) {

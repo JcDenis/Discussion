@@ -175,16 +175,31 @@ class Core
             && App::url()->getType() == 'post' // only on post page
             && My::settings()->get('canedit_post') // only if edition is allowed
             && (!My::settings()->get('canedit_time') || ($post->getTS() + My::settings()->get('canedit_time')) > time()) // only on limited time
+            && App::blog()->settings()->get('commentsWikibar')->get('active') !== false // only if plugin commentsWikibar is active
             && self::isDiscussionCategory($post->f('cat_id')) // only on discussion
             && self::getPostResolver((int) $post->f('post_id'))->isEmpty() // only if not resolved
             && (
                 App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())
                 || App::auth()->userID() == $post->f('user_id')
             ); // only if admin or post author
+    }
 
-        // @todo    complete post edition conditons:
-        // - global option to disable post edition
-        // - timer to allow post edition on lmited time
+    /**
+     * Check if comment can be editied from frontend.
+     */
+    public static function canEditComment(MetaRecord $post, MetaRecord $comment): bool
+    {
+        return App::task()->checkContext('FRONTEND') // only on frontend
+            && App::url()->getType() == 'post' // only on post page
+            && My::settings()->get('canedit_post') // only if edition is allowed
+            && (!My::settings()->get('canedit_time') || ($comment->getTS() + My::settings()->get('canedit_time')) > time()) // only on limited time
+            && App::blog()->settings()->get('commentsWikibar')->get('active') !== false // only if plugin commentsWikibar is active
+            && self::isDiscussionCategory($post->f('cat_id')) // only on discussion
+            && self::getPostResolver((int) $post->f('post_id'))->isEmpty() // only if not resolved
+            && (
+                App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())
+                || App::auth()->userID() == $comment->f('author')
+            ); // only if admin or post author
     }
 
     /**

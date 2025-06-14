@@ -1,7 +1,7 @@
 <?php
 // Language: Français
-// Module: Discussion - 0.10
-// Date: 2025-06-12 16:35:01
+// Module: Discussion - 0.10.2
+// Date: 2025-06-14 17:25:20
 // Author: , contact@jcdenis.fr
 // Translated with Translater - 2025.03.03
 
@@ -41,8 +41,12 @@ L10n::$locales['Edit'] = 'Modifier';
 L10n::$locales['Edit my discussion'] = 'Modifier ma discussion';
 L10n::$locales['Discussion successfully updated'] = 'Discussion mise à jour avec succès';
 L10n::$locales['Discussion closed as it is resolved in comment from %s'] = 'La discussion est fermée car résolue par le commentaire de %s';
+L10n::$locales['Edit comment:'] = 'Modifier le commentaire :';
+L10n::$locales['Save comment modifications'] = 'Enregistrer les modifications du commentaire';
 L10n::$locales['Solution'] = 'Solution';
 L10n::$locales['Mark this comment as answer and close discussion'] = 'Marquer ce commentaire comme solution et fermer la discussion';
+L10n::$locales['Edit my comment'] = 'Modifier mon commentaire';
+L10n::$locales['Comment successfully updated'] = 'Commentaire mise à jour avec succès';
 L10n::$locales['Mark discussion as resolved'] = 'Marquer la discussion comme résolue';
 L10n::$locales['Mark as resolved and close disscussion'] = 'Marquer cette discussion comme résolue et la fermer';
 L10n::$locales['Create a new discussion'] = 'Créer une nouvelle discussion';
