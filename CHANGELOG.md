@@ -1,3 +1,11 @@
+Discussion 0.11 - 2025.06.14
+===========================================================
+* Bump plugin FrontendSession from 0.30 to 0.31
+* Require plugin commentsWikibar 6.4
+* Require plugin legacyMarkdown 7.8
+* Use FrontendSession for comments buttons and actions
+* Allow comment edition on frontend
+
 Discussion 0.10 - 2025.06.12
 ===========================================================
 * Bump plugin FrontendSession from 0.23 to 0.30
