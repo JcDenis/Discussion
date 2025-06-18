@@ -254,6 +254,10 @@ class FrontendBehaviors
      */
     public static function publicEntryAfterContent(): void
     {
+        if (!App::frontend()->context()->exists('posts')) {
+            return;
+        }
+
         $meta = Core::getPostResolver((int) App::frontend()->context()->posts->f('post_id'));
         if (!$meta->isEmpty()) {
             echo (new Div())
@@ -397,7 +401,7 @@ class FrontendBehaviors
      */
     public static function publicCommentFormAfterContent(): void
     {
-        if (Core::canResolvePost(App::frontend()->context()->posts)) {
+        if (App::frontend()->context()->exists('posts') && Core::canResolvePost(App::frontend()->context()->posts)) {
             echo (new Para())
                 ->items([
                     (new Checkbox(My::id() . 'resolved', !empty($_POST[My::id() . 'resolved'])))
@@ -413,7 +417,7 @@ class FrontendBehaviors
      */
     public static function publicAfterCommentCreate(Cursor $cur, int $comment_id): void
     {
-        if (!empty($_POST[My::id() . 'resolved'])) {
+        if (App::frontend()->context()->exists('posts') && !empty($_POST[My::id() . 'resolved'])) {
             Core::setPostResolver(App::frontend()->context()->posts, $comment_id);
         }
     }
