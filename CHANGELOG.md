@@ -1,3 +1,9 @@
+Discussion 0.12 - 2025.06.26
+===========================================================
+* Fix unknown context
+* Fix settings
+* Standardize backend blocs
+
 Discussion 0.11 - 2025.06.14
 ===========================================================
 * Bump plugin FrontendSession from 0.30 to 0.31
