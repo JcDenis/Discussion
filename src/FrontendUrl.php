@@ -6,7 +6,7 @@ namespace Dotclear\Plugin\Discussion;
 
 use ArrayObject;
 use Dotclear\App;
-use Dotclear\Core\Frontend\Url;
+use Dotclear\Core\Url;
 use Dotclear\Core\Frontend\Utility;
 use Dotclear\Helper\File\Path;
 use Dotclear\Helper\Network\Http;
