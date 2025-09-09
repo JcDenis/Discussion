@@ -18,10 +18,10 @@ $this->registerModule(
     'Discussion',
     'Allow user to post from frontend.',
     'Jean-Christian Paul Denis and Contributors',
-    '0.12',
+    '0.13',
     [
         'requires'    => [
-            ['core', '2.34'],
+            ['core', '2.36'],
             ['FrontendSession', '0.30'],
             ['commentsWikibar', '6.4'], // optional
             ['legacyMarkdown', '7.8'], // optional
