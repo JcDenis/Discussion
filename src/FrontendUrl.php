@@ -6,8 +6,6 @@ namespace Dotclear\Plugin\Discussion;
 
 use ArrayObject;
 use Dotclear\App;
-use Dotclear\Core\Url;
-use Dotclear\Core\Frontend\Utility;
 use Dotclear\Helper\File\Path;
 use Dotclear\Helper\Network\Http;
 use Dotclear\Helper\Text;
@@ -22,7 +20,7 @@ use Throwable;
  * @author      Jean-Christian Paul Denis
  * @copyright   AGPL-3.0
  */
-class FrontendUrl extends Url
+class FrontendUrl
 {
     /**
      * Form errors.
@@ -75,7 +73,7 @@ class FrontendUrl extends Url
             || App::auth()->userID() == ''
             || !App::auth()->check(My::id(), App::blog()->id())
         ) {
-            self::p404();
+            App::url()::p404();
         }
 
         // from URL
@@ -173,7 +171,7 @@ class FrontendUrl extends Url
             || App::auth()->userID() == ''
             || !App::auth()->check(My::id(), App::blog()->id())
         ) {
-            self::p404();
+            App::url()::p404();
         }
 
         $uri = implode('/', $args);
@@ -195,7 +193,7 @@ class FrontendUrl extends Url
      */
     public static function comments(array $args): void
     {
-        self::p404();
+        App::url()::p404();
     }
 
     /**
@@ -256,18 +254,18 @@ class FrontendUrl extends Url
         // use only dotty tplset
         $tplset = App::themes()->moduleInfo(App::blog()->settings()->get('system')->get('theme'), 'tplset');
         if (!in_array($tplset, ['dotty', 'mustek'])) {
-            self::p404();
+            App::url()::p404();
         }
 
         if (count(self::$form_error) > 0) {
             App::frontend()->context()->form_error = implode("\n", self::$form_error);
         }
 
-        $default_template = Path::real(App::plugins()->moduleInfo(My::id(), 'root')) . DIRECTORY_SEPARATOR . Utility::TPL_ROOT . DIRECTORY_SEPARATOR;
+        $default_template = Path::real(App::plugins()->moduleInfo(My::id(), 'root')) . DIRECTORY_SEPARATOR . App::frontend()::TPL_ROOT . DIRECTORY_SEPARATOR;
         if (is_dir($default_template . $tplset)) {
             App::frontend()->template()->setPath(App::frontend()->template()->getPath(), $default_template . $tplset);
         }
 
-        self::serveDocument(My::id() . '-' . $template . '.html');
+        App::url()::serveDocument(My::id() . '-' . $template . '.html');
     }
 }
