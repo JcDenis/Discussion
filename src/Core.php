@@ -247,8 +247,8 @@ class Core
             $cur->setField('post_open_comment', 0);
             $cur->update(
                 'WHERE post_id = ' . $post_id . ' ' .
-                "AND blog_id = '" . App::con()->escapeStr(App::blog()->id()) . "' " .
-                "AND user_id = '" . App::con()->escapeStr((string) App::auth()->userID()) . "' "
+                "AND blog_id = '" . App::db()->con()->escapeStr(App::blog()->id()) . "' " .
+                "AND user_id = '" . App::db()->con()->escapeStr((string) App::auth()->userID()) . "' "
             );
             App::blog()->triggerBlog();
         }
