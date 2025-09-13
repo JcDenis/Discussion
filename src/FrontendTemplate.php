@@ -6,8 +6,18 @@ namespace Dotclear\Plugin\Discussion;
 
 use ArrayObject;
 use Dotclear\App;
-use Dotclear\Core\Frontend\Tpl;
-use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Input, Label, Link, Note, Para, Password, Submit, Text };
+use Dotclear\Helper\Html\Form\Checkbox;
+use Dotclear\Helper\Html\Form\Div;
+use Dotclear\Helper\Html\Form\Form;
+use Dotclear\Helper\Html\Form\Hidden;
+use Dotclear\Helper\Html\Form\Input;
+use Dotclear\Helper\Html\Form\Label;
+use Dotclear\Helper\Html\Form\Link;
+use Dotclear\Helper\Html\Form\Note;
+use Dotclear\Helper\Html\Form\Para;
+use Dotclear\Helper\Html\Form\Password;
+use Dotclear\Helper\Html\Form\Submit;
+use Dotclear\Helper\Html\Form\Text;
 use Dotclear\Helper\Html\Html;
 use Dotclear\Helper\Network\Http;
 
@@ -40,7 +50,7 @@ class FrontendTemplate
         $if   = [];
         $sign = fn ($a): string => (bool) $a ? '' : '!';
 
-        $operator = isset($attr['operator']) ? Tpl::getOperator($attr['operator']) : '&&';
+        $operator = isset($attr['operator']) ? App::frontend()->template()::getOperator($attr['operator']) : '&&';
 
         // success message
         if (isset($attr['success'])) {
@@ -253,7 +263,7 @@ class FrontendTemplate
         $if   = [];
         $sign = fn ($a): string => (bool) $a ? '!' : '';
 
-        $operator = isset($attr['operator']) ? Tpl::getOperator($attr['operator']) : '&&';
+        $operator = isset($attr['operator']) ? App::frontend()->template()::getOperator($attr['operator']) : '&&';
 
         if (isset($attr['has_discussion'])) {
             $if[] = $sign($attr['has_discussion']) . Core::class . '::getUserPosts()->isEmpty()';
