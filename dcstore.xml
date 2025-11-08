@@ -2,11 +2,11 @@
 <modules xmlns:da="http://dotaddict.org/da/">
   <module id="Discussion">
     <name>Discussion</name>
-    <version>1.13.3</version>
-    <date>2025-09-13T08:24:29+00:00</date>
+    <version>1.13.4</version>
+    <date>2025-11-08T08:51:22+00:00</date>
     <author>Jean-Christian Paul Denis and contributors</author>
     <desc>Allow user to post from frontend.</desc>
-    <file>https://github.com/JcDenis/Discussion/releases/download/v1.13.3/plugin-Discussion.zip</file>
+    <file>https://github.com/JcDenis/Discussion/releases/download/v1.13.4/plugin-Discussion.zip</file>
     <da:dcmin>2.36</da:dcmin>
     <da:details>https://github.com/JcDenis/Discussion/src/branch/master/README.md</da:details>
     <da:support>https://github.com/JcDenis/Discussion/issues</da:support>
