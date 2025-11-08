@@ -18,7 +18,7 @@ $this->registerModule(
     'Discussion',
     'Allow user to post from frontend.',
     'Jean-Christian Paul Denis and Contributors',
-    '1.13.3',
+    '1.13.4',
     [
         'requires'    => [
             ['core', '2.36'],
