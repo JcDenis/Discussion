@@ -1,9 +1,9 @@
 <?php
 // Language: Français
-// Module: Discussion - 0.10.2
-// Date: 2025-06-14 17:25:20
+// Module: Discussion - 1.13.3
+// Date: 2025-11-08 08:46:29
 // Author: , contact@jcdenis.fr
-// Translated with Translater - 2025.03.03
+// Translated with Translater - 2025.09.11
 
 
 #
@@ -19,6 +19,7 @@ L10n::$locales['You have no discussions yet'] = 'Vous n\'avez aucune discussion 
 L10n::$locales['An administrator will review it for publishing.'] = 'Un administrateur l\'examinera pour publication.';
 L10n::$locales['Create discussion'] = 'Créer la discussion';
 L10n::$locales['Start a new discussion'] = 'Démarrer une nouvelle discussion';
+L10n::$locales['Category:'] = 'Catégorie :';
 L10n::$locales['My discussions'] = 'Mes discussions';
 L10n::$locales['Enable users to post discussions on frontend'] = 'Autoriser les utilisateurs à créer des discussions coté publique';
 L10n::$locales['Add user permission to post discussions on sign up'] = 'Ajouter les permissions utilisateur lors de l\'inscription';
@@ -29,7 +30,7 @@ L10n::$locales['Open discussions comments to unregistered users'] = 'Ouvrir les 
 L10n::$locales['Limit discussion to this category children:'] = 'Limiter les discussions aux sous catégories de :';
 L10n::$locales['Prefix to use on resolved posts titles:'] = 'Préfixe à ajouter sur les titres de billets résolus :';
 L10n::$locales['Do not limit'] = 'Ne pas limiter';
-L10n::$locales['Select a category'] = 'Sélectionner un catégorie';
+L10n::$locales['Select a category'] = 'Sélectionner une catégorie';
 L10n::$locales['[Resolved]'] = '[Résolu]';
 L10n::$locales['Do not use artifact'] = 'Ne pas utiliser l\'artefact';
 L10n::$locales['Respond'] = 'Répondre';

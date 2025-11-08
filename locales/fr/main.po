@@ -1,15 +1,15 @@
 # Language: Français
-# Module: Discussion - 0.10.2
-# Date: 2025-06-14 17:25:20
+# Module: Discussion - 1.13.3
+# Date: 2025-11-08 08:46:29
 # Author: , contact@jcdenis.fr
-# Translated with translater 2025.03.03
+# Translated with translater 2025.09.11
 
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
-"Project-Id-Version: Discussion 0.10.2\n"
+"Project-Id-Version: Discussion 1.13.3\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-06-14T17:25:20+00:00\n"
+"PO-Revision-Date: 2025-11-08T08:46:29+00:00\n"
 "Last-Translator: Jean-Christian Denis\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -26,8 +26,8 @@ msgstr "Dernier commentaire :"
 
 #: default-templates/dotty/Discussion-comments.html:21
 #: default-templates/dotty/Discussion-posts.html:21
-#: src/FrontendBehaviors.php:464
-#: src/FrontendTemplate.php:323
+#: src/FrontendBehaviors.php:466
+#: src/FrontendTemplate.php:333
 msgid "New discussion"
 msgstr "Nouvelle discussion"
 
@@ -48,40 +48,44 @@ msgstr "Créer la discussion"
 msgid "Start a new discussion"
 msgstr "Démarrer une nouvelle discussion"
 
+#: default-templates/dotty/Discussion-create.html:52
+msgid "Category:"
+msgstr "Catégorie :"
+
 #: default-templates/dotty/Discussion-posts.html:20
-#: src/FrontendBehaviors.php:465
+#: src/FrontendBehaviors.php:467
 msgid "My discussions"
 msgstr "Mes discussions"
 
-#: src/BackendBehaviors.php:39
+#: src/BackendBehaviors.php:43
 msgid "Enable users to post discussions on frontend"
 msgstr "Autoriser les utilisateurs à créer des discussions coté publique"
 
-#: src/BackendBehaviors.php:45
+#: src/BackendBehaviors.php:49
 msgid "Add user permission to post discussions on sign up"
 msgstr "Ajouter les permissions utilisateur lors de l'inscription"
 
-#: src/BackendBehaviors.php:51
+#: src/BackendBehaviors.php:55
 msgid "Publish new discussion without validation"
 msgstr "Publier les nouvelles discussions sans validation"
 
-#: src/BackendBehaviors.php:57
+#: src/BackendBehaviors.php:62
 msgid "Allow users to edit their own discussions from frontend"
 msgstr "Autoriser les utilisateurs à modifier leurs propres discussions"
 
-#: src/BackendBehaviors.php:63
+#: src/BackendBehaviors.php:68
 msgid "Limit discussions edition to a given time in minutes (0 for no limit):"
 msgstr "Limiter l'édition des discussion à un temps donnée en minutes (0 pour aucune limite) :"
 
-#: src/BackendBehaviors.php:69
+#: src/BackendBehaviors.php:74
 msgid "Open discussions comments to unregistered users"
 msgstr "Ouvrir les commentaires de discussions aux utilisateurs non enregistrés"
 
-#: src/BackendBehaviors.php:80
+#: src/BackendBehaviors.php:85
 msgid "Limit discussion to this category children:"
 msgstr "Limiter les discussions aux sous catégories de :"
 
-#: src/BackendBehaviors.php:87
+#: src/BackendBehaviors.php:92
 msgid "Prefix to use on resolved posts titles:"
 msgstr "Préfixe à ajouter sur les titres de billets résolus :"
 
@@ -91,110 +95,110 @@ msgstr "Ne pas limiter"
 
 #: src/Core.php:75
 msgid "Select a category"
-msgstr "Sélectionner un catégorie"
+msgstr "Sélectionner une catégorie"
 
-#: src/Core.php:299
+#: src/Core.php:305
 msgid "[Resolved]"
 msgstr "[Résolu]"
 
-#: src/Core.php:311
+#: src/Core.php:317
 msgid "Do not use artifact"
 msgstr "Ne pas utiliser l'artefact"
 
-#: src/FrontendBehaviors.php:68
+#: src/FrontendBehaviors.php:65
 msgid "Respond"
 msgstr "Répondre"
 
-#: src/FrontendBehaviors.php:69
+#: src/FrontendBehaviors.php:66
 msgid "In response to a comment"
 msgstr "En réponse à un commentaire"
 
-#: src/FrontendBehaviors.php:183
+#: src/FrontendBehaviors.php:181
 msgid "Edit discussion:"
 msgstr "Modifier la discussion :"
 
-#: src/FrontendBehaviors.php:192
+#: src/FrontendBehaviors.php:190
 msgid "Update"
 msgstr "Mettre à jour"
 
-#: src/FrontendBehaviors.php:193
+#: src/FrontendBehaviors.php:191
 msgid "Save discussion modifications"
 msgstr "Enregistrer les modificaitons"
 
-#: src/FrontendBehaviors.php:232
+#: src/FrontendBehaviors.php:230
 msgid "Edit"
 msgstr "Modifier"
 
-#: src/FrontendBehaviors.php:233
+#: src/FrontendBehaviors.php:231
 msgid "Edit my discussion"
 msgstr "Modifier ma discussion"
 
-#: src/FrontendBehaviors.php:247
+#: src/FrontendBehaviors.php:245
 msgid "Discussion successfully updated"
 msgstr "Discussion mise à jour avec succès"
 
-#: src/FrontendBehaviors.php:266
+#: src/FrontendBehaviors.php:268
 msgid "Discussion closed as it is resolved in comment from %s"
 msgstr "La discussion est fermée car résolue par le commentaire de %s"
 
-#: src/FrontendBehaviors.php:302
+#: src/FrontendBehaviors.php:304
 msgid "Edit comment:"
 msgstr "Modifier le commentaire :"
 
-#: src/FrontendBehaviors.php:313
+#: src/FrontendBehaviors.php:315
 msgid "Save comment modifications"
 msgstr "Enregistrer les modifications du commentaire"
 
-#: src/FrontendBehaviors.php:365
+#: src/FrontendBehaviors.php:367
 msgid "Solution"
 msgstr "Solution"
 
-#: src/FrontendBehaviors.php:366
+#: src/FrontendBehaviors.php:368
 msgid "Mark this comment as answer and close discussion"
 msgstr "Marquer ce commentaire comme solution et fermer la discussion"
 
-#: src/FrontendBehaviors.php:376
+#: src/FrontendBehaviors.php:378
 msgid "Edit my comment"
 msgstr "Modifier mon commentaire"
 
-#: src/FrontendBehaviors.php:390
+#: src/FrontendBehaviors.php:392
 msgid "Comment successfully updated"
 msgstr "Commentaire mise à jour avec succès"
 
-#: src/FrontendBehaviors.php:407
+#: src/FrontendBehaviors.php:409
 msgid "Mark discussion as resolved"
 msgstr "Marquer la discussion comme résolue"
 
-#: src/FrontendBehaviors.php:407
+#: src/FrontendBehaviors.php:409
 msgid "Mark as resolved and close disscussion"
 msgstr "Marquer cette discussion comme résolue et la fermer"
 
-#: src/FrontendBehaviors.php:464
-#: src/FrontendTemplate.php:322
+#: src/FrontendBehaviors.php:466
+#: src/FrontendTemplate.php:332
 msgid "Create a new discussion"
 msgstr "Créer une nouvelle discussion"
 
-#: src/FrontendBehaviors.php:465
+#: src/FrontendBehaviors.php:467
 msgid "View my discussions"
 msgstr "Voir mes discussions"
 
-#: src/FrontendBehaviors.php:469
+#: src/FrontendBehaviors.php:471
 msgid "You can paticipate in discussions."
 msgstr "Vous pouvez participer aux discussions."
 
-#: src/FrontendUrl.php:85
+#: src/FrontendUrl.php:83
 msgid "Discussion successfully created."
 msgstr "Discussion créée avec succès."
 
-#: src/FrontendUrl.php:118
+#: src/FrontendUrl.php:116
 msgid "You must select a category."
 msgstr "Vous devez sélectionner une catégorie."
 
-#: src/FrontendUrl.php:121
+#: src/FrontendUrl.php:119
 msgid "You must set a discussion title."
 msgstr "Vous devez fournir un titre de discussion."
 
-#: src/FrontendUrl.php:124
+#: src/FrontendUrl.php:122
 msgid "You must set a discussion content."
 msgstr "Vous devez fournir un contenu de discussion."
 
