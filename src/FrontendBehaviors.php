@@ -60,10 +60,18 @@ class FrontendBehaviors
 
         // reply
         if (App::auth()->userID() != '') {
+            $syntax = 'html';
+            if (App::blog()->settings()->get('system')->get('wiki_comments')) {
+                $syntax = 'wiki';
+                if (App::blog()->settings()->get('system')->get('markdown_comments')) {
+                    $syntax = 'markdown';
+                }
+            }
             echo My::jsLoad('frontend-comment') .
                 Html::jsJson(My::id() . 'reply', [
                     'input_text' => __('Respond'),
                     'response_text' => __('In response to a comment'),
+                    'syntax' => $syntax,
                 ]);
         }
 

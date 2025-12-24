@@ -14,8 +14,13 @@ dotclear.DiscussionCommentOptions = (source, target) => {
   button.addEventListener('click', (e) => {
     const text = source.querySelector('.comment-content').textContent;
     if (text?.length) {
-      //var content = text.trim().split('\n').map((line,index,main)=>{ return '>' + line; }).join("\n");
-      target.innerHTML += '>' + `[${dotclear.Discussionreply.response_text}|#c${source.getAttribute('id').substr(1)}]` + "\n";// + content;
+      if (dotclear.Discussionreply.syntax === 'markdown') {
+        target.innerHTML += '> ' + `[${dotclear.Discussionreply.response_text}](#c${source.getAttribute('id').substr(1)})` + '\n'; // + content;
+      } else if (dotclear.Discussionreply.syntax === 'wiki') {
+        target.innerHTML += '>' + `[${dotclear.Discussionreply.response_text}|#c${source.getAttribute('id').substr(1)}]` + '\n'; // + content;
+      } else {
+        target.innerHTML += '>' + `<a href="#c${source.getAttribute('id').substr(1)}">${dotclear.Discussionreply.response_text}` + '</a>\n'; // + content;
+      }
       target.focus();
     }
 
@@ -26,7 +31,7 @@ dotclear.DiscussionCommentOptions = (source, target) => {
 };
 
 dotclear.ready(() => {
-  // translations
+  // translations and options
   const Discussionreply = dotclear.getData('Discussionreply');
   dotclear.Discussionreply = Discussionreply;
 
