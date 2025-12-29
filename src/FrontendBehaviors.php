@@ -8,11 +8,11 @@ use ArrayObject;
 use Dotclear\App;
 use Dotclear\Core\Frontend\Ctx;
 use Dotclear\Database\{ Cursor, MetaRecord };
-use Dotclear\Database\Statement\UpdateStatement;
 use Dotclear\Helper\Html\Form\{ Checkbox, Div, Form, Hidden, Label, Li, Link, Para, Submit, Text, Textarea, Ul };
-use Dotclear\Helper\Html\{ Html, WikiToHtml };
+use Dotclear\Helper\Html\{ Html};
 use Dotclear\Helper\Network\Http;
 use Dotclear\Plugin\commentsWikibar\My as Wikibar;
+use Dotclear\Plugin\commentsWikibar\FrontendBehaviors as WikibarHelper;
 use Dotclear\Plugin\legacyMarkdown\Helper as Markdown;
 use Dotclear\Plugin\FrontendSession\{ CommentOptions, FrontendSessionProfil };
 
@@ -26,6 +26,18 @@ use Dotclear\Plugin\FrontendSession\{ CommentOptions, FrontendSessionProfil };
 class FrontendBehaviors
 {
     private static bool $loop = false;
+
+    /**
+     * Tools fo wikibar.
+     *
+     * @param   ArrayObject<array-key, string>  $supported_modes
+     */
+    public static function initCommentsWikibar(ArrayObject $supported_modes): string
+    {
+        $supported_modes->append('Discussion');
+
+        return '';
+    }
 
     /**
      * Overload discussion post template.
@@ -69,9 +81,9 @@ class FrontendBehaviors
             }
             echo My::jsLoad('frontend-comment') .
                 Html::jsJson(My::id() . 'reply', [
-                    'input_text' => __('Respond'),
+                    'input_text'    => __('Respond'),
                     'response_text' => __('In response to a comment'),
-                    'syntax' => $syntax,
+                    'syntax'        => $syntax,
                 ]);
         }
 
@@ -82,90 +94,7 @@ class FrontendBehaviors
             return;
         }
 
-        $settings = Wikibar::settings();
-        // CSS
-        if ($settings->add_css) {
-            $custom_css = trim((string) $settings->custom_css);
-            if ($custom_css !== '') {
-                if (str_starts_with($custom_css, '/') || preg_match('!^https?://.+!', $custom_css)) {
-                    // Absolute URL
-                    $css_file = $custom_css;
-                } else {
-                    // Relative URL
-                    $css_file = App::blog()->settings()->system->themes_url . '/' .
-                    App::blog()->settings()->system->theme . '/' .
-                        $custom_css;
-                }
-
-                $css = App::plugins()->cssLoad($css_file);
-            } else {
-                $css = Wikibar::cssLoad('wikibar.css');
-            }
-
-            echo $css;
-        }
-
-        // JS
-        if ($settings->add_jslib) {
-            $custom_jslib = trim((string) $settings->custom_jslib);
-            if ($custom_jslib !== '') {
-                if (str_starts_with($custom_jslib, '/') || preg_match('!^https?://.+!', $custom_jslib)) {
-                    $js_file = $custom_jslib;
-                } else {
-                    $js_file = App::blog()->settings()->system->themes_url . '/' .
-                    App::blog()->settings()->system->theme . '/' .
-                        $custom_jslib;
-                }
-
-                $js = App::plugins()->jsLoad($js_file);
-            } else {
-                $js = Wikibar::jsLoad('wikibar.js');
-            }
-
-            echo $js;
-        }
-
-        if ($settings->add_jsglue) {
-            // Force formatting Markdown
-            $mode = 'markdown';
-
-            echo
-            Html::jsJson('commentswikibar', [
-                'base_url'   => App::blog()->host(),
-                'id'         => !empty($_POST['FrontendSessioncomment']) ? 'discussion_comment_content' : 'discussion_content',
-                'mode'       => $mode,
-                'legend_msg' => __('You can use the following shortcuts to format your text.'),
-                'label'      => __('Text formatting'),
-                'elements'   => [
-                    'strong' => ['title' => __('Strong emphasis')],
-                    'em'     => ['title' => __('Emphasis')],
-                    'ins'    => ['title' => __('Inserted')],
-                    'del'    => ['title' => __('Deleted')],
-                    'quote'  => ['title' => __('Inline quote')],
-                    'code'   => ['title' => __('Code')],
-                    'br'     => ['title' => __('Line break')],
-                    'ul'     => ['title' => __('Unordered list')],
-                    'ol'     => ['title' => __('Ordered list')],
-                    'pre'    => ['title' => __('Preformatted')],
-                    'bquote' => ['title' => __('Block quote')],
-                    'link'   => [
-                        'title'           => __('Link'),
-                        'href_prompt'     => __('URL?'),
-                        'hreflang_prompt' => __('Language?'),
-                        'title_prompt'    => __('Title?'),
-                    ],
-                ],
-                'options' => [
-                    'no_format' => $settings->no_format,
-                    'no_br'     => $settings->no_br,
-                    'no_list'   => $settings->no_list,
-                    'no_pre'    => $settings->no_pre,
-                    'no_quote'  => $settings->no_quote,
-                    'no_url'    => $settings->no_url,
-                ],
-            ]) .
-            Wikibar::jsLoad('bootstrap.js');
-        }
+        WikibarHelper::publicHeadContentHelper(!empty($_POST['FrontendSessioncomment']) ? 'discussion_comment_content' : 'discussion_content');
     }
 
     /**
@@ -203,7 +132,7 @@ class FrontendBehaviors
                             ]),
                     ])
                     ->render();
-            // update action
+                // update action
             } elseif (!empty($_POST[My::id() . 'updatepost']) && !empty(trim($_POST['discussion_content'] ?? ''))) {
                 FrontendUrl::loadFormater();
 
@@ -248,12 +177,12 @@ class FrontendBehaviors
     {
         // succes message of post edition
         if (!empty($_REQUEST['pupd'])) {
-                echo (new Div())
-                    ->items([
-                        (new Text('p', __('Discussion successfully updated')))
-                            ->class('success')
-                    ])
-                    ->render();
+            echo (new Div())
+                ->items([
+                    (new Text('p', __('Discussion successfully updated')))
+                        ->class('success'),
+                ])
+                ->render();
         }
     }
 
@@ -328,7 +257,7 @@ class FrontendBehaviors
                             ]),
                     ])
                     ->render();
-            // update comment action
+                // update comment action
             } elseif (!empty($_POST[My::id() . 'updatecomment']) && !empty(trim($_POST['discussion_comment_content'] ?? ''))) {
                 FrontendUrl::loadFormater();
 
@@ -372,7 +301,8 @@ class FrontendBehaviors
             && Core::isDiscussionCategory($post->f('cat_id'))
             && Core::canResolvePost($post)
         ) {
-            $buttons->append((new Submit(['discussion_answer'], __('Solution')))
+            $buttons->append(
+                (new Submit(['discussion_answer'], __('Solution')))
                 ->title(__('Mark this comment as answer and close discussion'))
             );
         }
@@ -395,12 +325,12 @@ class FrontendBehaviors
     {
         // succes message of post edition
         if (($_REQUEST['cupd'] ?? '') == App::frontend()->context()->comments->f('comment_id')) {
-                echo (new Div())
-                    ->items([
-                        (new Text('p', __('Comment successfully updated')))
-                            ->class('success')
-                    ])
-                    ->render();
+            echo (new Div())
+                ->items([
+                    (new Text('p', __('Comment successfully updated')))
+                        ->class('success'),
+                ])
+                ->render();
         }
     }
 
@@ -439,8 +369,8 @@ class FrontendBehaviors
     {
         $rs = App::blog()->getPosts($params);
         if (!$rs->isEmpty() && $rs->f('post_open_comment')
-            && Core::isDiscussionCategory((int) $rs->f('cat_id'))
-            && !Core::getPostResolver((int) $rs->f('post_id'))->isEmpty()
+                            && Core::isDiscussionCategory((int) $rs->f('cat_id'))
+                            && !Core::getPostResolver((int) $rs->f('post_id'))->isEmpty()
         ) {
             Core::delPostResolver((int) $rs->f('post_id'));
         }
@@ -469,7 +399,7 @@ class FrontendBehaviors
     public static function FrontendSessionProfil(FrontendSessionProfil $profil): void
     {
         if (App::auth()->check(My::id(), App::blog()->id())) {
-            $li  = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
+            $li    = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
             $lines = [
                 $li([App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), Html::escapeHTML(__('New discussion'))]),
                 $li([App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')]),
@@ -490,8 +420,8 @@ class FrontendBehaviors
     public static function FrontendSessionWidget(ArrayObject $lines): void
     {
         if (App::auth()->check(My::id(), App::blog()->id())) {
-            $li  = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
- 
+            $li = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
+
             $lines->append($li([App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), __('New discussion')]));
             $lines->append($li([App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')]));
         }
@@ -502,9 +432,9 @@ class FrontendBehaviors
      */
     public static function FrontendSessionAfterSignup(Cursor $cur): void
     {
-        $perms = App::users()->getUserPermissions($cur->user_id);
-        $perms = $perms[App::blog()->id()]['p'] ?? [];
-        $perms[My::id()]  = true;
+        $perms           = App::users()->getUserPermissions($cur->user_id);
+        $perms           = $perms[App::blog()->id()]['p'] ?? [];
+        $perms[My::id()] = true;
         App::auth()->sudo([App::users(), 'setUserBlogPermissions'], $cur->user_id, App::blog()->id(), $perms);
     }
 
@@ -550,12 +480,12 @@ class FrontendBehaviors
      */
     public static function templatePrepareParams(array $tpl, ArrayObject $attr, string $content): string
     {
-        if ($tpl['tag'] == 'Entries' 
+        if ($tpl['tag']       == 'Entries'
             && $tpl['method'] == 'blog::getPosts'
             && in_array(App::url()->getType(), ['category'])
         ) {
-            return 
-                "if (". Core::class . "::isDiscussionCategory(App::frontend()->context()->categories->cat_id)){" .
+            return
+                'if (' . Core::class . '::isDiscussionCategory(App::frontend()->context()->categories->cat_id)){' .
                 "\$params['order'] = 'post_selected DESC, post_upddt DESC' . (!empty(\$params['order']) ? ', ' . \$params['order'] : '');" .
                 "}\n";
         }

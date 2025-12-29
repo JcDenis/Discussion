@@ -53,6 +53,7 @@ class Frontend
         ]);
         App::behavior()->addBehaviors([
             'initWidgets'                       => Widgets::initWidgets(...),
+            'initCommentsWikibar'               => FrontendBehaviors::initCommentsWikibar(...),
             'urlHandlerBeforeGetData'           => FrontendBehaviors::urlHandlerBeforeGetData(...),
             'publicHeadContent'                 => FrontendBehaviors::publicHeadContent(...),
             'publicEntryBeforeContent'          => FrontendBehaviors::publicEntryBeforeContent(...),
