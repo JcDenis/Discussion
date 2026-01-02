@@ -94,8 +94,11 @@ class Core
         return $categories_combo;
     }
 
-    public static function isDiscussionCategory(int|string $cat_id): bool
+    public static function isDiscussionCategory(null|int|string $cat_id): bool
     {
+        if (is_null($cat_id)) {
+            return false;
+        }
         $rs = self::getCategories();
         while ($rs->fetch()) {
             if (self::isRootCategory($rs->f('cat_id'))) {
@@ -224,7 +227,7 @@ class Core
     public static function canResolvePost(MetaRecord $rs): bool
     {
         return !$rs->isEmpty() 
-            && Core::isDiscussionCategory((int) $rs->f('cat_id')) 
+            && Core::isDiscussionCategory($rs->f('cat_id')) 
             && (
                 App::auth()->userID() === $rs->f('user_id')
                 || App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())

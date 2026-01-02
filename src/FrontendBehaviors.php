@@ -44,7 +44,7 @@ class FrontendBehaviors
      */
     public static function urlHandlerBeforeGetData(Ctx $ctx): void
     {
-        if (!self::$loop && $ctx->exists('posts') && Core::isDiscussionCategory((int) $ctx->posts->f('cat_id'))) {
+        if (!self::$loop && $ctx->exists('posts') && Core::isDiscussionCategory($ctx->posts->f('cat_id'))) {
             self::$loop = true;
             FrontendUrl::serveTemplate('post');
             exit();
@@ -217,7 +217,7 @@ class FrontendBehaviors
         // Post resolved
         if (!empty($_POST['discussion_answer'])
             && $post->f('post_open_comment')
-            && Core::isDiscussionCategory((int) $post->f('cat_id'))
+            && Core::isDiscussionCategory($post->f('cat_id'))
         ) {
             Core::setPostResolver($post, (int) $comment->f('comment_id'));
             Http::redirect(Http::getSelfURI());
@@ -369,7 +369,7 @@ class FrontendBehaviors
     {
         $rs = App::blog()->getPosts($params);
         if (!$rs->isEmpty() && $rs->f('post_open_comment')
-                            && Core::isDiscussionCategory((int) $rs->f('cat_id'))
+                            && Core::isDiscussionCategory($rs->f('cat_id'))
                             && !Core::getPostResolver((int) $rs->f('post_id'))->isEmpty()
         ) {
             Core::delPostResolver((int) $rs->f('post_id'));
@@ -382,7 +382,7 @@ class FrontendBehaviors
     public static function FrontendSessionCommentsActive(CommentOptions $option): void
     {
         // check if it is a discussion category else follow blog settings
-        if (!is_null($option->rs) && Core::isDiscussionCategory((int) $option->rs->f('cat_id'))) {
+        if (!is_null($option->rs) && Core::isDiscussionCategory($option->rs->f('cat_id'))) {
             // active if user is auth or unregistered comments are allowed
             $option->setActive(App::auth()->check(My::id(), App::blog()->id()) || (bool) My::settings()->get('unregister_comment'));
 
