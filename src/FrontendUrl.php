@@ -123,7 +123,7 @@ class FrontendUrl
             }
 
             if (self::$form_error === [] && $preview) {
-                $content = App::filter()->wikiTransform($post_content);
+                $content = App::formater()->callEditorFormater('dcLegacyEditor', $post_format, $post_content);
                 $content = App::filter()->HTMLfilter($content);
                 App::frontend()->context()->post_preview['title']   = $post_title;
                 App::frontend()->context()->post_preview['content'] = (string) $content;
