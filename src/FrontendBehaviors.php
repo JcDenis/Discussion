@@ -457,7 +457,7 @@ class FrontendBehaviors
     }
 
     /**
-     * Check if current category is Root category and serve categories template.
+     * Check if current category is Root category and serve categories template. Otherwise, serve category template
      *
      * @param   ArrayObject<string, mixed>  $params
      */
@@ -468,6 +468,10 @@ class FrontendBehaviors
             && Core::isRootCategory(App::frontend()->context()->categories->f('cat_id'))
         ) {
             FrontendUrl::serveTemplate('categories');
+            exit;
+        } elseif (!App::frontend()->context()->categories->isEmpty()
+            && !Core::isRootCategory(App::frontend()->context()->categories->f('cat_id'))) {
+            FrontendUrl::serveTemplate('category');
             exit;
         }
     }
