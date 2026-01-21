@@ -141,7 +141,7 @@ class FrontendBehaviors
                 $cur->setField('post_format', 'markdown');
                 $cur->setField('post_lang', $post->f('post_lang'));
                 $cur->setField('post_title', $post->f('post_title'));
-                $cur->setField('post_dt', $post->f('post_dt'));
+                $cur->setField('post_upddt', $post->f('post_dt'));
                 $cur->setField('post_content_xhtml', null);
 
                 App::auth()->sudo(App::blog()->updPost(...), $post_id, $cur);
