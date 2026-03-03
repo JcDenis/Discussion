@@ -135,7 +135,7 @@ msgstr "Modifier ma discussion"
 
 #: src/FrontendBehaviors.php:245
 msgid "Discussion successfully updated"
-msgstr "Discussion mise à jour avec succès"
+msgstr "Discussion mis à jour avec succès"
 
 #: src/FrontendBehaviors.php:268
 msgid "Discussion closed as it is resolved in comment from %s"
