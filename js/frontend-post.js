@@ -12,7 +12,7 @@ dotclear.getDiscussionResolver = (post) => {
         if ( request.readyState === 4 && request.status === 200) {
           const response = JSON.parse( request.responseText );
 
-          target.prepend(response.ret)
+          target.prepend(response.ret + ' ')
         }
       };
 
@@ -31,6 +31,13 @@ dotclear.ready(() => {
   const rtPosts = document.querySelectorAll('article');
   if (rtPosts) {
     rtPosts.forEach(post => {
+      dotclear.getDiscussionResolver(post);
+    });
+  }
+
+  const rtCats = document.querySelectorAll('.discussion-posts tr');
+  if (rtCats) {
+    rtCats.forEach(post => {
       dotclear.getDiscussionResolver(post);
     });
   }
