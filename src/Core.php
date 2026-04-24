@@ -37,22 +37,52 @@ class Core
 
     public static function getRootCategory(): int
     {
-        return (int) (My::settings()->get('root_cat') ?: 0);
+        return is_numeric($root_cat = My::settings()->get('root_cat')) ? (int) $root_cat : 0;
     }
 
     public static function getRootCategoryTitle(): string
     {
-        return self::hasRootCategory() ? App::blog()->getCategories(['cat_id' => self::getRootCategory()])->f('cat_title') : __('Discussions');
+        if (self::hasRootCategory()) {
+            $rs = App::blog()->getCategories(['cat_id' => self::getRootCategory()]);
+            if (!$rs->isEmpty()) {
+                $cat_title = is_string($cat_title = $rs->f('cat_title')) ? $cat_title : '';
+                if ($cat_title !== '') {
+                    return $cat_title;
+                }
+            }
+        }
+
+        return __('Discussions');
     }
 
     public static function getRootCategoryUrl(): string
     {
-        return self::hasRootCategory() ? App::blog()->url() . App::url()->getURLFor('category', Html::sanitizeURL(App::blog()->getCategories(['cat_id' => self::getRootCategory()])->f('cat_url'))) : '';
+        if (self::hasRootCategory()) {
+            $rs = App::blog()->getCategories(['cat_id' => self::getRootCategory()]);
+            if (!$rs->isEmpty()) {
+                $cat_url = is_string($cat_url = $rs->f('cat_url')) ? $cat_url : '';
+                if ($cat_url !== '') {
+                    return App::blog()->url() . App::url()->getURLFor('category', Html::sanitizeURL($cat_url));
+                }
+            }
+        }
+
+        return '';
     }
 
     public static function getRootCategoryDescription(): string
     {
-        return self::hasRootCategory() ? App::blog()->getCategories(['cat_id' => self::getRootCategory()])->f('cat_desc') : '';
+        if (self::hasRootCategory()) {
+            $rs = App::blog()->getCategories(['cat_id' => self::getRootCategory()]);
+            if (!$rs->isEmpty()) {
+                $cat_desc = is_string($cat_desc = $rs->f('cat_desc')) ? $cat_desc : '';
+                if ($cat_desc !== '') {
+                    return $cat_desc;
+                }
+            }
+        }
+
+        return '';
     }
 
     public static function isRootCategory(int|string $id): bool
@@ -73,20 +103,27 @@ class Core
     public static function getCategoriesCombo(): array
     {
         $categories_combo = [new Option(App::task()->checkContext('BACKEND') ? __('Do not limit') : __('Select a category'), '')];
-        $root_cat         = self::getRootCategory();
-        $rs               = self::getCategories();
-        $level            = self::hasRootCategory() ? 1 : 0;
+
+        self::getRootCategory();
+
+        $rs    = self::getCategories();
+        $level = self::hasRootCategory() ? 1 : 0;
 
         while ($rs->fetch()) {
-            if (!App::task()->checkContext('BACKEND') && self::isRootCategory($rs->f('cat_id'))) {
+            $cat_id = is_numeric($cat_id = $rs->f('cat_id')) ? (int) $cat_id : 0;
+            if (!App::task()->checkContext('BACKEND') && self::isRootCategory($cat_id)) {
                 continue;
             }
+
+            $cat_level = is_numeric($cat_level = $rs->f('level')) ? (int) $cat_level : 1;
+            $cat_title = is_string($cat_title = $rs->f('cat_title')) ? $cat_title : '';
+
             $option = new Option(
-                str_repeat('&nbsp;', (int) (($rs->level - $level) * 4)) . Html::escapeHTML($rs->cat_title),
-                (string) $rs->cat_id
+                str_repeat('&nbsp;', ($cat_level - $level) * 4) . Html::escapeHTML($cat_title),
+                (string) $cat_id
             );
-            if ($rs->level - $level) {
-                $option->class('sub-option' . ($rs->level - $level));
+            if ($cat_level - $level !== 0) {
+                $option->class('sub-option' . ($cat_level - $level));
             }
             $categories_combo[] = $option;
         }
@@ -94,17 +131,18 @@ class Core
         return $categories_combo;
     }
 
-    public static function isDiscussionCategory(null|int|string $cat_id): bool
+    public static function isDiscussionCategory(?int $cat_id): bool
     {
         if (is_null($cat_id)) {
             return false;
         }
         $rs = self::getCategories();
         while ($rs->fetch()) {
-            if (self::isRootCategory($rs->f('cat_id'))) {
+            $current_cat_id = is_numeric($current_cat_id = $rs->f('cat_id')) ? (int) $current_cat_id : 0;
+            if (self::isRootCategory($current_cat_id)) {
                 continue;
             }
-            if (((int) $cat_id) == ((int) $rs->f('cat_id'))) {
+            if ($cat_id === $current_cat_id) {
                 return true;
             }
         }
@@ -131,12 +169,12 @@ class Core
      */
     public static function getPosts(array $params = [], bool $count_only = false): MetaRecord
     {
-        $params['cat_id']  = self::getRootCategory() . '?sub';
+        $params['cat_id'] = self::getRootCategory() . '?sub';
 
         return App::blog()->getPosts($params, $count_only);
     }
 
-    public static function getComments(): Metarecord
+    public static function getComments(): MetaRecord
     {
         return metaRecord::newFromArray([]);
     }
@@ -155,15 +193,20 @@ class Core
         $rs = App::blog()->getPosts(['post_id' => $posts]);
         if (!$rs->isEmpty()) {
             // update discussion post date to follow last comments
-            while($rs->fetch()) {
-                if (!self::isDiscussionCategory($rs->f('cat_id'))) {
+            while ($rs->fetch()) {
+                $cat_id = is_numeric($cat_id = $rs->f('cat_id')) ? (int) $cat_id : 0;
+                if (!self::isDiscussionCategory($cat_id)) {
                     continue;
                 }
+
+                $post_id  = is_numeric($post_id = $rs->f('post_id')) ? (int) $post_id : 0;
+                $timezone = is_string($timezone = App::blog()->settings()->system->blog_timezone) ? $timezone : 'UTC';
+
                 $cur = App::blog()->openPostCursor();
-                $cur->setField('post_upddt', date('Y-m-d H:i:s', time() + Date::getTimeOffset(App::blog()->settings()->get('system')->get('blog_timezone'))));
+                $cur->setField('post_upddt', date('Y-m-d H:i:s', time() + Date::getTimeOffset($timezone)));
 
                 $sql = new UpdateStatement();
-                $sql->where('post_id = ' . $rs->f('post_id'));
+                $sql->where('post_id = ' . $post_id);
                 $sql->update($cur);
             }
         }
@@ -182,33 +225,59 @@ class Core
     }
 
     /**
-     * Check if post can be editied from frontend.
+     * Check if post can be edited from frontend.
      */
     public static function canEditPost(MetaRecord $post): bool
     {
-        return self::canEdit()
-            && (!My::settings()->get('canedit_time') || ($post->getTS() + My::settings()->get('canedit_time')) > time()) // only on limited time
-            && self::isDiscussionCategory($post->f('cat_id')) // only on discussion
-            && self::getPostResolver((int) $post->f('post_id'))->isEmpty() // only if not resolved
-            && (
-                App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())
-                || App::auth()->userID() == $post->f('user_id')
-            ); // only if admin or post author
+        if (self::canEdit()) {
+            $post_ts      = is_numeric($post_ts = $post->getTS()) ? (int) $post_ts : 0;
+            $canedit_time = is_numeric($canedit_time = My::settings()->get('canedit_time')) ? (int) $canedit_time : 0;
+            if (($post_ts + $canedit_time) > time()) { // only on limited time
+                $cat_id = is_numeric($cat_id = $post->f('cat_id')) ? (int) $cat_id : 0;
+                if (self::isDiscussionCategory($cat_id)) { // only on discussion
+                    $post_id = is_numeric($post_id = $post->f('post_id')) ? (int) $post_id : 0;
+                    if (self::getPostResolver($post_id)->isEmpty()) { // only if not resolved
+                        // only if admin or post author
+                        if (App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())) {
+                            return true;
+                        }
+                        $user_id = is_string($user_id = $post->f('user_id')) ? $user_id : '';
+
+                        return $user_id !== '' && App::auth()->userID() === $user_id;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
-     * Check if comment can be editied from frontend.
+     * Check if comment can be edited from frontend.
      */
     public static function canEditComment(MetaRecord $post, MetaRecord $comment): bool
     {
-        return self::canEdit()
-            && (!My::settings()->get('canedit_time') || ($comment->getTS() + My::settings()->get('canedit_time')) > time()) // only on limited time
-            && self::isDiscussionCategory($post->f('cat_id')) // only on discussion
-            && self::getPostResolver((int) $post->f('post_id'))->isEmpty() // only if not resolved
-            && (
-                App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())
-                || App::auth()->userID() == $comment->f('author')
-            ); // only if admin or comment author
+        if (self::canEdit()) {
+            $comment_ts   = is_numeric($comment_ts = $comment->getTS()) ? (int) $comment_ts : 0;
+            $canedit_time = is_numeric($canedit_time = My::settings()->get('canedit_time')) ? (int) $canedit_time : 0;
+            if (($comment_ts + $canedit_time) > time()) { // only on limited time
+                $cat_id = is_numeric($cat_id = $post->f('cat_id')) ? (int) $cat_id : 0;
+                if (self::isDiscussionCategory($cat_id)) { // only on discussion
+                    $post_id = is_numeric($post_id = $post->f('post_id')) ? (int) $post_id : 0;
+                    if (self::getPostResolver($post_id)->isEmpty()) { // only if not resolved
+                        // only if admin or post author
+                        if (App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())) {
+                            return true;
+                        }
+                        $user_id = is_string($user_id = $comment->f('author')) ? $user_id : '';
+
+                        return $user_id !== '' && App::auth()->userID() === $user_id;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -216,7 +285,8 @@ class Core
      */
     public static function checkForm(): void
     {
-        if (!App::nonce()->checkNonce($_POST['discussion_check'] ?? '-')) {
+        $check = isset($_POST['discussion_check']) && is_string($check = $_POST['discussion_check']) ? $check : '-';
+        if (!App::nonce()->checkNonce($check)) {
             throw new PreconditionException();
         }
     }
@@ -226,12 +296,20 @@ class Core
      */
     public static function canResolvePost(MetaRecord $rs): bool
     {
-        return !$rs->isEmpty() 
-            && Core::isDiscussionCategory($rs->f('cat_id')) 
-            && (
-                App::auth()->userID() === $rs->f('user_id')
-                || App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())
-            );
+        if (!$rs->isEmpty()) {
+            $cat_id = is_numeric($cat_id = $rs->f('cat_id')) ? (int) $cat_id : 0;
+            if (self::isDiscussionCategory($cat_id)) { // only on discussion
+                // only if admin or post author
+                if (App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())) {
+                    return true;
+                }
+                $user_id = is_string($user_id = $rs->f('user_id')) ? $user_id : '';
+
+                return $user_id !== '' && App::auth()->userID() === $user_id;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -240,7 +318,7 @@ class Core
     public static function setPostResolver(MetaRecord $rs, int $resolver_id): void
     {
         if (self::canResolvePost($rs)) {
-            $post_id = (int) $rs->f('post_id');
+            $post_id = is_numeric($post_id = $rs->f('post_id')) ? (int) $post_id : 0;
 
             // mark post as resolved
             App::auth()->sudo(App::meta()->setPostMeta(...), $post_id, My::id() . 'post', (string) $resolver_id);
@@ -290,7 +368,7 @@ class Core
      */
     public static function getPostArtifact(): string
     {
-        return My::settings()->get('artifact') ?: self::DEFAULT_ARTIFACT;
+        return is_string($artifact = My::settings()->get('artifact')) ? $artifact : self::DEFAULT_ARTIFACT;
     }
 
     /**
@@ -301,7 +379,7 @@ class Core
     public static function getPostArtifacts(): array
     {
         return array_unique([
-            My::settings()->get('artifact') ?: self::DEFAULT_ARTIFACT,
+            self::getPostArtifact(),
             self::DEFAULT_ARTIFACT,
             "\u{2718}",
             "\u{25A0}",

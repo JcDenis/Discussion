@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Dotclear\Plugin\Discussion;
 
 use Dotclear\App;
-use Dotclear\Helper\Html\Form\{  Li, Link, Text, Ul };
+use Dotclear\Helper\Html\Form\{  Li, Link, Ul };
 use Dotclear\Helper\Html\Html;
 use Dotclear\Plugin\widgets\{ WidgetsElement, WidgetsStack };
 
@@ -45,7 +45,7 @@ class Widgets
     public static function lastWidget(WidgetsElement $widget): string
     {
         if ($widget->isOffline()
-            || !$widget->checkHomeOnly(App::url()->type)
+            || !$widget->checkHomeOnly(App::url()->getType())
             || !My::settings()->get('active')
         ) {
             return '';
@@ -53,18 +53,21 @@ class Widgets
 
         $lines = [];
         $rs    = Core::getPosts(['limit' => $widget->get('limit')]);
-        while($rs->fetch()) {
+        while ($rs->fetch()) {
+            $url        = is_string($url = $rs->getURL()) ? $url : '';
+            $post_title = is_string($post_title = $rs->f('post_title')) ? $post_title : '';
+            $cat_title  = is_string($cat_title = $rs->f('cat_title')) ? $cat_title : '';
+
             $lines[] = (new Li())
                 ->items([
                     (new Link())
-                        ->href($rs->getURL())
-                        ->text(Html::escapeHTML($rs->f('post_title')))
-                        ->title(Html::escapeHTML($rs->f('cat_title')))
+                        ->href($url)
+                        ->text(Html::escapeHTML($post_title))
+                        ->title(Html::escapeHTML($cat_title)),
                 ]);
         }
 
         if ($lines === []) {
-
             return '';
         }
 
@@ -78,11 +81,14 @@ class Widgets
                 ]);
         }
 
+        $class = is_string($class = $widget->get('class')) ? $class : '';
+        $title = is_string($title = $widget->get('title')) ? $title : '';
+
         return $widget->renderDiv(
             (bool) $widget->get('content_only'),
-            'lastdiscussions ' . $widget->get('class'),
+            'lastdiscussions ' . $class,
             '',
-            ($widget->get('title') ? $widget->renderTitle(Html::escapeHTML($widget->get('title'))) : '') . (new Ul())->items($lines)->render()
+            ($widget->get('title') ? $widget->renderTitle(Html::escapeHTML($title)) : '') . (new Ul())->items($lines)->render()
         );
     }
 }

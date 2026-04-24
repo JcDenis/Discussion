@@ -44,10 +44,13 @@ class FrontendBehaviors
      */
     public static function urlHandlerBeforeGetData(Ctx $ctx): void
     {
-        if (!self::$loop && $ctx->exists('posts') && Core::isDiscussionCategory($ctx->posts->f('cat_id'))) {
-            self::$loop = true;
-            FrontendUrl::serveTemplate('post');
-            exit();
+        if (!self::$loop && $ctx->exists('posts') && $ctx->categories instanceof MetaRecord) {
+            $cat_id = is_numeric($cat_id = $ctx->categories->f('cat_id')) ? (int) $cat_id : 0;
+            if (Core::isDiscussionCategory($cat_id)) {
+                self::$loop = true;
+                FrontendUrl::serveTemplate('post');
+                exit();
+            }
         }
     }
 
@@ -57,13 +60,14 @@ class FrontendBehaviors
     public static function publicHeadContent(): void
     {
         // style
-        $tplset = App::themes()->moduleInfo(App::blog()->settings()->get('system')->get('theme'), 'tplset');
+        $theme  = is_string($theme = App::blog()->settings()->system->theme) ? $theme : '';
+        $tplset = is_string($tplset = App::themes()->moduleInfo($theme, 'tplset')) ? $tplset : '';
         if (in_array($tplset, ['dotty', 'mustek'])) {
             echo My::cssLoad('frontend-' . $tplset);
         }
 
         // resolve
-        if (Core::getPostArtifact() != '') {
+        if (Core::getPostArtifact() !== '') {
             echo My::jsLoad('frontend-post') .
                 Html::jsJson(My::id() . 'resolver', [
                     'url' => App::blog()->url() . App::url()->getBase(My::id()),
@@ -94,7 +98,7 @@ class FrontendBehaviors
             return;
         }
 
-        WikibarHelper::publicHeadContentHelper(!empty($_POST['FrontendSessioncomment']) ? 'discussion_comment_content' : 'discussion_content');
+        WikibarHelper::publicHeadContentHelper(empty($_POST['FrontendSessioncomment']) ? 'discussion_content' : 'discussion_comment_content');
     }
 
     /**
@@ -104,10 +108,12 @@ class FrontendBehaviors
     {
         // Check rights
         if (Core::canEditPost($post)) {
-            $post_id = (int) $post->f('post_id');
+            $post_id = is_numeric($post_id = $post->f('post_id')) ? (int) $post_id : 0;
 
             // update form
             if (!empty($_POST[My::id() . 'editpost'])) {
+                $content = is_string($content = $post->f('post_content')) ? $content : '';
+
                 echo (new Form('discussion-form'))
                     ->method('post')
                     ->action('#p' . $post_id)
@@ -118,7 +124,7 @@ class FrontendBehaviors
                                 (new Text('h5', __('Edit discussion:'))),
                                 (new Textarea('discussion_content'))
                                     ->rows(15)
-                                    ->value(Html::escapeHTML($post->f('post_content'))),
+                                    ->value(Html::escapeHTML($content)),
                             ]),
                         (new Div())
                             ->class('controlset')
@@ -133,22 +139,26 @@ class FrontendBehaviors
                     ])
                     ->render();
                 // update action
-            } elseif (!empty($_POST[My::id() . 'updatepost']) && !empty(trim($_POST['discussion_content'] ?? ''))) {
-                FrontendUrl::loadFormater();
+            } elseif (!empty($_POST[My::id() . 'updatepost'])) {
+                $content = isset($_POST['discussion_content']) && is_string($content = $_POST['discussion_content']) ? trim($content) : '';
+                if ($content !== '') {
+                    FrontendUrl::loadFormater();
 
-                $cur = App::blog()->openPostCursor();
-                $cur->setField('post_content', $_POST['discussion_content']);
-                $cur->setField('post_format', 'markdown');
-                $cur->setField('post_lang', $post->f('post_lang'));
-                $cur->setField('post_title', $post->f('post_title'));
-                $cur->setField('post_dt', $post->f('post_dt'));
-                $cur->setField('post_content_xhtml', null);
+                    $cur = App::blog()->openPostCursor();
+                    $cur->setField('post_content', $_POST['discussion_content']);
+                    $cur->setField('post_format', 'markdown');
+                    $cur->setField('post_lang', $post->f('post_lang'));
+                    $cur->setField('post_title', $post->f('post_title'));
+                    $cur->setField('post_dt', $post->f('post_dt'));
+                    $cur->setField('post_content_xhtml', null);
 
-                App::auth()->sudo(App::blog()->updPost(...), $post_id, $cur);
+                    App::auth()->sudo(App::blog()->updPost(...), $post_id, $cur);
 
-                Http::redirect(
-                    $post->getURL() . (App::blog()->settings()->get('system')->get('url_scan') == 'query_string' ? '&' : '?') . 'pupd=' . $post_id
-                );
+                    $url_scan = is_string($url_scan = App::blog()->settings()->get('system')->get('url_scan')) ? $url_scan : '';
+                    $post_url = is_string($post_url = $post->getURL()) ? $post_url : '';
+
+                    Http::redirect($post_url . ($url_scan === 'query_string' ? '&' : '?') . 'pupd=' . $post_id);
+                }
             }
         }
     }
@@ -191,19 +201,30 @@ class FrontendBehaviors
      */
     public static function publicEntryAfterContent(): void
     {
-        if (!App::frontend()->context()->exists('posts')) {
+        if (!App::frontend()->context()->exists('posts') || !App::frontend()->context()->posts instanceof MetaRecord) {
             return;
         }
 
-        $meta = Core::getPostResolver((int) App::frontend()->context()->posts->f('post_id'));
+        $post_id = is_numeric($post_id = App::frontend()->context()->posts->f('post_id')) ? (int) $post_id : 0;
+        if ($post_id === 0) {
+            return;
+        }
+
+        $meta = Core::getPostResolver($post_id);
         if (!$meta->isEmpty()) {
+            $post_url = is_string($post_url = App::frontend()->context()->posts->getURL()) ? $post_url : '';
+
+            $comment_id      = is_numeric($comment_id = $meta->f('comment_id')) ? (int) $comment_id : 0;
+            $comment_author  = is_string($comment_author = $meta->f('comment_author')) ? $comment_author : '';
+            $comment_content = is_string($comment_content = $meta->f('comment_content')) ? $comment_content : '';
+
             echo (new Div())
                 ->class('post-resolver')
                 ->items([
                     (new Link())
-                        ->href(App::frontend()->context()->posts->getURL() . '#c' . $meta->f('comment_id'))
-                        ->text(sprintf(__('Discussion closed as it is resolved in comment from %s'), $meta->f('comment_author'))),
-                    (new Text('', $meta->f('comment_content'))),
+                        ->href($post_url . '#c' . $comment_id)
+                        ->text(sprintf(__('Discussion closed as it is resolved in comment from %s'), $comment_author)),
+                    (new Text('', $comment_content)),
                 ])
                 ->render();
         }
@@ -214,20 +235,24 @@ class FrontendBehaviors
      */
     public static function FrontendSessionCommentAction(MetaRecord $post, MetaRecord $comment): void
     {
+        $cat_id = is_numeric($cat_id = $post->f('cat_id')) ? (int) $cat_id : 0;
+
         // Post resolved
         if (!empty($_POST['discussion_answer'])
             && $post->f('post_open_comment')
-            && Core::isDiscussionCategory($post->f('cat_id'))
+            && Core::isDiscussionCategory($cat_id)
         ) {
-            Core::setPostResolver($post, (int) $comment->f('comment_id'));
+            $comment_id = is_numeric($comment_id = $comment->f('comment_id')) ? (int) $comment_id : 0;
+
+            Core::setPostResolver($post, $comment_id);
             Http::redirect(Http::getSelfURI());
         }
 
         // Comment edition
         if (Core::canEditComment($post, $comment)) {
-            $post_id         = (int) $post->f('post_id');
-            $comment_id      = (int) $comment->f('comment_id');
-            $comment_content = Markdown::fromHTML((string) $comment->f('comment_content'));
+            $post_id         = is_numeric($post_id = $post->f('post_id')) ? (int) $post_id : 0;
+            $comment_id      = is_numeric($comment_id = $comment->f('comment_id')) ? (int) $comment_id : 0;
+            $comment_content = is_string($comment_content = $comment->f('comment_content')) ? Markdown::fromHTML($comment_content) : '';
 
             // update comment form
             if (!empty($_POST[My::id() . 'editcomment'])) {
@@ -242,7 +267,7 @@ class FrontendBehaviors
                                 (new Textarea('discussion_comment_content'))
                                     ->rows(7)
                                     //->value(App::frontend()->context()->remove_html((string) $comment->f('comment_content'))),
-                                    ->value(Html::escapeHTML((string) $comment_content)),
+                                    ->value(Html::escapeHTML($comment_content)),
                             ]),
                         (new Div())
                             ->class('controlset')
@@ -258,33 +283,35 @@ class FrontendBehaviors
                     ])
                     ->render();
                 // update comment action
-            } elseif (!empty($_POST[My::id() . 'updatecomment']) && !empty(trim($_POST['discussion_comment_content'] ?? ''))) {
-                FrontendUrl::loadFormater();
+            } elseif (!empty($_POST[My::id() . 'updatecomment'])) {
+                $content = isset($_POST['discussion_comment_content']) && is_string($content = $_POST['discussion_comment_content']) ? trim($content) : '';
+                if ($content !== '') {
+                    FrontendUrl::loadFormater();
 
-                $content = $_POST['discussion_comment_content'];
+                    # --BEHAVIOR-- publicBeforeCommentTransform -- string
+                    $buffer = App::behavior()->callBehavior('publicBeforeCommentTransform', $content);
+                    if ($buffer !== '') {
+                        $content = $buffer;
+                    } else {
+                        App::filter()->initWikiComment();
+                        $content = App::filter()->wikiTransform($content);
+                    }
+                    $content = App::filter()->HTMLfilter($content);
 
-                # --BEHAVIOR-- publicBeforeCommentTransform -- string
-                $buffer = App::behavior()->callBehavior('publicBeforeCommentTransform', $content);
-                if ($buffer !== '') {
-                    $content = $buffer;
-                } else {
-                    App::filter()->initWikiComment();
-                    $content = App::filter()->wikiTransform($content);
+                    if ($content === '') {
+                        return;
+                    }
+
+                    $cur = App::blog()->openCommentCursor();
+                    $cur->setField('comment_content', $content);
+
+                    App::auth()->sudo(App::blog()->updComment(...), $comment_id, $cur);
+
+                    $url_scan = is_string($url_scan = App::blog()->settings()->get('system')->get('url_scan')) ? $url_scan : '';
+                    $post_url = is_string($post_url = $post->getURL()) ? $post_url : '';
+
+                    Http::redirect($post_url . ($url_scan === 'query_string' ? '&' : '?') . 'cupd=' . $comment_id);
                 }
-                $content = App::filter()->HTMLfilter($content);
-
-                if ($content == '') {
-                    return;
-                }
-
-                $cur = App::blog()->openCommentCursor();
-                $cur->setField('comment_content', $content);
-
-                App::auth()->sudo(App::blog()->updComment(...), $comment_id, $cur);
-
-                Http::redirect(
-                    $post->getURL() . (App::blog()->settings()->get('system')->get('url_scan') == 'query_string' ? '&' : '?') . 'cupd=' . $comment_id
-                );
             }
         }
     }
@@ -296,9 +323,11 @@ class FrontendBehaviors
      */
     public static function FrontendSessionCommentForm(MetaRecord $post, MetaRecord $comment, ArrayObject $buttons): void
     {
+        $cat_id = is_numeric($cat_id = $post->f('cat_id')) ? (int) $cat_id : 0;
+
         // Resolve button
         if ($post->f('post_open_comment')
-            && Core::isDiscussionCategory($post->f('cat_id'))
+            && Core::isDiscussionCategory($cat_id)
             && Core::canResolvePost($post)
         ) {
             $buttons->append(
@@ -323,14 +352,19 @@ class FrontendBehaviors
      */
     public static function publicCommentBeforeContent(): void
     {
-        // succes message of post edition
-        if (($_REQUEST['cupd'] ?? '') == App::frontend()->context()->comments->f('comment_id')) {
-            echo (new Div())
-                ->items([
-                    (new Text('p', __('Comment successfully updated')))
-                        ->class('success'),
-                ])
-                ->render();
+        if (App::frontend()->context()->comments instanceof MetaRecord) {
+            $cupd       = isset($_REQUEST['cupd']) && is_numeric($cupd = $_REQUEST['cupd']) ? (int) $cupd : 0;
+            $comment_id = is_numeric($comment_id = App::frontend()->context()->comments->f('comment_id')) ? (int) $comment_id : 0;
+
+            if ($cupd !== 0 && $cupd === $comment_id) {
+                // succes message of post edition
+                echo (new Div())
+                    ->items([
+                        (new Text('p', __('Comment successfully updated')))
+                            ->class('success'),
+                    ])
+                    ->render();
+            }
         }
     }
 
@@ -339,7 +373,10 @@ class FrontendBehaviors
      */
     public static function publicCommentFormAfterContent(): void
     {
-        if (App::frontend()->context()->exists('posts') && Core::canResolvePost(App::frontend()->context()->posts)) {
+        if (App::frontend()->context()->exists('posts')
+            && App::frontend()->context()->posts instanceof MetaRecord
+            && Core::canResolvePost(App::frontend()->context()->posts)
+        ) {
             echo (new Para())
                 ->items([
                     (new Checkbox(My::id() . 'resolved', !empty($_POST[My::id() . 'resolved'])))
@@ -355,7 +392,10 @@ class FrontendBehaviors
      */
     public static function publicAfterCommentCreate(Cursor $cur, int $comment_id): void
     {
-        if (App::frontend()->context()->exists('posts') && !empty($_POST[My::id() . 'resolved'])) {
+        if (App::frontend()->context()->exists('posts')
+            && App::frontend()->context()->posts instanceof MetaRecord
+            && !empty($_POST[My::id() . 'resolved'])
+        ) {
             Core::setPostResolver(App::frontend()->context()->posts, $comment_id);
         }
     }
@@ -368,11 +408,16 @@ class FrontendBehaviors
     public static function publicPostBeforeGetPosts(ArrayObject $params, ?string $args): void
     {
         $rs = App::blog()->getPosts($params);
-        if (!$rs->isEmpty() && $rs->f('post_open_comment')
-                            && Core::isDiscussionCategory($rs->f('cat_id'))
-                            && !Core::getPostResolver((int) $rs->f('post_id'))->isEmpty()
-        ) {
-            Core::delPostResolver((int) $rs->f('post_id'));
+        if (!$rs->isEmpty()) {
+            $cat_id  = is_numeric($cat_id = $rs->f('cat_id')) ? (int) $cat_id : 0;
+            $post_id = is_numeric($post_id = $rs->f('post_id')) ? (int) $post_id : 0;
+
+            if ($rs->f('post_open_comment')
+                && Core::isDiscussionCategory($cat_id)
+                && !Core::getPostResolver($post_id)->isEmpty()
+            ) {
+                Core::delPostResolver($post_id);
+            }
         }
     }
 
@@ -381,14 +426,18 @@ class FrontendBehaviors
      */
     public static function FrontendSessionCommentsActive(CommentOptions $option): void
     {
-        // check if it is a discussion category else follow blog settings
-        if (!is_null($option->rs) && Core::isDiscussionCategory($option->rs->f('cat_id'))) {
-            // active if user is auth or unregistered comments are allowed
-            $option->setActive(App::auth()->check(My::id(), App::blog()->id()) || (bool) My::settings()->get('unregister_comment'));
+        if ($option->rs instanceof MetaRecord) {
+            $cat_id = is_numeric($cat_id = $option->rs->f('cat_id')) ? (int) $cat_id : 0;
 
-            // not moderate if user is auth else follow blog settings
-            if (App::auth()->check(My::id(), App::blog()->id())) {
-                $option->setModerate(false);
+            // check if it is a discussion category else follow blog settings
+            if (Core::isDiscussionCategory($cat_id)) {
+                // active if user is auth or unregistered comments are allowed
+                $option->setActive(App::auth()->check(My::id(), App::blog()->id()) || (bool) My::settings()->get('unregister_comment'));
+
+                // not moderate if user is auth else follow blog settings
+                if (App::auth()->check(My::id(), App::blog()->id())) {
+                    $option->setModerate(false);
+                }
             }
         }
     }
@@ -399,15 +448,21 @@ class FrontendBehaviors
     public static function FrontendSessionProfil(FrontendSessionProfil $profil): void
     {
         if (App::auth()->check(My::id(), App::blog()->id())) {
-            $li    = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
-            $lines = [
-                $li([App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), Html::escapeHTML(__('New discussion'))]),
-                $li([App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')]),
-            ];
+            $li = fn (string $url, string $title, string $text): Li => (new Li())
+                ->items([
+                    (new Link())
+                        ->href(App::blog()->url() . $url)
+                        ->title($title)
+                        ->text($text),
+                ]);
 
             $profil->addAction(My::id(), My::name(), [
                 (new Text('p', __('You can paticipate in discussions.'))),
-                (new Ul())->items($lines),
+                (new Ul())
+                    ->items([
+                        $li(App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), Html::escapeHTML(__('New discussion'))),
+                        $li(App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')),
+                    ]),
             ]);
         }
     }
@@ -420,10 +475,16 @@ class FrontendBehaviors
     public static function FrontendSessionWidget(ArrayObject $lines): void
     {
         if (App::auth()->check(My::id(), App::blog()->id())) {
-            $li = fn (array $line): Li => (new Li())->items([(new Link())->href(App::blog()->url() . $line[0])->title($line[1])->text($line[2])]);
+            $li = fn (string $url, string $title, string $text): Li => (new Li())
+                ->items([
+                    (new Link())
+                        ->href(App::blog()->url() . $url)
+                        ->title($title)
+                        ->text($text),
+                ]);
 
-            $lines->append($li([App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), __('New discussion')]));
-            $lines->append($li([App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')]));
+            $lines->append($li(App::url()->getURLFor(My::id(), 'create'), Html::escapeHTML(__('Create a new discussion')), __('New discussion')));
+            $lines->append($li(App::url()->getURLFor(My::id(), 'posts'), Html::escapeHTML(__('View my discussions')), __('My discussions')));
         }
     }
 
@@ -432,10 +493,14 @@ class FrontendBehaviors
      */
     public static function FrontendSessionAfterSignup(Cursor $cur): void
     {
-        $perms           = App::users()->getUserPermissions($cur->user_id);
-        $perms           = $perms[App::blog()->id()]['p'] ?? [];
-        $perms[My::id()] = true;
-        App::auth()->sudo([App::users(), 'setUserBlogPermissions'], $cur->user_id, App::blog()->id(), $perms);
+        $user_id = is_string($user_id = $cur->user_id) ? $user_id : '';
+
+        if ($user_id !== '') {
+            $perms           = App::users()->getUserPermissions($user_id);
+            $perms           = $perms[App::blog()->id()]['p'] ?? [];
+            $perms[My::id()] = true;
+            App::auth()->sudo([App::users(), 'setUserBlogPermissions'], $cur->user_id, App::blog()->id(), $perms);
+        }
     }
 
     /**
@@ -464,16 +529,16 @@ class FrontendBehaviors
     public static function publicCategoryBeforeGetCategories(ArrayObject $params, ?string $args): void
     {
         App::frontend()->context()->categories = App::blog()->getCategories($params);
-        if (!App::frontend()->context()->categories->isEmpty()
-            && Core::isRootCategory(App::frontend()->context()->categories->f('cat_id'))
-        ) {
-            FrontendUrl::serveTemplate('categories');
-            exit;
-        } elseif (!App::frontend()->context()->categories->isEmpty()
-            && Core::isDiscussionCategory(App::frontend()->context()->categories->f('cat_id')) 
-            && !Core::isRootCategory(App::frontend()->context()->categories->f('cat_id'))) {
-            FrontendUrl::serveTemplate('category');
-            exit;
+        if (!App::frontend()->context()->categories->isEmpty()) {
+            $cat_id = is_numeric($cat_id = App::frontend()->context()->categories->f('cat_id')) ? (int) $cat_id : 0;
+            if (Core::isRootCategory($cat_id)) {
+                FrontendUrl::serveTemplate('categories');
+                exit;
+            }
+            if (Core::isDiscussionCategory($cat_id)) {
+                FrontendUrl::serveTemplate('category');
+                exit;
+            }
         }
     }
 
@@ -485,9 +550,9 @@ class FrontendBehaviors
      */
     public static function templatePrepareParams(array $tpl, ArrayObject $attr, string $content): string
     {
-        if ($tpl['tag']       == 'Entries'
-            && $tpl['method'] == 'blog::getPosts'
-            && in_array(App::url()->getType(), ['category'])
+        if ($tpl['tag']              === 'Entries'
+            && $tpl['method']        === 'blog::getPosts'
+            && App::url()->getType() === 'category'
         ) {
             return
                 'if (' . Core::class . '::isDiscussionCategory(App::frontend()->context()->categories->cat_id)){' .

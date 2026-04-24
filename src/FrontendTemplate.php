@@ -6,20 +6,11 @@ namespace Dotclear\Plugin\Discussion;
 
 use ArrayObject;
 use Dotclear\App;
-use Dotclear\Helper\Html\Form\Checkbox;
-use Dotclear\Helper\Html\Form\Div;
+use Dotclear\Database\MetaRecord;
 use Dotclear\Helper\Html\Form\Form;
-use Dotclear\Helper\Html\Form\Hidden;
-use Dotclear\Helper\Html\Form\Input;
-use Dotclear\Helper\Html\Form\Label;
 use Dotclear\Helper\Html\Form\Link;
-use Dotclear\Helper\Html\Form\Note;
 use Dotclear\Helper\Html\Form\Para;
-use Dotclear\Helper\Html\Form\Password;
-use Dotclear\Helper\Html\Form\Submit;
-use Dotclear\Helper\Html\Form\Text;
 use Dotclear\Helper\Html\Html;
-use Dotclear\Helper\Network\Http;
 
 /**
  * @brief       FrontendSession module template specifics.
@@ -50,7 +41,7 @@ class FrontendTemplate
         $if   = [];
         $sign = fn ($a): string => (bool) $a ? '' : '!';
 
-        $operator = isset($attr['operator']) ? App::frontend()->template()::getOperator($attr['operator']) : '&&';
+        $operator = isset($attr['operator']) && is_string($operator = $attr['operator']) ? App::frontend()->template()::getOperator($operator) : '&&';
 
         // success message
         if (isset($attr['success'])) {
@@ -89,11 +80,12 @@ class FrontendTemplate
     public static function DiscussionFormURL(ArrayObject $attr): string
     {
         $page = '';
-        if (isset($attr['page']) && in_array($attr['page'], ['list', 'create'])) {
+        if (isset($attr['page']) && is_string($attr['page']) && in_array($attr['page'], ['list', 'create'])) {
             $page = $attr['page'];
             unset($attr['page']);
         }
-        return self::filter($attr, 'App::blog()->url() . App::url()->getURLFor("' . My::id() . '", "'. $page . '")');
+
+        return self::filter($attr, 'App::blog()->url() . App::url()->getURLFor("' . My::id() . '", "' . $page . '")');
     }
 
     /**
@@ -113,8 +105,8 @@ class FrontendTemplate
      */
     public static function DiscussionPreviewIf(ArrayObject $attr, string $content): string
     {
-        return '<?php if(App::frontend()->context()->post_preview !== null && App::frontend()->context()->post_preview[\'preview\']) : ?>' . 
-            $content . 
+        return '<?php if(App::frontend()->context()->post_preview !== null && App::frontend()->context()->post_preview[\'preview\']) : ?>' .
+            $content .
             '<?php endif; ?>';
     }
 
@@ -165,7 +157,9 @@ class FrontendTemplate
      */
     public static function DiscussionCategoriesCombo(ArrayObject $attr): string
     {
-        return self::filter($attr, '(new Dotclear\Helper\Html\Form\Select(\'discussion_category\'))' .
+        return self::filter(
+            $attr,
+            '(new Dotclear\Helper\Html\Form\Select(\'discussion_category\'))' .
             '->items(' . Core::class . '::getCategoriesCombo())' .
             '->default((string) (int) ($_POST[\'discussion_category\'] ?? (App::frontend()->context()->categories?->f(\'cat_id\') ?: \'\')))' .
             '->render()'
@@ -212,23 +206,19 @@ class FrontendTemplate
      */
     public static function DiscussionCategoryComments(ArrayObject $attr, string $content): string
     {
-        $p = 
-            '$params[\'cat_id\'] = App::frontend()->context()->categories->cat_id;' .
+        $p = '$params[\'cat_id\'] = App::frontend()->context()->categories->cat_id;' .
             '$params[\'order\'] = \'comment_dt desc\';';
 
-        $lastn = 0;
-        if (isset($attr['lastn'])) {
-            $lastn = abs((int) $attr['lastn']) + 0;
-        }
+        $lastn = isset($attr['lastn']) && is_numeric($lastn = $attr['lastn']) ? (int) $lastn : 0;
         if ($lastn > 0) {
             $p .= '$params[\'limit\'] = ' . $lastn . ';';
         }
         if (isset($attr['no_content']) && $attr['no_content']) {
             $p .= '$params[\'no_content\'] = true;';
         }
-    
-        return 
-            '<?php ' . $p . 
+
+        return
+            '<?php ' . $p .
             'App::frontend()->context()->comments_params = $params;' .
             'App::frontend()->context()->comments = App::blog()->getComments($params); unset($params);' .
             'while (App::frontend()->context()->comments->fetch()) : ' .
@@ -249,7 +239,7 @@ class FrontendTemplate
      */
     public static function CategoryDescription(ArrayObject $attr): string
     {
-        return self::filter($attr, 'App::frontend()->context()->categories->cat_desc') . 
+        return self::filter($attr, 'App::frontend()->context()->categories->cat_desc') .
             self::filter($attr, self::class . '::newDiscussionButton()');
     }
 
@@ -263,7 +253,7 @@ class FrontendTemplate
         $if   = [];
         $sign = fn ($a): string => (bool) $a ? '!' : '';
 
-        $operator = isset($attr['operator']) ? App::frontend()->template()::getOperator($attr['operator']) : '&&';
+        $operator = isset($attr['operator']) && is_string($operator = $attr['operator']) ? App::frontend()->template()::getOperator($operator) : '&&';
 
         if (isset($attr['has_discussion'])) {
             $if[] = $sign($attr['has_discussion']) . Core::class . '::getUserPosts()->isEmpty()';
@@ -320,19 +310,22 @@ class FrontendTemplate
 
     public static function newDiscussionButton(): string
     {
-        if (App::url()->getType() == 'category'
-            && Core::isDiscussionCategory(App::frontend()->context()->categories->f('cat_id'))
+        if (App::url()->getType() === 'category'
+            && App::frontend()->context()->categories instanceof MetaRecord
             && App::auth()->check(My::id(), App::blog()->id())
         ) {
-            return (new Para())
-                ->items([
-                    (new Link())
-                        ->class('button')
-                        ->href(App::blog()->url() . App::url()->getURLFor(My::id(), 'create') . '/category/' . App::frontend()->context()->categories->f('cat_id'))
-                        ->title(Html::escapeHTML(__('Create a new discussion')))
-                        ->text(__('New discussion'))
-                ])
-                ->render();
+            $cat_id = is_numeric($cat_id = App::frontend()->context()->categories->f('cat_id')) ? (int) $cat_id : 0;
+            if (Core::isDiscussionCategory($cat_id)) {
+                return (new Para())
+                    ->items([
+                        (new Link())
+                            ->class('button')
+                            ->href(App::blog()->url() . App::url()->getURLFor(My::id(), 'create') . '/category/' . $cat_id)
+                            ->title(Html::escapeHTML(__('Create a new discussion')))
+                            ->text(__('New discussion')),
+                    ])
+                    ->render();
+            }
         }
 
         return '';
