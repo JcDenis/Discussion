@@ -44,8 +44,8 @@ class FrontendBehaviors
      */
     public static function urlHandlerBeforeGetData(Ctx $ctx): void
     {
-        if (!self::$loop && $ctx->exists('posts') && $ctx->categories instanceof MetaRecord) {
-            $cat_id = is_numeric($cat_id = $ctx->categories->f('cat_id')) ? (int) $cat_id : 0;
+        if (!self::$loop && $ctx->exists('posts') && $ctx->posts instanceof MetaRecord) {
+            $cat_id = is_numeric($cat_id = $ctx->posts->f('cat_id')) ? (int) $cat_id : 0;
             if (Core::isDiscussionCategory($cat_id)) {
                 self::$loop = true;
                 FrontendUrl::serveTemplate('post');
