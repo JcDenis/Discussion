@@ -126,13 +126,13 @@ class BackendBehaviors
         $_Int  = fn (string $name, int $default = 0): int => isset($_POST[$name]) && is_numeric($val = $_POST[$name]) ? (int) $val : $default;
         $_Str  = fn (string $name, string $default = ''): string => isset($_POST[$name]) && is_string($val = $_POST[$name]) ? $val : $default;
 
-        $blog_settings->get(My::id())->put('active', $_Bool(My::id() . 'active'), 'boolean');
-        $blog_settings->get(My::id())->put('signup_perm', $_Bool(My::id() . 'signup_perm'), 'boolean');
-        $blog_settings->get(My::id())->put('publish_post', $_Bool(My::id() . 'publish_post'), 'boolean');
-        $blog_settings->get(My::id())->put('canedit_post', $_Bool(My::id() . 'canedit_post'), 'boolean');
-        $blog_settings->get(My::id())->put('canedit_time', $_Int(My::id() . 'canedit_time'), 'integer');
-        $blog_settings->get(My::id())->put('unregister_comment', $_Bool(My::id() . 'unregister_comment'), 'boolean');
-        $blog_settings->get(My::id())->put('root_cat', $_Int(My::id() . 'root_cat'), 'integer');
-        $blog_settings->get(My::id())->put('artifact', $_Str(My::id() . 'artifact'), 'string');
+        $blog_settings->get(My::id())->put('active', $_Bool(My::id() . 'active'), App::blogWorkspace()::NS_BOOL);
+        $blog_settings->get(My::id())->put('signup_perm', $_Bool(My::id() . 'signup_perm'), App::blogWorkspace()::NS_BOOL);
+        $blog_settings->get(My::id())->put('publish_post', $_Bool(My::id() . 'publish_post'), App::blogWorkspace()::NS_BOOL);
+        $blog_settings->get(My::id())->put('canedit_post', $_Bool(My::id() . 'canedit_post'), App::blogWorkspace()::NS_BOOL);
+        $blog_settings->get(My::id())->put('canedit_time', $_Int(My::id() . 'canedit_time'), App::blogWorkspace()::NS_INT);
+        $blog_settings->get(My::id())->put('unregister_comment', $_Bool(My::id() . 'unregister_comment'), App::blogWorkspace()::NS_BOOL);
+        $blog_settings->get(My::id())->put('root_cat', $_Int(My::id() . 'root_cat'), App::blogWorkspace()::NS_INT);
+        $blog_settings->get(My::id())->put('artifact', $_Str(My::id() . 'artifact'), App::blogWorkspace()::NS_STRING);
     }
 }

@@ -31,12 +31,12 @@ class Install
         }
 
         try {
-            My::settings()->put('active', false, 'boolean', 'Enable users to post discussions on frontend', false, true);
-            My::settings()->put('publish_post', false, 'boolean', 'Publish new discussion without validation', false, true);
-            My::settings()->put('canedit_post', false, 'boolean', 'Allow post edition on frontend', false, true);
-            My::settings()->put('canedit_time', 0, 'integer', 'Limit post edition to a given time', false, true);
-            My::settings()->put('signup_perm', false, 'boolean', 'Add user permission on signup', false, true);
-            My::settings()->put('root_cat', 0, 'integer', 'Limit discussion to this category children', false, true);
+            My::settings()->put('active', false, App::blogWorkspace()::NS_BOOL, 'Enable users to post discussions on frontend', false, true);
+            My::settings()->put('publish_post', false, App::blogWorkspace()::NS_BOOL, 'Publish new discussion without validation', false, true);
+            My::settings()->put('canedit_post', false, App::blogWorkspace()::NS_BOOL, 'Allow post edition on frontend', false, true);
+            My::settings()->put('canedit_time', 0, App::blogWorkspace()::NS_INT, 'Limit post edition to a given time', false, true);
+            My::settings()->put('signup_perm', false, App::blogWorkspace()::NS_BOOL, 'Add user permission on signup', false, true);
+            My::settings()->put('root_cat', 0, App::blogWorkspace()::NS_INT, 'Limit discussion to this category children', false, true);
 
             return true;
         } catch (Exception $e) {
