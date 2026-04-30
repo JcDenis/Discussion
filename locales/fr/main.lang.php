@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 // Language: Français
 // Module: Discussion - 1.13.3
 // Date: 2025-11-08 08:46:29
