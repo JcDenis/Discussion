@@ -18,14 +18,14 @@ $this->registerModule(
     'Discussion',
     'Allow user to post from frontend.',
     'Jean-Christian Paul Denis and Contributors',
-    '1.16',
+    '1.17',
     [
         'requires' => [
-            ['core', '2.36'],
-            ['FrontendSession', '0.30'],
-            ['commentsWikibar', '7.5'], // optional
-            ['legacyMarkdown', '7.8'], // optional
-            //['ReadingTracking', '0.4'], // optional
+            ['core', '2.37'],
+            ['FrontendSession', '0.40'],
+            ['commentsWikibar', '7.7'], // optional
+            ['legacyMarkdown', '10.1'], // optional
+            //['ReadingTracking', '0.13'], // optional
         ],
         // @phpstan-ignore binaryOp.invalid
         'settings'    => ['blog' => '#params.' . $this->id . '_params'],

@@ -1,3 +1,12 @@
+Discussion 0.15 to 1.17 - 2026.05.02
+===========================================================
+* Fix fix fix...
+* Code review
+* Bump Dotclear from 2.36 to 2.37
+* Bump FrontendSession from 0.30 to 0.40
+* Bump commentsWikibar from 7.5 to 7.7
+* Bump legacyMarkdown from 7.8 to 10.1
+
 Discussion 0.14 - 2026.03.28
 ===========================================================
 * Lots of fixes..
