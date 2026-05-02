@@ -39,8 +39,8 @@ class Install
             My::settings()->put('root_cat', 0, App::blogWorkspace()::NS_INT, 'Limit discussion to this category children', false, true);
 
             return true;
-        } catch (Exception $e) {
-            App::error()->add($e->getMessage());
+        } catch (Exception $exception) {
+            App::error()->add($exception->getMessage());
 
             return false;
         }

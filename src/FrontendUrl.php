@@ -36,6 +36,7 @@ class FrontendUrl
         if (str_starts_with($args, '/')) {
             $args = substr($args, 1);
         }
+
         $exp = explode('/', $args);
 
         switch ($exp[0]) {
@@ -78,9 +79,9 @@ class FrontendUrl
         ) {
             App::url()::p404();
         }
-
         // from URL
-        $post_id = $post_cat = 0;
+        $post_id  = 0;
+        $post_cat = 0;
         foreach ($args as $k => $arg) {
             if ($arg === 'post' && isset($args[$k + 1]) && is_numeric($args[$k + 1])) {
                 App::frontend()->context()->discussion_success = __('Discussion successfully created.');
@@ -88,6 +89,7 @@ class FrontendUrl
                     $post_id = (int) $args[$k + 1];
                 }
             }
+
             if ($arg === 'category' && isset($args[$k + 1]) && is_numeric($args[$k + 1])) {
                 $cat_id = (int) $args[$k + 1];
                 if (Core::isDiscussionCategory($cat_id)) {
@@ -97,6 +99,7 @@ class FrontendUrl
                 }
             }
         }
+
         // post content format force to markdown
         $post_format = 'markdown';
 
@@ -127,9 +130,11 @@ class FrontendUrl
             if ($post_cat === 0) {
                 self::$form_error[] = __('You must select a category.');
             }
+
             if ($post_title === '') {
                 self::$form_error[] = __('You must set a discussion title.');
             }
+
             if ($post_content === '') {
                 self::$form_error[] = __('You must set a discussion content.');
             }
@@ -248,10 +253,12 @@ class FrontendUrl
         if (!App::filter()->wiki()) {
             App::filter()->initWikiPost();
         }
+
         if (App::filter()->wiki()) {
             // add wiki tranform capabilities for submission
             App::formater()->addEditorFormater('dcLegacyEditor', 'wiki', App::filter()->wiki()->transform(...));
         }
+
         // add markdown tranform capabilities for submission
         /* @phpstan-ignore-next-line */
         App::formater()->addEditorFormater('dcLegacyEditor', 'markdown', Markdown::convert(...));
@@ -265,11 +272,11 @@ class FrontendUrl
         // use only dotty tplset
         $theme  = is_string($theme = App::blog()->settings()->system->theme) ? $theme : '';
         $tplset = is_string($tplset = App::themes()->moduleInfo($theme, 'tplset')) ? $tplset : '';
-        if (!in_array($tplset, ['dotty', 'mustek'])) {
+        if (!in_array($tplset, ['dotty', 'mustek'], true)) {
             App::url()::p404();
         }
 
-        if (count(self::$form_error) > 0) {
+        if (self::$form_error !== []) {
             App::frontend()->context()->form_error = implode("\n", self::$form_error);
         }
 

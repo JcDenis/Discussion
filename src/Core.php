@@ -125,6 +125,7 @@ class Core
             if ($cat_level - $level !== 0) {
                 $option->class('sub-option' . ($cat_level - $level));
             }
+
             $categories_combo[] = $option;
         }
 
@@ -136,12 +137,14 @@ class Core
         if (is_null($cat_id)) {
             return false;
         }
+
         $rs = self::getCategories();
         while ($rs->fetch()) {
             $current_cat_id = is_numeric($current_cat_id = $rs->f('cat_id')) ? (int) $current_cat_id : 0;
             if (self::isRootCategory($current_cat_id)) {
                 continue;
             }
+
             if ($cat_id === $current_cat_id) {
                 return true;
             }
@@ -241,6 +244,7 @@ class Core
                         if (App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())) {
                             return true;
                         }
+
                         $user_id = is_string($user_id = $post->f('user_id')) ? $user_id : '';
 
                         return $user_id !== '' && App::auth()->userID() === $user_id;
@@ -269,6 +273,7 @@ class Core
                         if (App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())) {
                             return true;
                         }
+
                         $user_id = is_string($user_id = $comment->f('author')) ? $user_id : '';
 
                         return $user_id !== '' && App::auth()->userID() === $user_id;
@@ -303,6 +308,7 @@ class Core
                 if (App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())) {
                     return true;
                 }
+
                 $user_id = is_string($user_id = $rs->f('user_id')) ? $user_id : '';
 
                 return $user_id !== '' && App::auth()->userID() === $user_id;

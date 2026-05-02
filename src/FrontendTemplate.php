@@ -47,12 +47,15 @@ class FrontendTemplate
         if (isset($attr['success'])) {
             $if[] = $sign($attr['success']) . "(App::frontend()->context()->discussion_success != '')";
         }
+
         if (isset($attr['published'])) {
             $if[] = $sign($attr['published']) . My::class . "::settings()->get('publish_post')";
         }
+
         if (isset($attr['has_root_cat'])) {
             $if[] = $sign($attr['has_root_cat']) . '(' . My::class . "::settings()->get('root_cat') != '')";
         }
+
         if (isset($attr['preview'])) {
             $if[] = $sign($attr['preview']) . "(App::frontend()->context()->post_preview !== null && App::frontend()->context()->post_preview['preview'])";
         }
@@ -80,7 +83,7 @@ class FrontendTemplate
     public static function DiscussionFormURL(ArrayObject $attr): string
     {
         $page = '';
-        if (isset($attr['page']) && is_string($attr['page']) && in_array($attr['page'], ['list', 'create'])) {
+        if (isset($attr['page']) && is_string($attr['page']) && in_array($attr['page'], ['list', 'create'], true)) {
             $page = $attr['page'];
             unset($attr['page']);
         }
@@ -213,6 +216,7 @@ class FrontendTemplate
         if ($lastn > 0) {
             $p .= '$params[\'limit\'] = ' . $lastn . ';';
         }
+
         if (isset($attr['no_content']) && $attr['no_content']) {
             $p .= '$params[\'no_content\'] = true;';
         }
