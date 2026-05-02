@@ -79,6 +79,7 @@ class FrontendUrl
         ) {
             App::url()::p404();
         }
+
         // from URL
         $post_id  = 0;
         $post_cat = 0;
