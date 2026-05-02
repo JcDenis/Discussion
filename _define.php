@@ -37,6 +37,6 @@ $this->registerModule(
         'details' => 'https://github.com/JcDenis/' . $this->id . '/',
         // @phpstan-ignore binaryOp.invalid
         'repository' => 'https://raw.githubusercontent.com/JcDenis/' . $this->id . '/master/dcstore.xml',
-        'date'       => '2026-05-02T09:13:25+00:00',
+        'date'       => '2026-05-02T09:48:31+00:00',
     ]
 );
