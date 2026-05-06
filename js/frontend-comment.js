@@ -15,11 +15,11 @@ dotclear.DiscussionCommentOptions = (source, target) => {
     const text = source.querySelector('.comment-content').textContent;
     if (text?.length) {
       if (dotclear.Discussionreply.syntax === 'markdown') {
-        target.innerHTML += '> ' + `[${dotclear.Discussionreply.response_text}](#c${source.getAttribute('id').substr(1)})` + '\n'; // + content;
+        target.innerHTML += `> [${dotclear.Discussionreply.response_text}](#c${source.getAttribute('id').substr(1)})\n`; // + content;
       } else if (dotclear.Discussionreply.syntax === 'wiki') {
-        target.innerHTML += '>' + `[${dotclear.Discussionreply.response_text}|#c${source.getAttribute('id').substr(1)}]` + '\n'; // + content;
+        target.innerHTML += `>[${dotclear.Discussionreply.response_text}|#c${source.getAttribute('id').substr(1)}]\n`; // + content;
       } else {
-        target.innerHTML += '>' + `<a href="#c${source.getAttribute('id').substr(1)}">${dotclear.Discussionreply.response_text}` + '</a>\n'; // + content;
+        target.innerHTML += `><a href="#c${source.getAttribute('id').substr(1)}">${dotclear.Discussionreply.response_text}</a>\n`; // + content;
       }
       target.focus();
     }
