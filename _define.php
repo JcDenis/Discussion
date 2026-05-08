@@ -27,16 +27,12 @@ $this->registerModule(
             ['legacyMarkdown', '10.1'], // optional
             //['ReadingTracking', '0.13'], // optional
         ],
-        // @phpstan-ignore binaryOp.invalid
         'settings'    => ['blog' => '#params.' . $this->id . '_params'],
         'permissions' => 'My',
         'type'        => 'plugin',
-        // @phpstan-ignore binaryOp.invalid
-        'support' => 'https://github.com/JcDenis/' . $this->id . '/issues',
-        // @phpstan-ignore binaryOp.invalid
-        'details' => 'https://github.com/JcDenis/' . $this->id . '/',
-        // @phpstan-ignore binaryOp.invalid
-        'repository' => 'https://raw.githubusercontent.com/JcDenis/' . $this->id . '/master/dcstore.xml',
-        'date'       => '2026-05-02T09:48:31+00:00',
+        'support'     => 'https://github.com/JcDenis/' . $this->id . '/issues',
+        'details'     => 'https://github.com/JcDenis/' . $this->id . '/',
+        'repository'  => 'https://raw.githubusercontent.com/JcDenis/' . $this->id . '/master/dcstore.xml',
+        'date'        => '2026-05-02T09:48:31+00:00',
     ]
 );
