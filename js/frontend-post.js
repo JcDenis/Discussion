@@ -1,4 +1,4 @@
-/*global jQuery, dotclear, jsToolBar */
+/*global jQuery, dotclear */
 'use strict';
 
 dotclear.getDiscussionResolver = (post) => {
