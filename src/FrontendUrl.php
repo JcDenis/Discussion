@@ -273,7 +273,7 @@ class FrontendUrl
         // use only dotty tplset
         $theme  = is_string($theme = App::blog()->settings()->system->theme) ? $theme : '';
         $tplset = is_string($tplset = App::themes()->moduleInfo($theme, 'tplset')) ? $tplset : '';
-        if (!in_array($tplset, ['dotty', 'mustek'], true)) {
+        if (!in_array($tplset, ['glaz', 'dotty', 'mustek'], true)) {
             App::url()::p404();
         }
 
