@@ -148,7 +148,7 @@ class FrontendUrl
                 App::frontend()->context()->post_preview['content']    = $content;
                 App::frontend()->context()->post_preview['rawcontent'] = $post_content;
                 App::frontend()->context()->post_preview['preview']    = true;
-            } elseif (self::$form_error === [] && !$preview) {
+            } elseif (self::$form_error === []) {
                 try {
                     $cur = App::blog()->openPostCursor();
                     $cur->setField('user_id', App::auth()->userID());
