@@ -21,7 +21,7 @@ $this->registerModule(
     '1.17.1',
     [
         'requires' => [
-            ['core', '2.37'],
+            ['core', '2.39'],
             ['FrontendSession', '0.40'],
             ['commentsWikibar', '7.7'], // optional
             ['legacyMarkdown', '10.1'], // optional

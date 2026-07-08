@@ -203,7 +203,7 @@ class Core
                 }
 
                 $post_id  = is_numeric($post_id = $rs->f('post_id')) ? (int) $post_id : 0;
-                $timezone = is_string($timezone = App::blog()->settings()->system->blog_timezone) ? $timezone : 'UTC';
+                $timezone = App::blog()->settings()->get('system')->getStr('blog_timezone', false) ?: 'UTC';
 
                 $cur = App::blog()->openPostCursor();
                 $cur->setField('post_upddt', date('Y-m-d H:i:s', time() + Date::getTimeOffset($timezone)));
@@ -223,8 +223,8 @@ class Core
         return App::task()->checkContext('FRONTEND') // only on frontend
             && App::url()->getType() == 'post' // only on post page
             && My::settings()->get('canedit_post') // only if edition is allowed
-            && App::blog()->settings()->get('commentsWikibar')->get('active') !== false // only if plugin commentsWikibar is active
-            && App::blog()->settings()->get('system')->get('markdown_comments'); // only if markdown syntax is active
+            && App::blog()->settings()->get('commentsWikibar')->getBool('active') // only if plugin commentsWikibar is active
+            && App::blog()->settings()->get('system')->getBool('markdown_comments'); // only if markdown syntax is active
     }
 
     /**

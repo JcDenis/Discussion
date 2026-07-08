@@ -156,7 +156,7 @@ class FrontendUrl
                     $cur->setField('post_title', $post_title);
                     $cur->setField('post_content', $post_content);
                     $cur->setField('post_format', $post_format);
-                    $cur->setField('post_lang', App::blog()->settings()->get('system')->get('lang'));
+                    $cur->setField('post_lang', App::blog()->settings()->get('system')->getStr('lang'));
                     $cur->setField('post_open_comment', 1);
                     $cur->setField('cat_id', $post_cat);
 
@@ -195,7 +195,7 @@ class FrontendUrl
         $page = App::url()::getPageNumber($uri) ?: 1;
         App::frontend()->setPageNumber($page);
 
-        $nbpp = is_numeric($nbpp = App::blog()->settings()->get('system')->get('nb_post_per_page')) ? (int) $nbpp : 20;
+        $nbpp = App::blog()->settings()->get('system')->getInt('nb_post_per_page') ?? 20;
 
         App::frontend()->context()->__set('nb_entry_first_page', $nbpp);
         App::frontend()->context()->__set('nb_entry_per_page', $nbpp);
@@ -271,7 +271,7 @@ class FrontendUrl
     public static function serveTemplate(string $template): void
     {
         // use only dotty tplset
-        $theme  = is_string($theme = App::blog()->settings()->system->theme) ? $theme : '';
+        $theme  = App::blog()->settings()->get('system')->getStr('theme', false);
         $tplset = is_string($tplset = App::themes()->moduleInfo($theme, 'tplset')) ? $tplset : '';
         if (!in_array($tplset, ['glaz', 'dotty', 'mustek'], true)) {
             App::url()::p404();

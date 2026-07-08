@@ -61,7 +61,7 @@ class FrontendBehaviors
     public static function publicHeadContent(): void
     {
         // style
-        $theme  = is_string($theme = App::blog()->settings()->system->theme) ? $theme : '';
+        $theme  = App::blog()->settings()->get('system')->getStr('theme', false);
         $tplset = is_string($tplset = App::themes()->moduleInfo($theme, 'tplset')) ? $tplset : '';
         if (in_array($tplset, ['glaz', 'dotty', 'mustek'], true)) {
             echo My::cssLoad('frontend-' . $tplset);
@@ -78,9 +78,9 @@ class FrontendBehaviors
         // reply
         if (App::auth()->userID() != '') {
             $syntax = 'html';
-            if (App::blog()->settings()->get('system')->get('wiki_comments')) {
+            if (App::blog()->settings()->get('system')->getBool('wiki_comments')) {
                 $syntax = 'wiki';
-                if (App::blog()->settings()->get('system')->get('markdown_comments')) {
+                if (App::blog()->settings()->get('system')->getBool('markdown_comments')) {
                     $syntax = 'markdown';
                 }
             }
@@ -156,7 +156,7 @@ class FrontendBehaviors
 
                     App::auth()->sudo(App::blog()->updPost(...), $post_id, $cur);
 
-                    $url_scan = is_string($url_scan = App::blog()->settings()->get('system')->get('url_scan')) ? $url_scan : '';
+                    $url_scan = App::blog()->settings()->get('system')->getStr('url_scan', false);
                     $post_url = is_string($post_url = $post->getURL()) ? $post_url : '';
 
                     Http::redirect($post_url . ($url_scan === 'query_string' ? '&' : '?') . 'pupd=' . $post_id);
@@ -310,7 +310,7 @@ class FrontendBehaviors
 
                     App::auth()->sudo(App::blog()->updComment(...), $comment_id, $cur);
 
-                    $url_scan = is_string($url_scan = App::blog()->settings()->get('system')->get('url_scan')) ? $url_scan : '';
+                    $url_scan = App::blog()->settings()->get('system')->getStr('url_scan', false);
                     $post_url = is_string($post_url = $post->getURL()) ? $post_url : '';
 
                     Http::redirect($post_url . ($url_scan === 'query_string' ? '&' : '?') . 'cupd=' . $comment_id);
