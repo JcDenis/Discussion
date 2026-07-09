@@ -157,7 +157,7 @@ class FrontendBehaviors
                     App::auth()->sudo(App::blog()->updPost(...), $post_id, $cur);
 
                     $url_scan = App::blog()->settings()->get('system')->getStr('url_scan', false);
-                    $post_url = is_string($post_url = $post->getURL()) ? $post_url : '';
+                    $post_url = $post->getURL();
 
                     Http::redirect($post_url . ($url_scan === 'query_string' ? '&' : '?') . 'pupd=' . $post_id);
                 }
@@ -214,11 +214,11 @@ class FrontendBehaviors
 
         $meta = Core::getPostResolver($post_id);
         if (!$meta->isEmpty()) {
-            $post_url = is_string($post_url = App::frontend()->context()->posts->getURL()) ? $post_url : '';
+            $post_url = App::frontend()->context()->posts->getURL();
 
-            $comment_id      = is_numeric($comment_id = $meta->f('comment_id')) ? (int) $comment_id : 0;
-            $comment_author  = is_string($comment_author = $meta->f('comment_author')) ? $comment_author : '';
-            $comment_content = is_string($comment_content = $meta->f('comment_content')) ? $comment_content : '';
+            $comment_id      = $meta->intField('comment_id');
+            $comment_author  = $meta->strField('comment_author');
+            $comment_content = $meta->strField('comment_content');
 
             echo (new Div())
                 ->class('post-resolver')
@@ -311,7 +311,7 @@ class FrontendBehaviors
                     App::auth()->sudo(App::blog()->updComment(...), $comment_id, $cur);
 
                     $url_scan = App::blog()->settings()->get('system')->getStr('url_scan', false);
-                    $post_url = is_string($post_url = $post->getURL()) ? $post_url : '';
+                    $post_url = $post->getURL();
 
                     Http::redirect($post_url . ($url_scan === 'query_string' ? '&' : '?') . 'cupd=' . $comment_id);
                 }

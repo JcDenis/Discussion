@@ -54,9 +54,9 @@ class Widgets
         $lines = [];
         $rs    = Core::getPosts(['limit' => $widget->get('limit')]);
         while ($rs->fetch()) {
-            $url        = is_string($url = $rs->getURL()) ? $url : '';
-            $post_title = is_string($post_title = $rs->f('post_title')) ? $post_title : '';
-            $cat_title  = is_string($cat_title = $rs->f('cat_title')) ? $cat_title : '';
+            $url        = $rs->getURL();
+            $post_title = $rs->strField('post_title');
+            $cat_title  = $rs->strField('cat_title');
 
             $lines[] = (new Li())
                 ->items([

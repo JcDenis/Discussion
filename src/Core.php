@@ -233,7 +233,7 @@ class Core
     public static function canEditPost(MetaRecord $post): bool
     {
         if (self::canEdit()) {
-            $post_ts      = is_numeric($post_ts = $post->getTS()) ? (int) $post_ts : 0;
+            $post_ts      = $post->getTS();
             $canedit_time = is_numeric($canedit_time = My::settings()->get('canedit_time')) ? (int) $canedit_time : 0;
             if (($post_ts + $canedit_time) > time()) { // only on limited time
                 $cat_id = is_numeric($cat_id = $post->f('cat_id')) ? (int) $cat_id : 0;
@@ -262,7 +262,7 @@ class Core
     public static function canEditComment(MetaRecord $post, MetaRecord $comment): bool
     {
         if (self::canEdit()) {
-            $comment_ts   = is_numeric($comment_ts = $comment->getTS()) ? (int) $comment_ts : 0;
+            $comment_ts   = $comment->getTS();
             $canedit_time = is_numeric($canedit_time = My::settings()->get('canedit_time')) ? (int) $canedit_time : 0;
             if (($comment_ts + $canedit_time) > time()) { // only on limited time
                 $cat_id = is_numeric($cat_id = $post->f('cat_id')) ? (int) $cat_id : 0;
