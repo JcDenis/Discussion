@@ -361,7 +361,7 @@ class Core
 
             $posts[$post_id] = $meta->isEmpty() ?
                 MetaRecord::newFromArray([]) :
-                App::blog()->getComments(['post_id' => $post_id, 'comment_id' => $meta->meta_id, 'limit' => 1]);
+                App::blog()->getComments(['post_id' => $post_id, 'comment_id' => $meta->strField('meta_id'), 'limit' => 1]);
 
             self::$resolvers = $posts;
         }
