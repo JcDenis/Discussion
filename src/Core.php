@@ -45,7 +45,7 @@ class Core
         if (self::hasRootCategory()) {
             $rs = App::blog()->getCategories(['cat_id' => self::getRootCategory()]);
             if (!$rs->isEmpty()) {
-                $cat_title = is_string($cat_title = $rs->f('cat_title')) ? $cat_title : '';
+                $cat_title = $rs->strField('cat_title');
                 if ($cat_title !== '') {
                     return $cat_title;
                 }
@@ -60,7 +60,7 @@ class Core
         if (self::hasRootCategory()) {
             $rs = App::blog()->getCategories(['cat_id' => self::getRootCategory()]);
             if (!$rs->isEmpty()) {
-                $cat_url = is_string($cat_url = $rs->f('cat_url')) ? $cat_url : '';
+                $cat_url = $rs->strField('cat_url');
                 if ($cat_url !== '') {
                     return App::blog()->url() . App::url()->getURLFor('category', Html::sanitizeURL($cat_url));
                 }
@@ -75,7 +75,7 @@ class Core
         if (self::hasRootCategory()) {
             $rs = App::blog()->getCategories(['cat_id' => self::getRootCategory()]);
             if (!$rs->isEmpty()) {
-                $cat_desc = is_string($cat_desc = $rs->f('cat_desc')) ? $cat_desc : '';
+                $cat_desc = $rs->strField('cat_desc');
                 if ($cat_desc !== '') {
                     return $cat_desc;
                 }
@@ -110,13 +110,13 @@ class Core
         $level = self::hasRootCategory() ? 1 : 0;
 
         while ($rs->fetch()) {
-            $cat_id = is_numeric($cat_id = $rs->f('cat_id')) ? (int) $cat_id : 0;
+            $cat_id = $rs->intField('cat_id');
             if (!App::task()->checkContext('BACKEND') && self::isRootCategory($cat_id)) {
                 continue;
             }
 
-            $cat_level = is_numeric($cat_level = $rs->f('level')) ? (int) $cat_level : 1;
-            $cat_title = is_string($cat_title = $rs->f('cat_title')) ? $cat_title : '';
+            $cat_level = $rs->intField('level') ?: 1;
+            $cat_title = $rs->strField('cat_title');
 
             $option = new Option(
                 str_repeat('&nbsp;', ($cat_level - $level) * 4) . Html::escapeHTML($cat_title),
@@ -140,7 +140,7 @@ class Core
 
         $rs = self::getCategories();
         while ($rs->fetch()) {
-            $current_cat_id = is_numeric($current_cat_id = $rs->f('cat_id')) ? (int) $current_cat_id : 0;
+            $current_cat_id = $rs->intField('cat_id');
             if (self::isRootCategory($current_cat_id)) {
                 continue;
             }
@@ -197,12 +197,12 @@ class Core
         if (!$rs->isEmpty()) {
             // update discussion post date to follow last comments
             while ($rs->fetch()) {
-                $cat_id = is_numeric($cat_id = $rs->f('cat_id')) ? (int) $cat_id : 0;
+                $cat_id = $rs->intField('cat_id');
                 if (!self::isDiscussionCategory($cat_id)) {
                     continue;
                 }
 
-                $post_id  = is_numeric($post_id = $rs->f('post_id')) ? (int) $post_id : 0;
+                $post_id  = $rs->intField('post_id');
                 $timezone = App::blog()->settings()->get('system')->getStr('blog_timezone', false) ?: 'UTC';
 
                 $cur = App::blog()->openPostCursor();
@@ -236,16 +236,16 @@ class Core
             $post_ts      = $post->getTS();
             $canedit_time = is_numeric($canedit_time = My::settings()->get('canedit_time')) ? (int) $canedit_time : 0;
             if (($post_ts + $canedit_time) > time()) { // only on limited time
-                $cat_id = is_numeric($cat_id = $post->f('cat_id')) ? (int) $cat_id : 0;
+                $cat_id = $post->intField('cat_id');
                 if (self::isDiscussionCategory($cat_id)) { // only on discussion
-                    $post_id = is_numeric($post_id = $post->f('post_id')) ? (int) $post_id : 0;
+                    $post_id = $post->intField('post_id');
                     if (self::getPostResolver($post_id)->isEmpty()) { // only if not resolved
                         // only if admin or post author
                         if (App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())) {
                             return true;
                         }
 
-                        $user_id = is_string($user_id = $post->f('user_id')) ? $user_id : '';
+                        $user_id = $post->strField('user_id');
 
                         return $user_id !== '' && App::auth()->userID() === $user_id;
                     }
@@ -265,16 +265,16 @@ class Core
             $comment_ts   = $comment->getTS();
             $canedit_time = is_numeric($canedit_time = My::settings()->get('canedit_time')) ? (int) $canedit_time : 0;
             if (($comment_ts + $canedit_time) > time()) { // only on limited time
-                $cat_id = is_numeric($cat_id = $post->f('cat_id')) ? (int) $cat_id : 0;
+                $cat_id = $post->intField('cat_id');
                 if (self::isDiscussionCategory($cat_id)) { // only on discussion
-                    $post_id = is_numeric($post_id = $post->f('post_id')) ? (int) $post_id : 0;
+                    $post_id = $post->intField('post_id');
                     if (self::getPostResolver($post_id)->isEmpty()) { // only if not resolved
                         // only if admin or post author
                         if (App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())) {
                             return true;
                         }
 
-                        $user_id = is_string($user_id = $comment->f('author')) ? $user_id : '';
+                        $user_id = $comment->strField('author');
 
                         return $user_id !== '' && App::auth()->userID() === $user_id;
                     }
@@ -302,14 +302,14 @@ class Core
     public static function canResolvePost(MetaRecord $rs): bool
     {
         if (!$rs->isEmpty()) {
-            $cat_id = is_numeric($cat_id = $rs->f('cat_id')) ? (int) $cat_id : 0;
+            $cat_id = $rs->intField('cat_id');
             if (self::isDiscussionCategory($cat_id)) { // only on discussion
                 // only if admin or post author
                 if (App::auth()->check(App::auth()::PERMISSION_CONTENT_ADMIN, App::blog()->id())) {
                     return true;
                 }
 
-                $user_id = is_string($user_id = $rs->f('user_id')) ? $user_id : '';
+                $user_id = $rs->strField('user_id');
 
                 return $user_id !== '' && App::auth()->userID() === $user_id;
             }
@@ -324,7 +324,7 @@ class Core
     public static function setPostResolver(MetaRecord $rs, int $resolver_id): void
     {
         if (self::canResolvePost($rs)) {
-            $post_id = is_numeric($post_id = $rs->f('post_id')) ? (int) $post_id : 0;
+            $post_id = $rs->intField('post_id');
 
             // mark post as resolved
             App::auth()->sudo(App::meta()->setPostMeta(...), $post_id, My::id() . 'post', (string) $resolver_id);

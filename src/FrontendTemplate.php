@@ -318,7 +318,7 @@ class FrontendTemplate
             && App::frontend()->context()->categories instanceof MetaRecord
             && App::auth()->check(My::id(), App::blog()->id())
         ) {
-            $cat_id = is_numeric($cat_id = App::frontend()->context()->categories->f('cat_id')) ? (int) $cat_id : 0;
+            $cat_id = App::frontend()->context()->categories->intField('cat_id');
             if (Core::isDiscussionCategory($cat_id)) {
                 return (new Para())
                     ->items([

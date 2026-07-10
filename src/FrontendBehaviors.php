@@ -46,7 +46,7 @@ class FrontendBehaviors
     {
         $content_type = is_string($content_type = $ctx->content_type) ? $content_type : '';
         if (!self::$loop && !str_ends_with($content_type, 'xml') && $ctx->exists('posts') && $ctx->posts instanceof MetaRecord) {
-            $cat_id = is_numeric($cat_id = $ctx->posts->f('cat_id')) ? (int) $cat_id : 0;
+            $cat_id = $ctx->posts->intField('cat_id');
             if (Core::isDiscussionCategory($cat_id)) {
                 self::$loop = true;
                 FrontendUrl::serveTemplate('post');
@@ -110,11 +110,11 @@ class FrontendBehaviors
     {
         // Check rights
         if (Core::canEditPost($post)) {
-            $post_id = is_numeric($post_id = $post->f('post_id')) ? (int) $post_id : 0;
+            $post_id = $post->intField('post_id');
 
             // update form
             if (!empty($_POST[My::id() . 'editpost'])) {
-                $content = is_string($content = $post->f('post_content')) ? $content : '';
+                $content = $post->strField('post_content');
 
                 echo (new Form('discussion-form'))
                     ->method('post')
@@ -149,9 +149,9 @@ class FrontendBehaviors
                     $cur = App::blog()->openPostCursor();
                     $cur->setField('post_content', $_POST['discussion_content']);
                     $cur->setField('post_format', 'markdown');
-                    $cur->setField('post_lang', $post->f('post_lang'));
-                    $cur->setField('post_title', $post->f('post_title'));
-                    $cur->setField('post_dt', $post->f('post_dt'));
+                    $cur->setField('post_lang', $post->strField('post_lang', true));
+                    $cur->setField('post_title', $post->strField('post_title', true));
+                    $cur->setField('post_dt', $post->strField('post_dt', true));
                     $cur->setField('post_content_xhtml', null);
 
                     App::auth()->sudo(App::blog()->updPost(...), $post_id, $cur);
@@ -207,7 +207,7 @@ class FrontendBehaviors
             return;
         }
 
-        $post_id = is_numeric($post_id = App::frontend()->context()->posts->f('post_id')) ? (int) $post_id : 0;
+        $post_id = App::frontend()->context()->posts->intField('post_id');
         if ($post_id === 0) {
             return;
         }
@@ -237,14 +237,14 @@ class FrontendBehaviors
      */
     public static function FrontendSessionCommentAction(MetaRecord $post, MetaRecord $comment): void
     {
-        $cat_id = is_numeric($cat_id = $post->f('cat_id')) ? (int) $cat_id : 0;
+        $cat_id = $post->intField('cat_id');
 
         // Post resolved
         if (!empty($_POST['discussion_answer'])
-            && $post->f('post_open_comment')
+            && $post->boolField('post_open_comment')
             && Core::isDiscussionCategory($cat_id)
         ) {
-            $comment_id = is_numeric($comment_id = $comment->f('comment_id')) ? (int) $comment_id : 0;
+            $comment_id = $comment->intField('comment_id');
 
             Core::setPostResolver($post, $comment_id);
             Http::redirect(Http::getSelfURI());
@@ -252,9 +252,9 @@ class FrontendBehaviors
 
         // Comment edition
         if (Core::canEditComment($post, $comment)) {
-            $post_id         = is_numeric($post_id = $post->f('post_id')) ? (int) $post_id : 0;
-            $comment_id      = is_numeric($comment_id = $comment->f('comment_id')) ? (int) $comment_id : 0;
-            $comment_content = is_string($comment_content = $comment->f('comment_content')) ? Markdown::fromHTML($comment_content) : '';
+            $post_id         = $post->intField('post_id');
+            $comment_id      = $comment->intField('comment_id');
+            $comment_content = Markdown::fromHTML($comment->strField('comment_content'));
 
             // update comment form
             if (!empty($_POST[My::id() . 'editcomment'])) {
@@ -268,7 +268,7 @@ class FrontendBehaviors
                                 (new Text('h5', __('Edit comment:'))),
                                 (new Textarea('discussion_comment_content'))
                                     ->rows(7)
-                                    //->value(App::frontend()->context()->remove_html((string) $comment->f('comment_content'))),
+                                    //->value(App::frontend()->context()->remove_html($comment->strField('comment_content'))),
                                     ->value(Html::escapeHTML($comment_content)),
                             ]),
                         (new Div())
@@ -326,10 +326,10 @@ class FrontendBehaviors
      */
     public static function FrontendSessionCommentForm(MetaRecord $post, MetaRecord $comment, ArrayObject $buttons): void
     {
-        $cat_id = is_numeric($cat_id = $post->f('cat_id')) ? (int) $cat_id : 0;
+        $cat_id = $post->intField('cat_id');
 
         // Resolve button
-        if ($post->f('post_open_comment')
+        if ($post->boolField('post_open_comment')
             && Core::isDiscussionCategory($cat_id)
             && Core::canResolvePost($post)
         ) {
@@ -357,7 +357,7 @@ class FrontendBehaviors
     {
         if (App::frontend()->context()->comments instanceof MetaRecord) {
             $cupd       = isset($_REQUEST['cupd']) && is_numeric($cupd = $_REQUEST['cupd']) ? (int) $cupd : 0;
-            $comment_id = is_numeric($comment_id = App::frontend()->context()->comments->f('comment_id')) ? (int) $comment_id : 0;
+            $comment_id = App::frontend()->context()->comments->intField('comment_id');
 
             if ($cupd !== 0 && $cupd === $comment_id) {
                 // succes message of post edition
@@ -412,10 +412,10 @@ class FrontendBehaviors
     {
         $rs = App::blog()->getPosts($params);
         if (!$rs->isEmpty()) {
-            $cat_id  = is_numeric($cat_id = $rs->f('cat_id')) ? (int) $cat_id : 0;
-            $post_id = is_numeric($post_id = $rs->f('post_id')) ? (int) $post_id : 0;
+            $cat_id  = $rs->intField('cat_id');
+            $post_id = $rs->intField('post_id');
 
-            if ($rs->f('post_open_comment')
+            if ($rs->boolField('post_open_comment')
                 && Core::isDiscussionCategory($cat_id)
                 && !Core::getPostResolver($post_id)->isEmpty()
             ) {
@@ -430,7 +430,7 @@ class FrontendBehaviors
     public static function FrontendSessionCommentsActive(CommentOptions $option): void
     {
         if ($option->rs instanceof MetaRecord) {
-            $cat_id = is_numeric($cat_id = $option->rs->f('cat_id')) ? (int) $cat_id : 0;
+            $cat_id = $option->rs->intField('cat_id');
 
             // check if it is a discussion category else follow blog settings
             if (Core::isDiscussionCategory($cat_id)) {
@@ -533,7 +533,7 @@ class FrontendBehaviors
     {
         App::frontend()->context()->categories = App::blog()->getCategories($params);
         if (!App::frontend()->context()->categories->isEmpty()) {
-            $cat_id = is_numeric($cat_id = App::frontend()->context()->categories->f('cat_id')) ? (int) $cat_id : 0;
+            $cat_id = App::frontend()->context()->categories->intField('cat_id');
             if (Core::isRootCategory($cat_id)) {
                 FrontendUrl::serveTemplate('categories');
                 exit;
