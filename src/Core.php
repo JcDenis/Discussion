@@ -221,9 +221,9 @@ class Core
     public static function canEdit(): bool
     {
         return App::task()->checkContext('FRONTEND') // only on frontend
-            && App::url()->getType() == 'post' // only on post page
-            && My::settings()->get('canedit_post') // only if edition is allowed
-            && App::blog()->settings()->get('commentsWikibar')->getBool('active') // only if plugin commentsWikibar is active
+            && App::url()->isType('post')            // only on post page
+            && My::settings()->get('canedit_post')   // only if edition is allowed
+            && App::blog()->settings()->get('commentsWikibar')->getBool('active')    // only if plugin commentsWikibar is active
             && App::blog()->settings()->get('system')->getBool('markdown_comments'); // only if markdown syntax is active
     }
 

@@ -95,7 +95,7 @@ class FrontendBehaviors
 
         // edit
         if (!Wikibar::settings()->get('active')
-            || !in_array(App::url()->getType(), ['post', My::id()])
+            || !App::url()->isType(['post', My::id()])
         ) {
             return;
         }
@@ -554,9 +554,9 @@ class FrontendBehaviors
      */
     public static function templatePrepareParams(array $tpl, ArrayObject $attr, string $content): string
     {
-        if ($tpl['tag']              === 'Entries'
-            && $tpl['method']        === 'blog::getPosts'
-            && App::url()->getType() === 'category'
+        if ($tpl['tag']       === 'Entries'
+            && $tpl['method'] === 'blog::getPosts'
+            && App::url()->isType('category')
         ) {
             return
                 'if (' . Core::class . '::isDiscussionCategory(App::frontend()->context()->categories->cat_id)){' .

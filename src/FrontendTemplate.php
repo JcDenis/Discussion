@@ -314,7 +314,7 @@ class FrontendTemplate
 
     public static function newDiscussionButton(): string
     {
-        if (App::url()->getType() === 'category'
+        if (App::url()->isType('category')
             && App::frontend()->context()->categories instanceof MetaRecord
             && App::auth()->check(My::id(), App::blog()->id())
         ) {
