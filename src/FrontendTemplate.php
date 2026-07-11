@@ -164,7 +164,7 @@ class FrontendTemplate
             $attr,
             '(new Dotclear\Helper\Html\Form\Select(\'discussion_category\'))' .
             '->items(' . Core::class . '::getCategoriesCombo())' .
-            '->default((string) (int) ($_POST[\'discussion_category\'] ?? (App::frontend()->context()->categories?->f(\'cat_id\') ?: \'\')))' .
+            '->default((string) (int) ($_POST[\'discussion_category\'] ?? (App::frontend()->context()->categories?->strField(\'cat_id\') ?: \'\')))' .
             '->render()'
         );
     }
