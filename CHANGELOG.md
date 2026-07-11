@@ -1,3 +1,7 @@
+Discussion 0.18 - xxxx.xx.xx
+===========================================================
+* Bump Dotclear from 2.37 to 2.39 (url type, metarecord methods)
+
 Discussion 0.15 to 1.17 - 2026.05.02
 ===========================================================
 * Fix fix fix...
