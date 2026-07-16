@@ -49,11 +49,11 @@ class FrontendTemplate
         }
 
         if (isset($attr['published'])) {
-            $if[] = $sign($attr['published']) . My::class . "::settings()->get('publish_post')";
+            $if[] = $sign($attr['published']) . My::class . "::settings()->getBool('publish_post', false)";
         }
 
         if (isset($attr['has_root_cat'])) {
-            $if[] = $sign($attr['has_root_cat']) . '(' . My::class . "::settings()->get('root_cat') != '')";
+            $if[] = $sign($attr['has_root_cat']) . '(' . My::class . "::settings()->getStr('root_cat') !== '')";
         }
 
         if (isset($attr['preview'])) {

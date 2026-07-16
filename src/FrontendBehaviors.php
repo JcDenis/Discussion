@@ -94,7 +94,7 @@ class FrontendBehaviors
         }
 
         // edit
-        if (!Wikibar::settings()->get('active')
+        if (!Wikibar::settings()->getBool('active', false)
             || !App::url()->isType(['post', My::id()])
         ) {
             return;
@@ -435,7 +435,7 @@ class FrontendBehaviors
             // check if it is a discussion category else follow blog settings
             if (Core::isDiscussionCategory($cat_id)) {
                 // active if user is auth or unregistered comments are allowed
-                $option->setActive(App::auth()->check(My::id(), App::blog()->id()) || (bool) My::settings()->get('unregister_comment'));
+                $option->setActive(App::auth()->check(My::id(), App::blog()->id()) || My::settings()->getBool('unregister_comment', false));
 
                 // not moderate if user is auth else follow blog settings
                 if (App::auth()->check(My::id(), App::blog()->id())) {

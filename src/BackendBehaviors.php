@@ -25,11 +25,6 @@ class BackendBehaviors
 
     public static function adminBlogPreferencesFormV2(BlogSettingsInterface $blog_settings): void
     {
-        // Variable data helpers
-        $_Bool = fn (mixed $var): bool => (bool) $var;
-        $_Int  = fn (mixed $var, int $default = 0): int => $var !== null && is_numeric($val = $var) ? (int) $val : $default;
-        $_Str  = fn (mixed $var, string $default = ''): string => $var !== null && is_string($val = $var) ? $val : $default;
-
         echo (new Fieldset(My::id() . '_params'))
             ->legend(new Legend((new Img(My::icons()[0]))->class('icon-small')->render() . ' ' . My::name()))
             ->items([
@@ -41,25 +36,25 @@ class BackendBehaviors
                             ->items([
                                 (new Para())
                                     ->items([
-                                        (new Checkbox(My::id() . 'active', $_Bool($blog_settings->get(My::id())->get('active'))))
+                                        (new Checkbox(My::id() . 'active', $blog_settings->get(My::id())->getBool('active', false)))
                                             ->value(1)
                                             ->label(new Label(__('Enable users to post discussions on frontend'), Label::IL_FT)),
                                     ]),
                                 (new Para())
                                     ->items([
-                                        (new Checkbox(My::id() . 'signup_perm', $_Bool($blog_settings->get(My::id())->get('signup_perm'))))
+                                        (new Checkbox(My::id() . 'signup_perm', $blog_settings->get(My::id())->getBool('signup_perm', false)))
                                             ->value(1)
                                             ->label(new Label(__('Add user permission to post discussions on sign up'), Label::IL_FT)),
                                     ]),
                                 (new Para())
                                     ->items([
-                                        (new Checkbox(My::id() . 'publish_post', $_Bool($blog_settings->get(My::id())->get('publish_post'))))
+                                        (new Checkbox(My::id() . 'publish_post', $blog_settings->get(My::id())->getBool('publish_post', false)))
                                             ->value(1)
                                             ->label(new Label(__('Publish new discussion without validation'), Label::IL_FT)),
                                     ]),
                                 (new Para())
                                     ->items([
-                                        (new Checkbox(My::id() . 'canedit_post', $_Bool($blog_settings->get(My::id())->get('canedit_post'))))
+                                        (new Checkbox(My::id() . 'canedit_post', $blog_settings->get(My::id())->getBool('canedit_post', false)))
                                             ->value(1)
                                             ->disabled(!self::canEdit())
                                             ->label(new Label(__('Allow users to edit their own discussions from frontend'), Label::IL_FT)),
@@ -67,12 +62,12 @@ class BackendBehaviors
                                 (new Para())
                                     ->items([
                                         (new Number(My::id() . 'canedit_time', 0, 60))
-                                            ->value($_Int($blog_settings->get(My::id())->get('canedit_time')))
+                                            ->value($blog_settings->get(My::id())->getInt('canedit_time', false))
                                             ->label(new Label(__('Limit discussions edition to a given time in minutes (0 for no limit):'), Label::OL_TF)),
                                     ]),
                                 (new Para())
                                     ->items([
-                                        (new Checkbox(My::id() . 'unregister_comment', $_Bool($blog_settings->get(My::id())->get('unregister_comment'))))
+                                        (new Checkbox(My::id() . 'unregister_comment', $blog_settings->get(My::id())->getBool('unregister_comment', false)))
                                             ->value(1)
                                             ->label(new Label(__('Open discussions comments to unregistered users'), Label::IL_FT)),
                                     ]),
@@ -84,14 +79,14 @@ class BackendBehaviors
                                     ->items([
                                         (new Select(My::id() . 'root_cat'))
                                             ->items(Core::getCategoriesCombo())
-                                            ->default($_Int($blog_settings->get(My::id())->get('root_cat')))
+                                            ->default($blog_settings->get(My::id())->getInt('root_cat', false))
                                             ->label((new Label(__('Limit discussion to this category children:'), Label::OL_TF))),
                                     ]),
                                 (new Para())
                                     ->items([
                                         (new Select(My::id() . 'artifact'))
                                             ->items(Core::getPostArtifactsCombo())
-                                            ->default($_Str($blog_settings->get(My::id())->get('artifact')))
+                                            ->default($blog_settings->get(My::id())->getStr('artifact', false))
                                             ->label((new Label(__('Prefix to use on resolved posts titles:'), Label::OL_TF))),
                                     ]),
                                 (new Text('h5', __('Discussions and comments edition requirements:')))

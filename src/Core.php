@@ -37,7 +37,7 @@ class Core
 
     public static function getRootCategory(): int
     {
-        return is_numeric($root_cat = My::settings()->get('root_cat')) ? (int) $root_cat : 0;
+        return My::settings()->getInt('root_cat', false);
     }
 
     public static function getRootCategoryTitle(): string
@@ -220,11 +220,11 @@ class Core
      */
     public static function canEdit(): bool
     {
-        return App::task()->checkContext('FRONTEND') // only on frontend
-            && App::url()->isType('post')            // only on post page
-            && My::settings()->get('canedit_post')   // only if edition is allowed
-            && App::blog()->settings()->get('commentsWikibar')->getBool('active')    // only if plugin commentsWikibar is active
-            && App::blog()->settings()->get('system')->getBool('markdown_comments'); // only if markdown syntax is active
+        return App::task()->checkContext('FRONTEND')            // only on frontend
+            && App::url()->isType('post')                       // only on post page
+            && My::settings()->getBool('canedit_post', false)   // only if edition is allowed
+            && App::blog()->settings()->get('commentsWikibar')->getBool('active', false)    // only if plugin commentsWikibar is active
+            && App::blog()->settings()->get('system')->getBool('markdown_comments', false); // only if markdown syntax is active
     }
 
     /**
@@ -234,7 +234,7 @@ class Core
     {
         if (self::canEdit()) {
             $post_ts      = $post->getTS();
-            $canedit_time = is_numeric($canedit_time = My::settings()->get('canedit_time')) ? (int) $canedit_time : 0;
+            $canedit_time = My::settings()->getInt('canedit_time', false);
             if (($post_ts + $canedit_time) > time()) { // only on limited time
                 $cat_id = $post->intField('cat_id');
                 if (self::isDiscussionCategory($cat_id)) { // only on discussion
@@ -263,7 +263,7 @@ class Core
     {
         if (self::canEdit()) {
             $comment_ts   = $comment->getTS();
-            $canedit_time = is_numeric($canedit_time = My::settings()->get('canedit_time')) ? (int) $canedit_time : 0;
+            $canedit_time = My::settings()->getInt('canedit_time', false);
             if (($comment_ts + $canedit_time) > time()) { // only on limited time
                 $cat_id = $post->intField('cat_id');
                 if (self::isDiscussionCategory($cat_id)) { // only on discussion
@@ -374,7 +374,9 @@ class Core
      */
     public static function getPostArtifact(): string
     {
-        return is_string($artifact = My::settings()->get('artifact')) ? $artifact : self::DEFAULT_ARTIFACT;
+        $artifact = My::settings()->getStr('artifact', false);
+
+        return empty($artifact) ? self::DEFAULT_ARTIFACT : $artifact;
     }
 
     /**

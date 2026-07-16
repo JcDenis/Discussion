@@ -73,7 +73,7 @@ class FrontendUrl
      */
     public static function create(array $args): void
     {
-        if (!My::settings()->get('active')
+        if (!My::settings()->getBool('active', false)
             || App::auth()->userID() == ''
             || !App::auth()->check(My::id(), App::blog()->id())
         ) {
@@ -86,7 +86,7 @@ class FrontendUrl
         foreach ($args as $k => $arg) {
             if ($arg === 'post' && isset($args[$k + 1]) && is_numeric($args[$k + 1])) {
                 App::frontend()->context()->discussion_success = __('Discussion successfully created.');
-                if (My::settings()->get('publish_post')) {
+                if (My::settings()->getBool('publish_post', false)) {
                     $post_id = (int) $args[$k + 1];
                 }
             }
@@ -152,17 +152,17 @@ class FrontendUrl
                 try {
                     $cur = App::blog()->openPostCursor();
                     $cur->setField('user_id', App::auth()->userID());
-                    $cur->setField('post_status', My::settings()->get('publish_post') ? App::status()->post()::PUBLISHED : App::status()->post()::PENDING);
+                    $cur->setField('post_status', My::settings()->getBool('publish_post', false) ? App::status()->post()::PUBLISHED : App::status()->post()::PENDING);
                     $cur->setField('post_title', $post_title);
                     $cur->setField('post_content', $post_content);
                     $cur->setField('post_format', $post_format);
-                    $cur->setField('post_lang', App::blog()->settings()->get('system')->getStr('lang'));
+                    $cur->setField('post_lang', App::blog()->settings()->get('system')->getStr('lang', false));
                     $cur->setField('post_open_comment', 1);
                     $cur->setField('cat_id', $post_cat);
 
                     $post_id = is_numeric($post_id = App::auth()->sudo(App::blog()->addPost(...), $cur)) ? (int) $post_id : 0;
 
-                    $more = '/post/' . (My::settings()->get('publish_post') ? $post_id : '0') . '/category/' . $post_cat;
+                    $more = '/post/' . (My::settings()->getBool('publish_post', false) ? $post_id : '0') . '/category/' . $post_cat;
 
                     header('Location: ' . App::blog()->url() . App::url()->getURLFor(My::id(), 'create') . $more);
                 } catch (Exception $e) {
@@ -184,7 +184,7 @@ class FrontendUrl
      */
     public static function posts(array $args): void
     {
-        if (!My::settings()->get('active')
+        if (!My::settings()->getBool('active', false)
             || App::auth()->userID() == ''
             || !App::auth()->check(My::id(), App::blog()->id())
         ) {
