@@ -59,7 +59,7 @@ msgstr "Mes discussions"
 
 #: src/BackendBehaviors.php:43
 msgid "Enable users to post discussions on frontend"
-msgstr "Autoriser les utilisateurs à créer des discussions coté publique"
+msgstr "Autoriser les utilisateurs à créer des discussions coté public"
 
 #: src/BackendBehaviors.php:49
 msgid "Add user permission to post discussions on sign up"
