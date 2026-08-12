@@ -1,4 +1,4 @@
-Discussion 0.18 - xxxx.xx.xx
+Discussion 0.18 - 2026.08.12
 ===========================================================
 * Bump Dotclear from 2.37 to 2.39 (url type, metarecord methods)
 
