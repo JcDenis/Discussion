@@ -179,7 +179,7 @@ class Core
 
     public static function getComments(): MetaRecord
     {
-        return metaRecord::newFromArray([]);
+        return MetaRecord::newFromArray([]);
     }
 
     /**
