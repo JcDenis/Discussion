@@ -2,7 +2,7 @@
 #discussion-form textarea,
 #discussion-form select {
   display: block;
-  width: 75%;
+  inline-size: 75%;
 }
 #discussion-form .post-preview-content {
     margin: 0.5em;
@@ -17,11 +17,11 @@
     display: inline-block;
 }
 .content-inner #discussion-form {
-    padding-bottom: 2em;
-    border-bottom: 1px solid var(--main-color, #4b4b4b);
+    padding-block-end: 2em;
+    border-block-end: 1px solid var(--main-color, #4b4b4b);
 }
 .post-comment-answer {
-    text-align: right;
+    text-align: end;
     margin: 0.25em;
 }
 
@@ -30,6 +30,6 @@
     padding: 0.25em;
     background-color: var(--comment-background-color, #4b4b4b);
     border: 1px solid var(--comment-me-background-color, #4b4b4b);
-    border-left-width: 0.5em;
+    border-inline-start-width: 0.5em;
     font-size: 0.9em;
 }
