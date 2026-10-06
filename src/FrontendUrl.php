@@ -261,7 +261,6 @@ class FrontendUrl
         }
 
         // add markdown tranform capabilities for submission
-        /* @phpstan-ignore-next-line */
         App::formater()->addEditorFormater('dcLegacyEditor', 'markdown', Markdown::convert(...));
     }
 
