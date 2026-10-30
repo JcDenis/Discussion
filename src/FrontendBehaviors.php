@@ -76,7 +76,7 @@ class FrontendBehaviors
         }
 
         // reply
-        if (App::auth()->userID() != '') {
+        if ((string) App::auth()->userID() !== '') {
             $syntax = 'html';
             if (App::blog()->settings()->get('system')->getBool('wiki_comments')) {
                 $syntax = 'wiki';
@@ -521,7 +521,7 @@ class FrontendBehaviors
      */
     public static function publicBreadcrumb(string $context, string $separator): string
     {
-        return $context == My::id() ? My::name() : '';
+        return $context === My::id() ? My::name() : '';
     }
 
     /**
