@@ -160,7 +160,7 @@ class Core
      */
     public static function getUserPosts(array $params = [], bool $count_only = false): MetaRecord
     {
-        $params['user_id'] = (string) App::auth()->userID();
+        $params['user_id'] = App::auth()->userID();
 
         return self::getPosts($params, $count_only);
     }
@@ -335,7 +335,7 @@ class Core
             $cur->update(
                 'WHERE post_id = ' . $post_id . ' ' .
                 "AND blog_id = '" . App::db()->con()->escapeStr(App::blog()->id()) . "' " .
-                "AND user_id = '" . App::db()->con()->escapeStr((string) App::auth()->userID()) . "' "
+                "AND user_id = '" . App::db()->con()->escapeStr(App::auth()->userID()) . "' "
             );
             App::blog()->triggerBlog();
         }

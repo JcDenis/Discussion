@@ -74,7 +74,7 @@ class FrontendUrl
     public static function create(array $args): void
     {
         if (!My::settings()->getBool('active', false)
-            || (string) App::auth()->userID() === ''
+            || App::auth()->userID() === ''
             || !App::auth()->check(My::id(), App::blog()->id())
         ) {
             App::url()::p404();
@@ -185,7 +185,7 @@ class FrontendUrl
     public static function posts(array $args): void
     {
         if (!My::settings()->getBool('active', false)
-            || (string) App::auth()->userID() === ''
+            || App::auth()->userID() === ''
             || !App::auth()->check(My::id(), App::blog()->id())
         ) {
             App::url()::p404();

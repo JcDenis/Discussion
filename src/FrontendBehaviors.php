@@ -76,7 +76,7 @@ class FrontendBehaviors
         }
 
         // reply
-        if ((string) App::auth()->userID() !== '') {
+        if (App::auth()->userID() !== '') {
             $syntax = 'html';
             if (App::blog()->settings()->get('system')->getBool('wiki_comments')) {
                 $syntax = 'wiki';
