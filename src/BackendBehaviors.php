@@ -19,8 +19,8 @@ class BackendBehaviors
 {
     private static function canEdit(): bool
     {
-        return App::blog()->settings()->get('commentsWikibar')->getBool('active')
-            && App::blog()->settings()->get('system')->getBool('markdown_comments');
+        return App::blog()->settings()->get('commentsWikibar')->getBool('active', false)
+            && App::blog()->settings()->get('system')->getBool('markdown_comments', false);
     }
 
     public static function adminBlogPreferencesFormV2(BlogSettingsInterface $blog_settings): void

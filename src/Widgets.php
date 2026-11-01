@@ -46,7 +46,7 @@ class Widgets
     {
         if ($widget->isOffline()
             || !$widget->checkHomeOnly(App::url()->getType())
-            || !My::settings()->get('active')
+            || !My::settings()->getBool('active', false)
         ) {
             return '';
         }
@@ -71,7 +71,7 @@ class Widgets
             return '';
         }
 
-        if ($widget->get('addroot') && Core::hasRootCategory()) {
+        if ((bool) $widget->get('addroot') && Core::hasRootCategory()) {
             $lines[] = (new Li())
                 ->class('all')
                 ->items([
@@ -81,14 +81,15 @@ class Widgets
                 ]);
         }
 
-        $class = is_string($class = $widget->get('class')) ? $class : '';
-        $title = is_string($title = $widget->get('title')) ? $title : '';
+        $class = $widget->getClass();
+        ;
+        $title = $widget->getTitle();
 
         return $widget->renderDiv(
-            (bool) $widget->get('content_only'),
+            $widget->getContentOnly(),
             'lastdiscussions ' . $class,
             '',
-            ($widget->get('title') ? $widget->renderTitle(Html::escapeHTML($title)) : '') . (new Ul())->items($lines)->render()
+            ($title !== '' ? $widget->renderTitle(Html::escapeHTML($title)) : '') . (new Ul())->items($lines)->render()
         );
     }
 }

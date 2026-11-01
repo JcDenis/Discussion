@@ -43,7 +43,7 @@ class Prepend
             FrontendUrl::discussionEndpoint(...)
         );
 
-        if (My::settings()->get('active')) {
+        if (My::settings()->getBool('active', false)) {
             App::behavior()->addBehaviors([
                 'coreBlogAfterTriggerComments' => Core::coreBlogAfterTriggerComments(...),
             ]);

@@ -217,7 +217,8 @@ class FrontendTemplate
             $p .= '$params[\'limit\'] = ' . $lastn . ';';
         }
 
-        if (isset($attr['no_content']) && $attr['no_content']) {
+        $no_content = isset($attr['no_content']) && is_numeric($no_content = $attr['no_content']) ? (int) $no_content : 0;
+        if ($no_content === 1) {
             $p .= '$params[\'no_content\'] = true;';
         }
 
@@ -280,7 +281,8 @@ class FrontendTemplate
         $params .= "\$params['limit'] = App::frontend()->context()->nb_entry_per_page;\n";
         $params .= "\$params['limit'] = [(App::frontend()->getPageNumber() - 1) * \$params['limit'],\$params['limit']];\n";
 
-        if (isset($attr['no_content']) && $attr['no_content']) {
+        $no_content = isset($attr['no_content']) && is_numeric($no_content = $attr['no_content']) ? (int) $no_content : 0;
+        if ($no_content === 1) {
             $params .= "\$params['no_content'] = true;\n";
         }
 
@@ -305,7 +307,8 @@ class FrontendTemplate
             'App::frontend()->context()->pagination = ' . Core::class . '::getUserPosts($params,true); unset($params);' . "\n" .
             "?>\n";
 
-        if (isset($attr['no_context']) && $attr['no_context']) {
+        $no_context = isset($attr['no_context']) && is_numeric($no_context = $attr['no_context']) ? (int) $no_context : 0;
+        if ($no_context === 1) {
             return $params . $content;
         }
 

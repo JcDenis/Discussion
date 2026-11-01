@@ -78,9 +78,9 @@ class FrontendBehaviors
         // reply
         if (App::auth()->userID() !== '') {
             $syntax = 'html';
-            if (App::blog()->settings()->get('system')->getBool('wiki_comments')) {
+            if (App::blog()->settings()->get('system')->getBool('wiki_comments', false)) {
                 $syntax = 'wiki';
-                if (App::blog()->settings()->get('system')->getBool('markdown_comments')) {
+                if (App::blog()->settings()->get('system')->getBool('markdown_comments', false)) {
                     $syntax = 'markdown';
                 }
             }

@@ -7,6 +7,7 @@ namespace Dotclear\Plugin\Discussion;
 use ArrayObject;
 use Dotclear\App;
 use Dotclear\Helper\File\Path;
+use Dotclear\Helper\Html\WikiToHtml;
 use Dotclear\Helper\Network\Http;
 use Dotclear\Plugin\legacyMarkdown\Helper as Markdown;
 use Exception;
@@ -233,7 +234,7 @@ class FrontendUrl
         $rsp      = '';
         $post_id  = (int) ($args[1] ?? 0);
         $artifact = Core::getPostArtifact();
-        if ($post_id && $artifact !== '') {
+        if ($post_id !== 0 && $artifact !== '') {
             $rsp = Core::getPostResolver($post_id)->isEmpty() ? '' : $artifact;
         }
 
@@ -251,11 +252,11 @@ class FrontendUrl
     public static function loadFormater(): void
     {
         // init wiki transform
-        if (!App::filter()->wiki()) {
+        if (App::filter()->wiki() === null) {
             App::filter()->initWikiPost();
         }
 
-        if (App::filter()->wiki()) {
+        if (App::filter()->wiki() instanceof WikiToHtml) {
             // add wiki tranform capabilities for submission
             App::formater()->addEditorFormater('dcLegacyEditor', 'wiki', App::filter()->wiki()->transform(...));
         }
