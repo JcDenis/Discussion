@@ -192,9 +192,10 @@ class FrontendUrl
             App::url()::p404();
         }
 
-        $uri  = implode('/', $args);
-        $page = App::url()::getPageNumber($uri) ?: 1;
-        App::frontend()->setPageNumber($page);
+        $uri         = implode('/', $args);
+        $page_number = App::url()::getPageNumber($uri);
+
+        App::frontend()->setPageNumber($page_number !== false ? $page_number : 1);
 
         $nbpp = App::blog()->settings()->get('system')->getInt('nb_post_per_page') ?? 20;
 
