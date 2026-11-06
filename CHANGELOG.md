@@ -1,3 +1,9 @@
+Discussion 0.19 - 2026.11.06
+===========================================================
+* Bump Dotclear from 2.39 to 2.40
+* Add global rss feed
+* Code review
+
 Discussion 0.18 - 2026.08.12
 ===========================================================
 * Bump Dotclear from 2.37 to 2.39 (url type, metarecord methods)
