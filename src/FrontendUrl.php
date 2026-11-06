@@ -59,6 +59,11 @@ class FrontendUrl
 
                 break;
 
+            case 'feed':
+                self::feed($exp);
+
+                break;
+
             default:
                 $exp[0] = 'categories';
                 self::categories($exp);
@@ -213,6 +218,37 @@ class FrontendUrl
     public static function comments(array $args): void
     {
         App::url()::p404();
+    }
+
+    /**
+     * Discussions feed (posts and comments).
+     *
+     * URL: discussion/feed/atom or discussion/feed/rss2
+     *
+     * @param   array<int, string>  $args
+     */
+    public static function feed(array $args): void
+    {
+        $type = $args[1] ?? 'atom';
+        if (!My::settings()->getBool('active', false) || !in_array($type, ['atom', 'rss2'], true) || isset($args[2])) {
+            App::url()::p404();
+        }
+
+        App::frontend()->context()->nb_entry_per_page = App::blog()->settings()->get('system')->getInt('nb_post_per_feed');
+        App::frontend()->context()->short_feed_items  = App::blog()->settings()->get('system')->getBool('short_feed_items');
+        App::frontend()->context()->feed_subtitle     = ' - ' . Core::getRootCategoryTitle();
+
+        $root = is_string($root = App::plugins()->moduleInfo(My::id(), 'root')) ? $root : '';
+        App::frontend()->template()->setPath(
+            App::frontend()->template()->getPath(),
+            Path::real($root) . DIRECTORY_SEPARATOR . App::frontend()::TPL_ROOT . DIRECTORY_SEPARATOR . 'feed'
+        );
+
+        $robots_policy = App::blog()->settings()->get('system')->getStr('robots_policy', false);
+        header('X-Robots-Tag: ' . App::frontend()->context()::robotsPolicy($robots_policy, ''));
+        Http::$cache_max_age = 60 * 60; // 1 hour cache for feed
+
+        App::url()::serveDocument(My::id() . '-' . $type . '.xml', $type === 'atom' ? 'application/atom+xml' : 'application/rss+xml');
     }
 
     /**

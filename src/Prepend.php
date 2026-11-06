@@ -39,7 +39,7 @@ class Prepend
         App::url()->register(
             My::id(),
             'discussion',
-            '^discussion(/(categories|create|posts|comments|resolver)(/.+)?)?$',
+            '^discussion(/(categories|create|posts|comments|resolver|feed)(/.+)?)?$',
             FrontendUrl::discussionEndpoint(...)
         );
 

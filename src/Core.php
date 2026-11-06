@@ -183,6 +183,86 @@ class Core
     }
 
     /**
+     * Get discussions categories IDs (root category and its children).
+     *
+     * @return  array<int, int>
+     */
+    public static function getDiscussionCategoriesIds(): array
+    {
+        $ids = [];
+        $rs  = App::blog()->getCategories(['start' => self::getRootCategory()]);
+        while ($rs->fetch()) {
+            $ids[] = $rs->intField('cat_id');
+        }
+        if (self::hasRootCategory() && !in_array(self::getRootCategory(), $ids, true)) {
+            $ids[] = self::getRootCategory();
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Get latest discussions posts and comments for feed.
+     *
+     * Items are sorted by date, newest first.
+     *
+     * @return  array<int, array{type: string, id: int, post_id: int, dt: string}>
+     */
+    public static function getFeedItems(int $limit): array
+    {
+        $limit = max(1, $limit);
+        $items = [];
+
+        // Posts of discussions categories
+        $params = [
+            'no_content' => true,
+            'order'      => 'post_dt DESC',
+            'limit'      => $limit,
+        ];
+        if (self::hasRootCategory()) {
+            $params['cat_id'] = self::getRootCategory() . '?sub';
+        }
+        $rs = App::blog()->getPosts($params);
+        while ($rs->fetch()) {
+            $items[] = [
+                'type'    => 'post',
+                'id'      => $rs->intField('post_id'),
+                'post_id' => $rs->intField('post_id'),
+                'dt'      => $rs->strField('post_dt'),
+            ];
+        }
+
+        // Comments on posts of discussions categories
+        $params = [
+            'no_content'        => true,
+            'post_type'         => 'post',
+            'comment_trackback' => 0,
+            'order'             => 'comment_dt DESC',
+            'limit'             => $limit,
+        ];
+        if (self::hasRootCategory()) {
+            $ids = self::getDiscussionCategoriesIds();
+            if ($ids === []) {
+                return [];
+            }
+            $params['sql'] = 'AND P.cat_id IN (' . implode(',', $ids) . ') ';
+        }
+        $rs = App::blog()->getComments($params);
+        while ($rs->fetch()) {
+            $items[] = [
+                'type'    => 'comment',
+                'id'      => $rs->intField('comment_id'),
+                'post_id' => $rs->intField('post_id'),
+                'dt'      => $rs->strField('comment_dt'),
+            ];
+        }
+
+        usort($items, fn (array $a, array $b): int => strcmp($b['dt'], $a['dt']));
+
+        return array_slice($items, 0, $limit);
+    }
+
+    /**
      * Update post update date on new comment.
      *
      * This moves post order to reflect forum style order on category page.

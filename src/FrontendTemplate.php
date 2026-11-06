@@ -234,6 +234,65 @@ class FrontendTemplate
     }
 
     /**
+     * Loop on discussions feed items (posts and comments).
+     *
+     * attributes:
+     *
+     *      - lastn     Number of items (default to blog setting of posts per feed)
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionFeedItems(ArrayObject $attr, string $content): string
+    {
+        $lastn = isset($attr['lastn']) && is_numeric($lastn = $attr['lastn']) ? (int) $lastn : 0;
+        $limit = $lastn > 0 ? (string) $lastn : 'App::blog()->settings()->get(\'system\')->getInt(\'nb_post_per_feed\')';
+
+        return
+            '<?php foreach (' . Core::class . '::getFeedItems(' . $limit . ') as $discussion_feed_item) : ' .
+            'App::frontend()->context()->discussion_feed_type = $discussion_feed_item[\'type\'];' .
+            'App::frontend()->context()->posts = App::blog()->getPosts([\'post_id\' => $discussion_feed_item[\'post_id\']]);' .
+            'if ($discussion_feed_item[\'type\'] === \'comment\') { App::frontend()->context()->comments = App::blog()->getComments([\'comment_id\' => $discussion_feed_item[\'id\']]); }' .
+            'if (!App::frontend()->context()->posts->isEmpty()) : ?>' .
+            $content .
+            '<?php endif;' .
+            'if ($discussion_feed_item[\'type\'] === \'comment\') { App::frontend()->context()->pop(\'comments\'); }' .
+            'App::frontend()->context()->pop(\'posts\'); App::frontend()->context()->pop(\'discussion_feed_type\');' .
+            'endforeach; unset($discussion_feed_item); ?>';
+    }
+
+    /**
+     * Check current discussions feed item type.
+     *
+     * attributes:
+     *
+     *      - type      post or comment
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionFeedItemIf(ArrayObject $attr, string $content): string
+    {
+        $type = isset($attr['type']) && $attr['type'] === 'comment' ? 'comment' : 'post';
+
+        return '<?php if (App::frontend()->context()->discussion_feed_type === \'' . $type . '\') : ?>' . $content . '<?php endif; ?>';
+    }
+
+    /**
+     * Get discussions feed URL.
+     *
+     * attributes:
+     *
+     *      - type      atom or rss2 (default to atom)
+     *
+     * @param   ArrayObject<string, mixed>  $attr       The attributes
+     */
+    public static function DiscussionFeedURL(ArrayObject $attr): string
+    {
+        $type = isset($attr['type']) && $attr['type'] === 'rss2' ? 'rss2' : 'atom';
+
+        return self::filter($attr, 'App::blog()->url() . App::url()->getURLFor("' . My::id() . '", "feed/' . $type . '")');
+    }
+
+    /**
      * Overload Category description on category page.
      *
      * attributes:
