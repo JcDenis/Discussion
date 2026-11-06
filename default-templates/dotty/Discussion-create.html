@@ -7,7 +7,8 @@
 
 <tpl:Block name="head-linkrel">
   <link rel="contents" href="{{tpl:BlogArchiveURL}}" title="{{tpl:lang Archives}}" />
-  <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="{{tpl:BlogFeedURL type="atom"}}" />
+  <link rel="alternate" type="application/atom+xml" title="{{tpl:DiscussionCategoriesTitle encode_html="1"}} (Atom 1.0)" href="{{tpl:DiscussionFeedURL type="atom"}}" />
+  <link rel="alternate" type="application/rss+xml" title="{{tpl:DiscussionCategoriesTitle encode_html="1"}} (RSS 2.0)" href="{{tpl:DiscussionFeedURL type="rss2"}}" />
 </tpl:Block>
 
 

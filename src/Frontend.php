@@ -37,6 +37,8 @@ class Frontend
             'DiscussionEntries'           => FrontendTemplate::DiscussionEntries(...),
             'DiscussionEntriesIf'         => FrontendTemplate::DiscussionEntriesIf(...),
             'DiscussionEntriesPagination' => FrontendTemplate::DiscussionEntriesPagination(...),
+            'DiscussionFeedItems'         => FrontendTemplate::DiscussionFeedItems(...),
+            'DiscussionFeedItemIf'        => FrontendTemplate::DiscussionFeedItemIf(...),
         ]);
         App::frontend()->template()->addValues([
             'DiscussionFormNonce'             => FrontendTemplate::DiscussionFormNonce(...),
@@ -50,6 +52,7 @@ class Frontend
             'DiscussionCategoriesDescription' => FrontendTemplate::DiscussionCategoriesDescription(...),
             'DiscussionCategoriesCombo'       => FrontendTemplate::DiscussionCategoriesCombo(...),
             'CategoryDescription'             => FrontendTemplate::CategoryDescription(...),
+            'DiscussionFeedURL'               => FrontendTemplate::DiscussionFeedURL(...),
         ]);
         App::behavior()->addBehaviors([
             'initWidgets'                       => Widgets::initWidgets(...),

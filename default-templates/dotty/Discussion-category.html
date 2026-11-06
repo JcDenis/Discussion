@@ -4,6 +4,12 @@
   <body class="dc-category dc-discussion">
 </tpl:Block>
 
+<tpl:Block name="head-linkrel">
+  {{tpl:parent}}
+  <link rel="alternate" type="application/atom+xml" title="{{tpl:DiscussionCategoriesTitle encode_html="1"}} (Atom 1.0)" href="{{tpl:DiscussionFeedURL type="atom"}}" />
+  <link rel="alternate" type="application/rss+xml" title="{{tpl:DiscussionCategoriesTitle encode_html="1"}} (RSS 2.0)" href="{{tpl:DiscussionFeedURL type="rss2"}}" />
+</tpl:Block>
+
 <tpl:Block name="main-content-header-feed"></tpl:Block>
 <tpl:Block name="main-content-header-subcats"></tpl:Block>
 
