@@ -194,6 +194,7 @@ class Core
         while ($rs->fetch()) {
             $ids[] = $rs->intField('cat_id');
         }
+
         if (self::hasRootCategory() && !in_array(self::getRootCategory(), $ids, true)) {
             $ids[] = self::getRootCategory();
         }
@@ -222,6 +223,7 @@ class Core
         if (self::hasRootCategory()) {
             $params['cat_id'] = self::getRootCategory() . '?sub';
         }
+
         $rs = App::blog()->getPosts($params);
         while ($rs->fetch()) {
             $items[] = [
@@ -245,8 +247,10 @@ class Core
             if ($ids === []) {
                 return [];
             }
+
             $params['sql'] = 'AND P.cat_id IN (' . implode(',', $ids) . ') ';
         }
+
         $rs = App::blog()->getComments($params);
         while ($rs->fetch()) {
             $items[] = [

@@ -40,5 +40,6 @@ Once it's done you can manage Discussion option from blog preferences.
 ## CONTRIBUTORS
 
 * Jean-Christian Denis (author)
+* Claude (AI assistant by Anthropic)
 
 You are welcome to contribute to this code.
