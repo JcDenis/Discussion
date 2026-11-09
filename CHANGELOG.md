@@ -1,3 +1,9 @@
+Discussion 1.20 - 2026.11.09
+===========================================================
+* Add Claude to contributors
+* Code formatting (Rector)
+* Use Dotclear 2.40 typed cursor and widget methods
+
 Discussion 0.19 - 2026.11.06
 ===========================================================
 * Bump Dotclear from 2.39 to 2.40
