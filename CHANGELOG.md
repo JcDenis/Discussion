@@ -4,7 +4,7 @@ Discussion 1.20 - 2026.11.09
 * Code formatting (Rector)
 * Use Dotclear 2.40 typed cursor and widget methods
 
-Discussion 0.19 - 2026.11.06
+Discussion 1.19 - 2026.11.06
 ===========================================================
 * Bump Dotclear from 2.39 to 2.40
 * Add global rss feed
