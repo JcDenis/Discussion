@@ -290,7 +290,7 @@ class Core
                 $timezone = App::blog()->settings()->get('system')->getStr('blog_timezone', false) ?: 'UTC';
 
                 $cur = App::blog()->openPostCursor();
-                $cur->setField('post_upddt', date('Y-m-d H:i:s', time() + Date::getTimeOffset($timezone)));
+                $cur->setStrField('post_upddt', date('Y-m-d H:i:s', time() + Date::getTimeOffset($timezone)));
 
                 $sql = new UpdateStatement();
                 $sql->where('post_id = ' . $post_id);
@@ -415,7 +415,7 @@ class Core
 
             // Close post comments
             $cur = App::blog()->openPostCursor();
-            $cur->setField('post_open_comment', 0);
+            $cur->setIntField('post_open_comment', 0);
             $cur->update(
                 'WHERE post_id = ' . $post_id . ' ' .
                 "AND blog_id = '" . App::db()->con()->escapeStr(App::blog()->id()) . "' " .

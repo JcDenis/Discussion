@@ -82,7 +82,6 @@ class Widgets
         }
 
         $class = $widget->getClass();
-        ;
         $title = $widget->getTitle();
 
         return $widget->renderDiv(

@@ -157,14 +157,14 @@ class FrontendUrl
             } elseif (self::$form_error === []) {
                 try {
                     $cur = App::blog()->openPostCursor();
-                    $cur->setField('user_id', App::auth()->userID());
-                    $cur->setField('post_status', My::settings()->getBool('publish_post', false) ? App::status()->post()::PUBLISHED : App::status()->post()::PENDING);
-                    $cur->setField('post_title', $post_title);
-                    $cur->setField('post_content', $post_content);
-                    $cur->setField('post_format', $post_format);
-                    $cur->setField('post_lang', App::blog()->settings()->get('system')->getStr('lang', false));
-                    $cur->setField('post_open_comment', 1);
-                    $cur->setField('cat_id', $post_cat);
+                    $cur->setStrField('user_id', App::auth()->userID());
+                    $cur->setIntField('post_status', My::settings()->getBool('publish_post', false) ? App::status()->post()::PUBLISHED : App::status()->post()::PENDING);
+                    $cur->setStrField('post_title', $post_title);
+                    $cur->setStrField('post_content', $post_content);
+                    $cur->setStrField('post_format', $post_format);
+                    $cur->setStrField('post_lang', App::blog()->settings()->get('system')->getStr('lang', false));
+                    $cur->setIntField('post_open_comment', 1);
+                    $cur->setIntField('cat_id', $post_cat);
 
                     $post_id = is_numeric($post_id = App::auth()->sudo(App::blog()->addPost(...), $cur)) ? (int) $post_id : 0;
 

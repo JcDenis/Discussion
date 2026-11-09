@@ -147,12 +147,12 @@ class FrontendBehaviors
                     FrontendUrl::loadFormater();
 
                     $cur = App::blog()->openPostCursor();
-                    $cur->setField('post_content', $_POST['discussion_content']);
-                    $cur->setField('post_format', 'markdown');
-                    $cur->setField('post_lang', $post->strField('post_lang', true));
-                    $cur->setField('post_title', $post->strField('post_title', true));
-                    $cur->setField('post_dt', $post->strField('post_dt', true));
-                    $cur->setField('post_content_xhtml', null);
+                    $cur->setStrField('post_content', $content);
+                    $cur->setStrField('post_format', 'markdown');
+                    $cur->setStrField('post_lang', $post->strField('post_lang', true));
+                    $cur->setStrField('post_title', $post->strField('post_title', true));
+                    $cur->setStrField('post_dt', $post->strField('post_dt', true));
+                    $cur->setStrField('post_content_xhtml', null);
 
                     App::auth()->sudo(App::blog()->updPost(...), $post_id, $cur);
 
@@ -306,7 +306,7 @@ class FrontendBehaviors
                     }
 
                     $cur = App::blog()->openCommentCursor();
-                    $cur->setField('comment_content', $content);
+                    $cur->setStrField('comment_content', $content);
 
                     App::auth()->sudo(App::blog()->updComment(...), $comment_id, $cur);
 
