@@ -225,7 +225,7 @@ class FrontendBehaviors
                 ->items([
                     (new Link())
                         ->href($post_url . '#c' . $comment_id)
-                        ->text(sprintf(__('Discussion closed as it is resolved in comment from %s'), $comment_author)),
+                        ->text(sprintf(__('Discussion closed as it is resolved in comment from %s'), Html::escapeHTML($comment_author))),
                     (new Text('', $comment_content)),
                 ])
                 ->render();
@@ -496,13 +496,13 @@ class FrontendBehaviors
      */
     public static function FrontendSessionAfterSignup(Cursor $cur): void
     {
-        $user_id = is_string($user_id = $cur->user_id) ? $user_id : '';
+        $user_id = $cur->strField('user_id');
 
         if ($user_id !== '') {
             $perms           = App::users()->getUserPermissions($user_id);
             $perms           = $perms[App::blog()->id()]['p'] ?? [];
             $perms[My::id()] = true;
-            App::auth()->sudo([App::users(), 'setUserBlogPermissions'], $cur->user_id, App::blog()->id(), $perms);
+            App::auth()->sudo(App::users()->setUserBlogPermissions(...), $user_id, App::blog()->id(), $perms);
         }
     }
 

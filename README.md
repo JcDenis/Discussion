@@ -2,7 +2,7 @@
 
 [![Release](https://img.shields.io/github/v/release/jcdenis/Discussion?color=lightblue)](https://github.com/JcDenis/Discussion/releases)
 ![Date](https://img.shields.io/github/release-date/jcdenis/Discussion?color=red)
-[![Dotclear](https://img.shields.io/badge/dotclear-v2.36-137bbb.svg)](https://fr.dotclear.org/download)
+[![Dotclear](https://img.shields.io/badge/dotclear-v2.40-137bbb.svg)](https://fr.dotclear.org/download)
 [![Repository](https://img.shields.io/badge/repository-official-9ac123.svg)](https://dotclear.org/plugin/detail/Discussion)
 [![License](https://img.shields.io/github/license/jcdenis/Discussion?color=white)](https://github.com/JcDenis/Discussion/blob/master/LICENSE)
 
@@ -14,8 +14,8 @@ _Discussion_ is a plugin for the open-source web publishing software called [Dot
 
 ## REQUIREMENTS
 
-* Dotclear 2.39
-* PHP 8.1+
+* Dotclear 2.40
+* PHP 8.2+
 * Plugin FrontendSession
 * Dotclear admin permission for configuration
 
