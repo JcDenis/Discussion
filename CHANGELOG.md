@@ -1,3 +1,8 @@
+Discussion 1.21 - 2026.11.11
+===========================================================
+* Fix version in CHANGELOG
+* Escape comment author of resolved discussion, use typed cursor methods
+
 Discussion 1.20 - 2026.11.09
 ===========================================================
 * Add Claude to contributors
