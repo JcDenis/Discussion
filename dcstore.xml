@@ -8,7 +8,7 @@
     <desc>Allow user to post from frontend.</desc>
     <file>https://github.com/JcDenis/Discussion/releases/download/v1.21/plugin-Discussion.zip</file>
     <da:dcmin>2.40</da:dcmin>
-    <da:details>https://github.com/JcDenis/Discussion/src/branch/master/README.md</da:details>
+    <da:details>https://github.com/JcDenis/Discussion/blob/master/README.md</da:details>
     <da:support>https://github.com/JcDenis/Discussion/issues</da:support>
   </module>
 </modules>
