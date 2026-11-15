@@ -32,7 +32,7 @@ Required Dotclear and PHP versions: see `_define.php`.
 * `default-templates/`: public templates.
 * Widgets: `lastdiscussions`.
 * Behaviors used: `initWidgets`, `adminBlogPreferencesFormV2`, `adminBeforeBlogSettingsUpdate`, `initCommentsWikibar`, `urlHandlerBeforeGetData`, `publicHeadContent`, `publicEntryBeforeContent`, `publicEntryAfterContent`, `publicPostBeforeGetPosts`, `publicCommentBeforeContent`, `publicCommentFormAfterContent`, `publicAfterCommentCreate`, `publicBreadcrumb`, `publicCategoryBeforeGetCategories`, `coreBlogAfterTriggerComments`.
-* Requires FrontendSession, commentsWikibar, legacyMarkdown (`requires` in `_define.php`).
+* Requires FrontendSession and legacyMarkdown (`requires` in `_define.php`), commentsWikibar is optional.
 
 ## Pitfalls
 
