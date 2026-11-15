@@ -22,7 +22,7 @@ $this->registerModule(
     'Discussion',
     'Allow user to post from frontend.',
     'Jean-Christian Paul Denis and Contributors',
-    '1.22.1',
+    '1.22.2',
     [
         'requires' => [
             ['core', '2.40'],
@@ -37,6 +37,6 @@ $this->registerModule(
         'support'     => 'https://github.com/JcDenis/' . $this->id . '/issues',
         'details'     => 'https://github.com/JcDenis/' . $this->id . '/',
         'repository'  => 'https://raw.githubusercontent.com/JcDenis/' . $this->id . '/master/dcstore.xml',
-        'date'        => '2026-11-15T10:41:53+00:00',
+        'date'        => '2026-11-15T15:11:22+00:00',
     ]
 );

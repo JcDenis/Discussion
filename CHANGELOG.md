@@ -1,3 +1,7 @@
+Discussion 1.22.2 - 2026.11.15
+===========================================================
+* [lang] Do not override core translations
+
 Discussion 1.22.1 - 2026.11.15
 ===========================================================
 * [fix] commentsWikibar is optional, legacyMarkdown is required
