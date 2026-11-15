@@ -25,7 +25,7 @@ Discussion s'appuie sur d'autres plugins :
 * **FrontendSession** (obligatoire) : il gère la connexion des visiteurs sur le site public. Activez-le d'abord.
 * **commentsWikibar** et **Markdown syntax** (facultatifs) : ils ajoutent la barre d'outils et le Markdown dans les formulaires. Sans eux, la modification des messages n'est pas possible.
 
-Le thème du blog doit utiliser le jeu de modèles `dotty`, `mustek` ou `glaz` (comme Berlin). Avec un autre jeu de modèles, les pages du plugin affichent une erreur « Document non trouvé ».
+Le plugin fonctionne avec tous les thèmes : ses pages utilisent toujours ses propres gabarits et sa feuille de style.
 
 ## Régler le plugin
 
@@ -133,6 +133,8 @@ Dans **Système > Widgets**, ajoutez le widget **Dernières discussions** dans l
 
 ![Le widget dans l'administration](img/widget-admin.png)
 
+Les discussions résolues y portent le préfixe choisi, comme sur les titres des billets.
+
 Ses réglages : le titre, le nombre de discussions affichées (**Limite**) et l'option **Ajouter un lien vers le forum**, qui ajoute en bas le lien « Toutes les discussions ». Comme les autres widgets, il se règle aussi pour n'apparaître que sur l'accueil, et pour sa classe CSS.
 
 ![Le widget sur le site](img/widget-public.png)
@@ -143,9 +145,5 @@ Ses réglages : le titre, le nombre de discussions affichées (**Limite**) et l'
 
 ## Bon à savoir
 
-* **Les textes** : le champ « Content: » du formulaire de création n'est pas traduit en français. Plusieurs mots de l'interface sont des fautes d'orthographe d'origine (« paticipate », « disscussion »).
-* **Le widget** n'affiche pas le préfixe des discussions résolues dans la liste, contrairement à la page « Mes discussions ».
 * **Commentaires non enregistrés** : si vous les autorisez, tout visiteur peut répondre, mais seuls l'auteur de la discussion et les administrateurs peuvent la marquer comme résolue.
-* **Contraste** : avec le thème Berlin, l'encadré « discussion fermée » est peu lisible (texte sombre sur fond gris foncé).
-* **Autre jeu de modèles** : avec un thème qui n'est pas basé sur `dotty`, `mustek` ou `glaz`, le plugin renvoie des pages introuvables.
 * **Flux** : la balise auteur du flux Atom reste vide.
