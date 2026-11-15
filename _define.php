@@ -27,8 +27,8 @@ $this->registerModule(
         'requires' => [
             ['core', '2.40'],
             ['FrontendSession', '0.40'],
-            ['commentsWikibar', '7.7'], // optional
-            ['legacyMarkdown', '10.1'], // optional
+            ['legacyMarkdown', '10.1'],
+            // commentsWikibar is optional, it is used for edition
             //['ReadingTracking', '0.13'], // optional
         ],
         'settings'    => ['blog' => '#params.' . $this->id . '_params'],

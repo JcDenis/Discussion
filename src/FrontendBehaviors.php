@@ -91,7 +91,8 @@ class FrontendBehaviors
         }
 
         // edit
-        if (!Wikibar::settings()->getBool('active', false)
+        if (!App::plugins()->moduleExists('commentsWikibar')
+            || !Wikibar::settings()->getBool('active', false)
             || !App::url()->isType(['post', My::id()])
         ) {
             return;

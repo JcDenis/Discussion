@@ -307,7 +307,8 @@ class Core
         return App::task()->checkContext('FRONTEND')            // only on frontend
             && App::url()->isType('post')                       // only on post page
             && My::settings()->getBool('canedit_post', false)   // only if edition is allowed
-            && App::blog()->settings()->get('commentsWikibar')->getBool('active', false)    // only if plugin commentsWikibar is active
+            && App::plugins()->moduleExists('commentsWikibar')                                // only if plugin commentsWikibar is installed
+            && App::blog()->settings()->get('commentsWikibar')->getBool('active', false)    // and active
             && App::blog()->settings()->get('system')->getBool('markdown_comments', false); // only if markdown syntax is active
     }
 

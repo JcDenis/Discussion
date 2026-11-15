@@ -19,7 +19,8 @@ class BackendBehaviors
 {
     private static function canEdit(): bool
     {
-        return App::blog()->settings()->get('commentsWikibar')->getBool('active', false)
+        return App::plugins()->moduleExists('commentsWikibar')
+            && App::blog()->settings()->get('commentsWikibar')->getBool('active', false)
             && App::blog()->settings()->get('system')->getBool('markdown_comments', false);
     }
 
