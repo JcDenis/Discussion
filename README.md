@@ -12,6 +12,8 @@ _Discussion_ is a plugin for the open-source web publishing software called [Dot
 
 > Allow user to post from frontend.
 
+A [user guide in French](https://github.com/JcDenis/Discussion/blob/master/docs/fr/utilisation.md) is available.
+
 ## REQUIREMENTS
 
 * Dotclear 2.40
@@ -32,6 +34,7 @@ Once it's done you can manage Discussion option from blog preferences.
 
 ## LINKS
 
+* [User guide (in French)](https://github.com/JcDenis/Discussion/blob/master/docs/fr/utilisation.md)
 * [License](https://github.com/JcDenis/Discussion/blob/master/LICENSE)
 * [Packages & details](https://github.com/JcDenis/Discussion/releases) (or on [Repository](https://dotclear.org/plugin/detail/Discussion))
 * [Sources & contributions](https://github.com/JcDenis/Discussion)
