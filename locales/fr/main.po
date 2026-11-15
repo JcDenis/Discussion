@@ -118,7 +118,7 @@ msgid "Edit discussion:"
 msgstr "Modifier la discussion :"
 
 #: src/FrontendBehaviors.php:190
-msgid "Update"
+msgid "Update content"
 msgstr "Mettre à jour"
 
 #: src/FrontendBehaviors.php:191
@@ -219,10 +219,10 @@ msgid "All discussions"
 msgstr "Toutes les discussions"
 
 msgid "Content:"
-msgstr "Contenu :"
+msgstr "Contenu :"
 
 msgid "Title:"
-msgstr "Titre :"
+msgstr "Titre :"
 
 msgid "Preview"
 msgstr "Prévisualiser"

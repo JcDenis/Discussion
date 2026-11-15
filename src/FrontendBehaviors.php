@@ -130,7 +130,7 @@ class FrontendBehaviors
                             ->class('controlset')
                             ->separator(' ')
                             ->items([
-                                (new Submit([My::id() . 'updatepost'], __('Update')))
+                                (new Submit([My::id() . 'updatepost'], __('Update content')))
                                     ->title(__('Save discussion modifications')),
                                 (new Submit([My::id() . 'cancelpost'], __('Cancel'))),
                                 (new Hidden(['FrontendSessioncheck'], App::nonce()->getNonce())),
@@ -273,7 +273,7 @@ class FrontendBehaviors
                             ->class('controlset')
                             ->separator(' ')
                             ->items([
-                                (new Submit([My::id() . 'updatecomment'], __('Update')))
+                                (new Submit([My::id() . 'updatecomment'], __('Update content')))
                                     ->title(__('Save comment modifications')),
                                 (new Submit([My::id() . 'cancelcomment'], __('Cancel'))),
                                 (new Hidden(['FrontendSessioncheck'], App::nonce()->getNonce())),
