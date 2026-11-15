@@ -1,13 +1,11 @@
 <?php
 declare(strict_types=1);
 
-// Language: Français
-// Module: Discussion - 1.13.3
-// Date: 2025-11-08 08:46:29
-// Author: , contact@jcdenis.fr
-// Translated with Translater - 2025.09.11
-
-
+/**
+ * @package Dotclear
+ *
+ * @copyright Olivier Meunier & Association Dotclear
+ */
 #
 # DOT NOT MODIFY THIS FILE !
 #
@@ -42,16 +40,16 @@ L10n::$locales['Update'] = 'Mettre à jour';
 L10n::$locales['Save discussion modifications'] = 'Enregistrer les modificaitons';
 L10n::$locales['Edit'] = 'Modifier';
 L10n::$locales['Edit my discussion'] = 'Modifier ma discussion';
-L10n::$locales['Discussion successfully updated'] = 'Discussion mise à jour avec succès';
+L10n::$locales['Discussion successfully updated'] = 'Discussion mis à jour avec succès';
 L10n::$locales['Discussion closed as it is resolved in comment from %s'] = 'La discussion est fermée car résolue par le commentaire de %s';
 L10n::$locales['Edit comment:'] = 'Modifier le commentaire :';
 L10n::$locales['Save comment modifications'] = 'Enregistrer les modifications du commentaire';
 L10n::$locales['Solution'] = 'Solution';
 L10n::$locales['Mark this comment as answer and close discussion'] = 'Marquer ce commentaire comme solution et fermer la discussion';
 L10n::$locales['Edit my comment'] = 'Modifier mon commentaire';
-L10n::$locales['Comment successfully updated'] = 'Commentaire mis à jour avec succès';
+L10n::$locales['Comment successfully updated'] = 'Commentaire mise à jour avec succès';
 L10n::$locales['Mark discussion as resolved'] = 'Marquer la discussion comme résolue';
-L10n::$locales['Mark as resolved and close disscussion'] = 'Marquer cette discussion comme résolue et la fermer';
+L10n::$locales['Mark as resolved and close discussion'] = 'Marquer cette discussion comme résolue et la fermer';
 L10n::$locales['Create a new discussion'] = 'Créer une nouvelle discussion';
 L10n::$locales['View my discussions'] = 'Voir mes discussions';
 L10n::$locales['You can paticipate in discussions.'] = 'Vous pouvez participer aux discussions.';
@@ -63,3 +61,12 @@ L10n::$locales['Last discussions'] = 'Dernières discussions';
 L10n::$locales['Limit:'] = 'Limite :';
 L10n::$locales['Add link to forum'] = 'Ajouter un lien vers le forum';
 L10n::$locales['All discussions'] = 'Toutes les discussions';
+L10n::$locales['Content:'] = 'Contenu :';
+L10n::$locales['Title:'] = 'Titre :';
+L10n::$locales['Preview'] = 'Prévisualiser';
+L10n::$locales['Cancel'] = 'Annuler';
+L10n::$locales['Discussion'] = 'Discussion';
+L10n::$locales['Discussions'] = 'Discussions';
+L10n::$locales['Discussions and comments edition requirements:'] = 'Conditions pour modifier les discussions et commentaires :';
+L10n::$locales['Markdown syntax must be activated'] = 'La syntaxe Markdown doit être activée';
+L10n::$locales['Wikibar must be activated'] = 'La barre wiki doit être activée';

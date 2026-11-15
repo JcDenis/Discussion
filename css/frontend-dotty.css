@@ -28,8 +28,9 @@
 .post-resolver {
     margin: 1em;
     padding: 0.25em;
-    background-color: var(--comment-background-color, #4b4b4b);
-    border: 1px solid var(--comment-me-background-color, #4b4b4b);
+    color: inherit;
+    background-color: var(--comment-background-color, rgba(128, 128, 128, .12));
+    border: 1px solid var(--comment-me-background-color, rgba(128, 128, 128, .5));
     border-inline-start-width: 0.5em;
     font-size: 0.9em;
 }

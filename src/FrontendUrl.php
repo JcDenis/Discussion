@@ -307,12 +307,8 @@ class FrontendUrl
      */
     public static function serveTemplate(string $template): void
     {
-        // use only dotty tplset
-        $theme  = App::blog()->settings()->get('system')->getStr('theme', false);
-        $tplset = is_string($tplset = App::themes()->moduleInfo($theme, 'tplset')) ? $tplset : '';
-        if (!in_array($tplset, ['glaz', 'dotty', 'mustek'], true)) {
-            App::url()::p404();
-        }
+        // Templates exist only for dotty, they are used with all themes
+        $tplset = 'dotty';
 
         if (self::$form_error !== []) {
             App::frontend()->context()->form_error = implode("\n", self::$form_error);

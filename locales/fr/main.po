@@ -170,7 +170,7 @@ msgid "Mark discussion as resolved"
 msgstr "Marquer la discussion comme résolue"
 
 #: src/FrontendBehaviors.php:409
-msgid "Mark as resolved and close disscussion"
+msgid "Mark as resolved and close discussion"
 msgstr "Marquer cette discussion comme résolue et la fermer"
 
 #: src/FrontendBehaviors.php:466
@@ -218,3 +218,29 @@ msgstr "Ajouter un lien vers le forum"
 msgid "All discussions"
 msgstr "Toutes les discussions"
 
+msgid "Content:"
+msgstr "Contenu :"
+
+msgid "Title:"
+msgstr "Titre :"
+
+msgid "Preview"
+msgstr "Prévisualiser"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Discussion"
+msgstr "Discussion"
+
+msgid "Discussions"
+msgstr "Discussions"
+
+msgid "Discussions and comments edition requirements:"
+msgstr "Conditions pour modifier les discussions et commentaires :"
+
+msgid "Markdown syntax must be activated"
+msgstr "La syntaxe Markdown doit être activée"
+
+msgid "Wikibar must be activated"
+msgstr "La barre wiki doit être activée"

@@ -51,18 +51,23 @@ class Widgets
             return '';
         }
 
-        $lines = [];
-        $rs    = Core::getPosts(['limit' => $widget->get('limit')]);
+        $lines    = [];
+        $artifact = Core::getPostArtifact();
+        $rs       = Core::getPosts(['limit' => $widget->get('limit')]);
         while ($rs->fetch()) {
             $url        = $rs->getURL();
             $post_title = $rs->strField('post_title');
             $cat_title  = $rs->strField('cat_title');
 
+            $resolved = !Core::getPostResolver($rs->intField('post_id'))->isEmpty();
+
             $lines[] = (new Li())
+                ->class($resolved ? 'resolved' : '')
                 ->items([
                     (new Link())
                         ->href($url)
-                        ->text(Html::escapeHTML($post_title))
+                        // Same artifact as on posts titles
+                        ->text(($resolved && $artifact !== '' ? Html::escapeHTML($artifact) . ' ' : '') . Html::escapeHTML($post_title))
                         ->title(Html::escapeHTML($cat_title)),
                 ]);
         }

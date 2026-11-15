@@ -61,11 +61,8 @@ class FrontendBehaviors
     public static function publicHeadContent(): void
     {
         // style
-        $theme  = App::blog()->settings()->get('system')->getStr('theme', false);
-        $tplset = is_string($tplset = App::themes()->moduleInfo($theme, 'tplset')) ? $tplset : '';
-        if (in_array($tplset, ['glaz', 'dotty', 'mustek'], true)) {
-            echo My::cssLoad('frontend-' . $tplset);
-        }
+        // Only one style sheet, for all themes
+        echo My::cssLoad('frontend-dotty');
 
         // resolve
         if (Core::getPostArtifact() !== '') {
@@ -384,7 +381,7 @@ class FrontendBehaviors
                 ->items([
                     (new Checkbox(My::id() . 'resolved', !empty($_POST[My::id() . 'resolved'])))
                         ->value(1)
-                        ->label((new Label(__('Mark discussion as resolved'), Label::IL_FT))->title(__('Mark as resolved and close disscussion'))),
+                        ->label((new Label(__('Mark discussion as resolved'), Label::IL_FT))->title(__('Mark as resolved and close discussion'))),
                 ])
                 ->render();
         }
