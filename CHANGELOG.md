@@ -1,3 +1,7 @@
+Discussion 1.22.1 - 2026.11.15
+===========================================================
+* [fix] commentsWikibar is optional, legacyMarkdown is required
+
 Discussion 1.22 - 2026.11.15
 ===========================================================
 * [fix] Templates and style for all themes, resolved discussions in widget, closed notice colors
