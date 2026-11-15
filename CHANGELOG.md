@@ -1,3 +1,8 @@
+Discussion 1.22 - 2026.11.15
+===========================================================
+* [fix] Templates and style for all themes, resolved discussions in widget, closed notice colors
+* [docs] Add a user guide in French, with screenshots
+
 Discussion 1.21 - 2026.11.11
 ===========================================================
 * Fix version in CHANGELOG
