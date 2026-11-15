@@ -23,7 +23,8 @@ Ce plugin n'a pas de page d'administration : tout se règle dans les paramètres
 Discussion s'appuie sur d'autres plugins :
 
 * **FrontendSession** (obligatoire) : il gère la connexion des visiteurs sur le site public. Activez-le d'abord.
-* **commentsWikibar** et **Markdown syntax** (facultatifs) : ils ajoutent la barre d'outils et le Markdown dans les formulaires. Sans eux, la modification des messages n'est pas possible.
+* **Markdown syntax** (_legacyMarkdown_, obligatoire) : les discussions sont écrites en Markdown.
+* **commentsWikibar** (facultatif) : il ajoute la barre d'outils dans les formulaires. Sans lui, la modification des messages n'est pas possible.
 
 Le plugin fonctionne avec tous les thèmes : ses pages utilisent toujours ses propres gabarits et sa feuille de style.
 

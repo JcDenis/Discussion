@@ -37,6 +37,7 @@ Required Dotclear and PHP versions: see `_define.php`.
 ## Pitfalls
 
 * CI installs FrontendSession, commentsWikibar, legacyMarkdown from the author's repositories, then from franck-paul's.
+* legacyMarkdown is required (discussions are stored in Markdown). commentsWikibar is optional (edition only): check `App::plugins()->moduleExists('commentsWikibar')` before using its classes or settings, and keep it out of `requires`.
 
 ## Testing
 
